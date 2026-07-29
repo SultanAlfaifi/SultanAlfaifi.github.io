@@ -54,4 +54,4 @@ Items remain intentionally incomplete rather than being inferred or fabricated.
 - [x] Recheck every external link; retain manual-review notes for sites that block automated requests
 - [x] Run the complete validation suite
 - [x] Confirm public-display approval for all supplied portfolio assets
-- [ ] Complete DNS propagation and GitHub Pages HTTPS certificate issuance
+- [x] Complete DNS propagation and GitHub Pages HTTPS certificate issuance
