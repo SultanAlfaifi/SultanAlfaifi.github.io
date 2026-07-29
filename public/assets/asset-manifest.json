@@ -1,0 +1,339 @@
+{
+  "danna": {
+    "sourceFile": "DANA copy 2.png",
+    "color": {
+      "path": "/assets/logos/danna-color.webp",
+      "width": 390,
+      "height": 480
+    },
+    "monochrome": null,
+    "processing": {
+      "trim": "auto",
+      "safePadding": 32,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.92,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": false
+    }
+  },
+  "deeplearning-ai": {
+    "sourceFile": "dlai-logo.png",
+    "color": {
+      "path": "/assets/logos/deeplearning-ai-color.webp",
+      "width": 1400,
+      "height": 198
+    },
+    "monochrome": {
+      "path": "/assets/logos/deeplearning-ai-mono.webp",
+      "width": 1400,
+      "height": 198
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 1.04,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "ibm": {
+    "sourceFile": "IBM_logo.svg",
+    "color": {
+      "path": "/assets/logos/ibm-color.webp",
+      "width": 1259,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/ibm-mono.webp",
+      "width": 1259,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 28,
+      "backgroundDetected": "rgba(16,56,97,54)",
+      "visualScale": 0.88,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "kaust-academy": {
+    "sourceFile": "KAUST Academy.png",
+    "color": {
+      "path": "/assets/logos/kaust-academy-color.webp",
+      "width": 874,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/kaust-academy-mono.webp",
+      "width": 874,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 1.02,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "kaust-university": {
+    "sourceFile": "KAUST_Logo.svg",
+    "color": {
+      "path": "/assets/logos/kaust-university-color.webp",
+      "width": 1014,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/kaust-university-mono.webp",
+      "width": 1014,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.94,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "salla": {
+    "sourceFile": "logo-wide.svg",
+    "color": {
+      "path": "/assets/logos/salla-color.webp",
+      "width": 1101,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/salla-mono.webp",
+      "width": 1101,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 28,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.9,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "mckinsey": {
+    "sourceFile": "McKinsey_Script_Mark_2019.svg.webp",
+    "color": {
+      "path": "/assets/logos/mckinsey-color.webp",
+      "width": 1008,
+      "height": 345
+    },
+    "monochrome": {
+      "path": "/assets/logos/mckinsey-mono.webp",
+      "width": 1008,
+      "height": 345
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "rgba(1,7,11,64)",
+      "visualScale": 0.92,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "nvidia": {
+    "sourceFile": "NVIDIA_logo.svg.webp",
+    "color": {
+      "path": "/assets/logos/nvidia-color.webp",
+      "width": 999,
+      "height": 224
+    },
+    "monochrome": {
+      "path": "/assets/logos/nvidia-mono.webp",
+      "width": 999,
+      "height": 224
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 1,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "portrait": {
+    "sourceFile": "Personal Photo 1.png",
+    "color": {
+      "path": "/assets/portrait/sultan-alfaifi.webp",
+      "width": 1600,
+      "height": 1529
+    },
+    "monochrome": null,
+    "processing": {
+      "trim": "none",
+      "safePadding": 0,
+      "backgroundDetected": "portrait-transparent-preserved",
+      "visualScale": 1,
+      "objectPosition": "50% 34%",
+      "monochromeEnabled": false
+    }
+  },
+  "masari": {
+    "sourceFile": "Screenshot 2026-07-29 162102.png",
+    "color": {
+      "path": "/assets/logos/masari-color.webp",
+      "width": 188,
+      "height": 63
+    },
+    "monochrome": null,
+    "processing": {
+      "trim": "auto",
+      "safePadding": 12,
+      "backgroundDetected": "light-neutral-removed",
+      "visualScale": 1,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": false
+    }
+  },
+  "tabayun": {
+    "sourceFile": "tabayun-logo.png",
+    "color": {
+      "path": "/assets/logos/tabayun-color.webp",
+      "width": 400,
+      "height": 195
+    },
+    "monochrome": null,
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.96,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": false
+    }
+  },
+  "university-michigan": {
+    "sourceFile": "University-of-Michigan-Logo.png",
+    "color": {
+      "path": "/assets/logos/university-michigan-color.webp",
+      "width": 1400,
+      "height": 300
+    },
+    "monochrome": {
+      "path": "/assets/logos/university-michigan-mono.webp",
+      "width": 1400,
+      "height": 300
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.94,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "uqu": {
+    "sourceFile": "UQU.png",
+    "color": {
+      "path": "/assets/logos/uqu-color.webp",
+      "width": 1189,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/uqu-mono.webp",
+      "width": 1189,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 24,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.96,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "riadiat": {
+    "sourceFile": "logo-header.f52d9df.svg",
+    "color": {
+      "path": "/assets/logos/riadiat-color.webp",
+      "width": 494,
+      "height": 269
+    },
+    "monochrome": {
+      "path": "/assets/logos/riadiat-mono.webp",
+      "width": 494,
+      "height": 269
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 18,
+      "backgroundDetected": "transparent",
+      "visualScale": 1.04,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "fazzah": {
+    "sourceFile": "69f11a3d9b9537.54539445 1.png",
+    "color": {
+      "path": "/assets/logos/fazzah-color.webp",
+      "width": 666,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/fazzah-mono.webp",
+      "width": 666,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 20,
+      "backgroundDetected": "transparent",
+      "visualScale": 1.38,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "ai-pioneers": {
+    "sourceFile": "AIP.png",
+    "color": {
+      "path": "/assets/logos/ai-pioneers-color.webp",
+      "width": 575,
+      "height": 480
+    },
+    "monochrome": {
+      "path": "/assets/logos/ai-pioneers-mono.webp",
+      "width": 575,
+      "height": 480
+    },
+    "processing": {
+      "trim": "auto",
+      "safePadding": 20,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.88,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": true
+    }
+  },
+  "amad-hackathon": {
+    "sourceFile": "amad-logo.png",
+    "color": {
+      "path": "/assets/logos/amad-hackathon-color.webp",
+      "width": 762,
+      "height": 480
+    },
+    "monochrome": null,
+    "processing": {
+      "trim": "auto",
+      "safePadding": 18,
+      "backgroundDetected": "transparent",
+      "visualScale": 0.96,
+      "objectPosition": "50% 50%",
+      "monochromeEnabled": false
+    }
+  }
+}

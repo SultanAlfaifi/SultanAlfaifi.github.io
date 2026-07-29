@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Sultan Alfaifi monogram</title>
+  <rect x="1" y="1" width="62" height="62" rx="10" fill="#18211E" stroke="#2B3531" stroke-width="2"/>
+  <path d="M16 20h20v7H23v5h11c8 0 13 4 13 11 0 8-6 12-16 12H16v-7h15c5 0 8-1 8-5 0-3-2-4-7-4H16V20Z" fill="#C8FF3D"/>
+  <circle cx="48" cy="16" r="4" fill="#6D8EFF"/>
+</svg>
