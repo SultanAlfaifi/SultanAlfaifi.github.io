@@ -9,7 +9,6 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const sections = navigation
@@ -32,7 +31,6 @@ export function Navbar() {
 
   useEffect(() => {
     if (!open) return;
-    firstLinkRef.current?.focus();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -44,10 +42,14 @@ export function Navbar() {
 
       if (event.key === "Tab") {
         const drawer = document.querySelector<HTMLElement>(".nav__drawer");
-        const focusable = drawer?.querySelectorAll<HTMLElement>(
+        const drawerLinks = drawer?.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled])'
         );
-        if (!focusable?.length) return;
+        const focusable = [
+          menuButtonRef.current,
+          ...(drawerLinks ? Array.from(drawerLinks) : [])
+        ].filter((element): element is HTMLElement => Boolean(element));
+        if (!focusable.length) return;
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
 
@@ -67,6 +69,17 @@ export function Navbar() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 841px)");
+
+    function closeDrawerOnDesktop(event: MediaQueryListEvent) {
+      if (event.matches) setOpen(false);
+    }
+
+    desktopQuery.addEventListener("change", closeDrawerOnDesktop);
+    return () => desktopQuery.removeEventListener("change", closeDrawerOnDesktop);
+  }, []);
 
   function closeMenu() {
     setOpen(false);
@@ -114,7 +127,6 @@ export function Navbar() {
         <nav id="mobile-navigation" aria-label="Mobile navigation">
           {navigation.map((item, index) => (
             <a
-              ref={index === 0 ? firstLinkRef : undefined}
               key={item.href}
               href={item.href}
               tabIndex={open ? 0 : -1}

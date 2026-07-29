@@ -293,7 +293,7 @@
       "trim": "auto",
       "safePadding": 20,
       "backgroundDetected": "transparent",
-      "visualScale": 1.38,
+      "visualScale": 1.06,
       "objectPosition": "50% 50%",
       "monochromeEnabled": true
     }

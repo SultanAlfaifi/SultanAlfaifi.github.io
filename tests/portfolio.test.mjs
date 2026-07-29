@@ -18,6 +18,10 @@ const navbarSource = readFileSync(
   new URL("../components/navbar.tsx", import.meta.url),
   "utf8"
 );
+const layoutSource = readFileSync(
+  new URL("../app/layout.tsx", import.meta.url),
+  "utf8"
+);
 
 function luminance(hex) {
   const values = [1, 3, 5]
@@ -102,6 +106,10 @@ test("the S monogram is shared by the browser and navigation brand", () => {
   assert.doesNotMatch(navbarSource, />SA<\/span>/);
 });
 
+test("social metadata uses a static image with a reliable PNG extension", () => {
+  assert.match(layoutSource, /url: "\/opengraph-image\.png"/);
+});
+
 test("protocol blues meet WCAG AA against their intended backgrounds", () => {
   assert.ok(contrastRatio("#2f55b7", "#f4f3ec") >= 4.5);
   assert.ok(contrastRatio("#2f55b7", "#fbfbf8") >= 4.5);
@@ -117,6 +125,12 @@ test("responsive and reduced-motion safeguards are present", () => {
     cssSource,
     /#recommendations \.section-header h2[\s\S]*?10\.25vw/
   );
+  assert.match(
+    cssSource,
+    /\.nav__drawer\s*\{[\s\S]*?position:\s*absolute[\s\S]*?100dvh[\s\S]*?background:\s*#111816/
+  );
+  assert.match(navbarSource, /matchMedia\("\(min-width: 841px\)"\)/);
+  assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(cssSource, /organization-rail__group\[aria-hidden="true"\]/);
 });

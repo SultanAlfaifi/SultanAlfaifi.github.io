@@ -478,7 +478,7 @@ export const portfolioAssets: PortfolioAsset[] = [
       color: "/assets/logos/fazzah-color.webp",
       monochrome: "/assets/logos/fazzah-mono.webp"
     },
-    visualScale: 1.38,
+    visualScale: 1.06,
     objectPosition: "50% 50%",
     trim: "auto",
     safePadding: 20,
@@ -573,7 +573,7 @@ export const identity = {
   headline:
     "I build full-stack products powered by intelligent agents.",
   summary:
-    "A full-stack software engineer specializing in AI agents, building end-to-end products across interfaces, backend logic, APIs, databases, and LLM-powered workflows.",
+    "I turn product ideas into complete software—from responsive interfaces and reliable backends to connected data and LLM-powered workflows.",
   location: "Makkah, Saudi Arabia",
   education: "Software Engineering, Umm Al-Qura University",
   languages: "Arabic & English",
@@ -1152,5 +1152,5 @@ export const seo = {
   title: "Sultan Alfaifi — Full-Stack Software Engineer & AI Agents",
   description:
     "Portfolio of Sultan Alfaifi, a full-stack software engineer specializing in AI agents, LLM applications, web development, APIs, and intelligent systems.",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://SultAlfaifi.com"
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sultalfaifi.com"
 };

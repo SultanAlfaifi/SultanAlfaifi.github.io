@@ -32,13 +32,29 @@ export const metadata: Metadata = {
     url: "/",
     title: seo.title,
     description: seo.description,
-    siteName: "Sultan Alfaifi"
+    siteName: "Sultan Alfaifi",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Sultan Alfaifi — Full-Stack Software Engineer specializing in AI Agents"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
     title: seo.title,
     description: seo.description,
-    creator: "@SultAlfaifi"
+    creator: "@SultAlfaifi",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Sultan Alfaifi — Full-Stack Software Engineer specializing in AI Agents"
+      }
+    ]
   },
   robots: {
     index: true,

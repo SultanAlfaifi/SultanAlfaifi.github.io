@@ -9,7 +9,7 @@
   </p>
 
   <p>
-    <a href="https://SultAlfaifi.com"><strong>Visit the live portfolio</strong></a>
+    <a href="https://sultalfaifi.com"><strong>Visit the live portfolio</strong></a>
     ·
     <a href="#local-development">Run locally</a>
     ·
@@ -30,7 +30,7 @@
 ## Overview
 
 This repository contains the source for
-[SultAlfaifi.com](https://SultAlfaifi.com), the professional portfolio of
+[SultAlfaifi.com](https://sultalfaifi.com), the professional portfolio of
 Sultan Alfaifi. It positions Sultan as a **Full-Stack Software Engineer
 specializing in AI Agents** and presents his work through an editorial
 system-architecture visual language.
@@ -230,7 +230,7 @@ Pushes to `main` trigger
 
 The canonical production URL is:
 
-**[https://SultAlfaifi.com](https://SultAlfaifi.com)**
+**[https://sultalfaifi.com](https://sultalfaifi.com)**
 
 ## Author
 
