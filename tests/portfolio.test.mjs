@@ -18,6 +18,10 @@ const navbarSource = readFileSync(
   new URL("../components/navbar.tsx", import.meta.url),
   "utf8"
 );
+const projectsSource = readFileSync(
+  new URL("../components/projects-section.tsx", import.meta.url),
+  "utf8"
+);
 const layoutSource = readFileSync(
   new URL("../app/layout.tsx", import.meta.url),
   "utf8"
@@ -88,9 +92,10 @@ test("corrected community brands and achievement mappings stay explicit", () => 
   assert.match(dataSource, /name: "Fazzah Voluntary National Association"/);
   assert.match(dataSource, /logo: "fazzah"[\s\S]*?https:\/\/www\.fazzah\.org\//);
   assert.match(dataSource, /name: "Artificial Intelligence Pioneers"[\s\S]*?logo: "ai-pioneers"/);
-  assert.match(dataSource, /slug: "potato-disease-cnn"[\s\S]*?brandAssetId: "kaust-academy"/);
+  assert.match(dataSource, /slug: "kaust-ai-projects"[\s\S]*?brandAssetId: "kaust-academy"/);
+  assert.match(dataSource, /slug: "kaust-ai-projects"[\s\S]*?screenshot: "\/assets\/projects\/kaust-ai-projects\.webp"/);
   assert.match(dataSource, /title: "Amd FinTech Hackathon Finalist"[\s\S]*?assetId: "amad-hackathon"/);
-  assert.match(dataSource, /title: "Best UI Designer — UQU Computer Club"[\s\S]*?assetId: "uqu"/);
+  assert.match(dataSource, /title: "Best UI Designer at UQU Computer Club"[\s\S]*?assetId: "uqu"/);
   assert.doesNotMatch(dataSource, /Raedat|Fazaa Volunteer/);
 });
 
@@ -98,6 +103,29 @@ test("hero thesis remains concise and direct", () => {
   assert.match(
     dataSource,
     /"I build full-stack products powered by intelligent agents\."/
+  );
+});
+
+test("hero content exits upward before the following section", () => {
+  assert.match(
+    cssSource,
+    /@keyframes hero-content-drift[\s\S]*?translate3d\(0, -5svh, 0\)[\s\S]*?opacity:\s*0/
+  );
+  assert.doesNotMatch(
+    cssSource,
+    /@keyframes hero-content-drift[\s\S]*?translate3d\(0, 7svh, 0\)/
+  );
+});
+
+test("Masari leads selected work with user-provided usage evidence", () => {
+  assert.match(
+    dataSource,
+    /slug: "masari"[\s\S]*?value: "About 1,600"[\s\S]*?label: "Active users"[\s\S]*?value: "1,250\+"[\s\S]*?label: "CVs downloaded"[\s\S]*?flagship: true/
+  );
+  assert.match(dataSource, /slug: "danna"[\s\S]*?flagship: false/);
+  assert.match(
+    projectsSource,
+    /\["masari", "tabayun", "danna", "kaust-ai-projects"\]/
   );
 });
 
@@ -110,12 +138,13 @@ test("social metadata uses a static image with a reliable PNG extension", () => 
   assert.match(layoutSource, /url: "\/opengraph-image\.png"/);
 });
 
-test("protocol blues meet WCAG AA against their intended backgrounds", () => {
-  assert.ok(contrastRatio("#2f55b7", "#f4f3ec") >= 4.5);
-  assert.ok(contrastRatio("#2f55b7", "#fbfbf8") >= 4.5);
-  assert.ok(contrastRatio("#2f55b7", "#e8ece7") >= 4.5);
-  assert.ok(contrastRatio("#9bb0ff", "#111816") >= 4.5);
-  assert.ok(contrastRatio("#9bb0ff", "#17201d") >= 4.5);
+test("the supplied mint palette meets its intended contrast roles", () => {
+  assert.ok(contrastRatio("#131515", "#fffafb") >= 4.5);
+  assert.ok(contrastRatio("#2b2c28", "#fffafb") >= 4.5);
+  assert.ok(contrastRatio("#131515", "#7de2d1") >= 4.5);
+  assert.ok(contrastRatio("#7de2d1", "#131515") >= 4.5);
+  assert.ok(contrastRatio("#fffafb", "#131515") >= 4.5);
+  assert.ok(contrastRatio("#339989", "#fffafb") >= 3);
 });
 
 test("responsive and reduced-motion safeguards are present", () => {

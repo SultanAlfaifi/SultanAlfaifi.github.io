@@ -3,154 +3,84 @@ import path from "node:path";
 
 const pairs = [
   {
-    usage: "Primary text on paper",
-    foreground: "#252C29",
-    background: "#F4F3EC",
+    usage: "Primary text on blush paper",
+    foreground: "#131515",
+    background: "#FFFAFB",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Muted metadata on paper",
-    foreground: "#5C6762",
-    background: "#F4F3EC",
+    usage: "Secondary text on blush paper",
+    foreground: "#2B2C28",
+    background: "#FFFAFB",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Protocol links and labels on paper",
-    foreground: "#2F55B7",
-    background: "#F4F3EC",
+    usage: "Blush text on ink",
+    foreground: "#FFFAFB",
+    background: "#131515",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Protocol links and labels on white",
-    foreground: "#2F55B7",
-    background: "#FBFBF8",
+    usage: "Blush text on charcoal",
+    foreground: "#FFFAFB",
+    background: "#2B2C28",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Protocol labels on graph background",
-    foreground: "#2F55B7",
-    background: "#E8ECE7",
+    usage: "Ink text on mint controls",
+    foreground: "#131515",
+    background: "#7DE2D1",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Bright protocol links on ink",
-    foreground: "#9BB0FF",
-    background: "#111816",
+    usage: "Mint labels on ink",
+    foreground: "#7DE2D1",
+    background: "#131515",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Bright protocol links on community ink",
-    foreground: "#9BB0FF",
-    background: "#17201D",
+    usage: "Ink text on teal surfaces",
+    foreground: "#131515",
+    background: "#339989",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Warm-white navigation text on ink",
-    foreground: "#C5CDC9",
-    background: "#111816",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Project body text on project ink",
-    foreground: "#C0C9C4",
-    background: "#151E1B",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Project secondary text on project ink",
-    foreground: "#AEB9B3",
-    background: "#151E1B",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Community metadata on community ink",
-    foreground: "#9CA8A2",
-    background: "#17201D",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Footer metadata on footer ink",
-    foreground: "#AAB4AF",
-    background: "#0B100F",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Chartreuse active state on ink",
-    foreground: "#C8FF3D",
-    background: "#111816",
-    minimum: 3,
-    category: "Icons and large active states"
-  },
-  {
-    usage: "Ink text on chartreuse buttons and contact section",
-    foreground: "#111816",
-    background: "#C8FF3D",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Recommendation quote on white",
-    foreground: "#252C29",
-    background: "#FBFBF8",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Light structural border on paper",
-    foreground: "#7D8882",
-    background: "#F4F3EC",
-    minimum: 3,
-    category: "Borders and controls"
-  },
-  {
-    usage: "Dark structural border on ink",
-    foreground: "#676B67",
-    background: "#111816",
-    minimum: 3,
-    category: "Borders and controls"
-  },
-  {
-    usage: "Light-surface keyboard focus",
-    foreground: "#754500",
-    background: "#F4F3EC",
+    usage: "Teal focus ring on blush paper",
+    foreground: "#339989",
+    background: "#FFFAFB",
     minimum: 3,
     category: "Focus indicator"
   },
   {
-    usage: "Dark-surface keyboard focus",
-    foreground: "#FFBF3F",
-    background: "#111816",
+    usage: "Mint focus ring on ink",
+    foreground: "#7DE2D1",
+    background: "#131515",
     minimum: 3,
     category: "Focus indicator"
   },
   {
-    usage: "Monochrome rail logos on ink",
-    foreground: "#F4F3EC",
-    background: "#18211E",
+    usage: "Charcoal structural controls on mint",
+    foreground: "#2B2C28",
+    background: "#7DE2D1",
     minimum: 3,
-    category: "Non-text logo treatment"
+    category: "Borders and controls"
   }
 ];
 
 const excludedPairs = [
   {
-    usage: "Chartreuse as text or control on paper",
-    foreground: "#C8FF3D",
-    background: "#F4F3EC",
+    usage: "Mint as small text on blush paper",
+    foreground: "#7DE2D1",
+    background: "#FFFAFB",
     reason:
-      "Insufficient contrast. Chartreuse is prohibited here and reserved for ink backgrounds or as a background with ink text."
+      "Insufficient contrast. Mint is reserved for dark surfaces, large decorative type, or backgrounds with ink text."
   }
 ];
 

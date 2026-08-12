@@ -63,7 +63,7 @@ function OrganizationItem({
         href={organization.url}
         target="_blank"
         rel="noreferrer noopener"
-        aria-label={`${organization.name} — ${organization.relationship}`}
+        aria-label={`${organization.name}: ${organization.relationship}`}
       >
         {content}
       </a>

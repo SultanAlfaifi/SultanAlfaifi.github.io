@@ -11,7 +11,6 @@ export function ProgramsSection() {
     <section id="journey" className="section section--paper">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Learning system / 07"
           title="Learning, Applied."
           description="A curated collection of programs that strengthened my technical foundations, AI capabilities, and professional mindset."
         />

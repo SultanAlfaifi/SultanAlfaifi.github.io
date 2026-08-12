@@ -13,7 +13,7 @@ export function CommunitySection() {
     <section id="community" className="section section--community">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Knowledge in motion / 08"
+          eyebrow="Knowledge in motion"
           title="Community & Teaching"
           description="Sharing practical knowledge through bootcamps, workshops, and volunteer initiatives focused on artificial intelligence and technology."
           inverse

@@ -12,31 +12,31 @@ export function AboutSection() {
     <section id="about" className="section section--paper">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Profile / 01"
+          eyebrow="Profile"
           title="About"
           description="Engineering complete products, then extending them with intelligent behavior."
         />
 
         <div className="about-layout">
           {portrait ? (
-            <Reveal className="about-portrait">
+            <Reveal className="about-portrait" variant="media">
               <div className="about-portrait__frame">
-                <Image
-                  src={portrait.derived.color}
-                  alt={portrait.alt}
-                  fill
-                  sizes="(max-width: 840px) 100vw, 42vw"
-                  priority={false}
-                  style={{ objectPosition: portrait.objectPosition }}
-                />
-                <span aria-hidden="true">HUMAN / ENGINEER / BUILDER</span>
+                <div className="about-portrait__stage">
+                  <Image
+                    src={portrait.derived.color}
+                    alt={portrait.alt}
+                    fill
+                    sizes="(max-width: 840px) 94vw, 44vw"
+                    priority={false}
+                    style={{ objectPosition: portrait.objectPosition }}
+                  />
+                </div>
               </div>
-              <p>Portrait supplied and approved by Sultan Alfaifi.</p>
             </Reveal>
           ) : null}
 
           <div className="about-layout__content">
-            <Reveal className="about-layout__copy">
+            <Reveal className="about-layout__copy" variant="right">
               {about.paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -67,8 +67,9 @@ export function AboutSection() {
                       <Image
                         src={educationLogo.derived.color}
                         alt={educationLogo.alt}
-                        width={220}
-                        height={86}
+                        width={1189}
+                        height={480}
+                        style={{ height: "auto" }}
                       />
                     </dd>
                   </div>

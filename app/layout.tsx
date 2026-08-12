@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import { identity, seo, socialLinks } from "@/data/portfolio";
 import "./globals.css";
 
@@ -13,6 +13,12 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-mono",
+  display: "swap"
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
   display: "swap"
 });
 
@@ -38,7 +44,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Sultan Alfaifi — Full-Stack Software Engineer specializing in AI Agents"
+        alt: "Sultan Alfaifi, Full-Stack Software Engineer specializing in AI Agents"
       }
     ]
   },
@@ -52,7 +58,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Sultan Alfaifi — Full-Stack Software Engineer specializing in AI Agents"
+        alt: "Sultan Alfaifi, Full-Stack Software Engineer specializing in AI Agents"
       }
     ]
   },
@@ -94,7 +100,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${manrope.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${plexMono.variable} ${spaceGrotesk.variable}`}>
       <body>
         <script
           type="application/ld+json"

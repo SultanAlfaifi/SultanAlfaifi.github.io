@@ -7,7 +7,6 @@ export function ExpertiseSection() {
     <section id="expertise" className="section section--white">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Capabilities / 02"
           title="Areas of Expertise"
           description="From full-stack engineering to intelligent agentic systems, I build complete solutions across the product lifecycle."
         />
