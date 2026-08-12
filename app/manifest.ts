@@ -4,7 +4,7 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Sultan Alfaifi — Portfolio",
+    name: "Sultan Alfaifi | Portfolio",
     short_name: "Sultan Alfaifi",
     description:
       "Full-stack software engineer specializing in AI agents and LLM applications.",

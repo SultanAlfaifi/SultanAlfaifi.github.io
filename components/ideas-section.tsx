@@ -12,7 +12,6 @@ export function IdeasSection() {
     <section id="ideas" className="section section--ideas">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Ideas into clarity / 10"
           title="Ideas, Explained."
           description="From complex systems to clear, practical knowledge."
           inverse

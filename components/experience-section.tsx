@@ -1,20 +1,31 @@
 import Image from "next/image";
 import { experience, getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
+import { SallaExperienceStory } from "./salla-experience-story";
 import { SectionHeader } from "./section-header";
 
 export function ExperienceSection() {
+  const sallaExperience = experience.find((item) => item.organization === "Salla");
+  const sallaAsset = sallaExperience ? getPortfolioAsset(sallaExperience.assetId) : null;
+  const remainingExperience = experience.filter((item) => item !== sallaExperience);
+
   return (
-    <section id="experience" className="section section--paper">
+    <section id="experience" className="section section--paper experience-section">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Applied practice / 04"
           title="Experience"
           description="Professional learning grounded in implementation, feedback, and engineering workflows."
         />
+      </div>
 
-        <div className="experience-timeline">
-          {experience.map((item) => (
+      {sallaExperience && sallaAsset ? (
+        <SallaExperienceStory experience={sallaExperience} asset={sallaAsset} />
+      ) : null}
+
+      {remainingExperience.length > 0 ? (
+        <div className="page-shell">
+          <div className="experience-timeline">
+          {remainingExperience.map((item) => (
             <Reveal key={`${item.organization}-${item.role}`} className="experience-entry">
               <div className="experience-entry__marker" aria-hidden="true">
                 <span />
@@ -51,8 +62,9 @@ export function ExperienceSection() {
               </div>
             </Reveal>
           ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }

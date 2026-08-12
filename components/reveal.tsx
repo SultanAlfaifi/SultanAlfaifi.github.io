@@ -1,29 +1,54 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+
+type RevealPhase = "before" | "visible" | "past";
+type RevealVariant = "soft" | "title" | "media" | "left" | "right";
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
+  variant?: RevealVariant;
 };
 
-export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
-  const [visible, setVisible] = useState(false);
+export function Reveal({
+  children,
+  className = "",
+  delay = 0,
+  variant = "soft"
+}: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
+    const applyPhase = (phase: RevealPhase) => {
+      element.classList.remove("reveal--before", "reveal--visible", "reveal--past");
+      element.classList.add("reveal--ready", `reveal--${phase}`);
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
+      applyPhase("visible");
+      return;
+    }
+
+    const rect = element.getBoundingClientRect();
+    applyPhase(rect.bottom < 0 ? "past" : rect.top > window.innerHeight ? "before" : "visible");
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
-          observer.unobserve(element);
+          applyPhase("visible");
+        } else if (entry.boundingClientRect.bottom <= 0) {
+          applyPhase("past");
+        } else if (entry.boundingClientRect.top >= window.innerHeight) {
+          applyPhase("before");
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.1 }
+      { rootMargin: "-4% 0px -7% 0px", threshold: 0.08 }
     );
 
     observer.observe(element);
@@ -33,7 +58,7 @@ export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
   return (
     <div
       ref={ref}
-      className={`reveal ${visible ? "reveal--visible" : ""} ${className}`}
+      className={`reveal reveal--${variant} reveal--visible ${className}`}
       style={{ "--reveal-delay": `${delay}ms` } as React.CSSProperties}
     >
       {children}

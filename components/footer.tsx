@@ -24,6 +24,9 @@ export function Footer() {
           Return to top ↑
         </a>
       </div>
+      <p className="footer__wordmark" aria-hidden="true">
+        SULTAN <span>/</span> ALFAIFI
+      </p>
     </footer>
   );
 }

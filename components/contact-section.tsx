@@ -31,7 +31,6 @@ export function ContactSection() {
     <section id="contact" className="contact-section" aria-labelledby="contact-title">
       <div className="page-shell contact-section__inner">
         <div className="contact-section__copy">
-          <p>Open channel / Contact</p>
           <h2 id="contact-title">Let&apos;s build something meaningful.</h2>
           <p>
             Have a software opportunity, AI project, collaboration, consultation, or

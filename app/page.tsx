@@ -17,6 +17,7 @@ import { SkillsSection } from "@/components/skills-section";
 export default function Home() {
   return (
     <>
+      <div className="scroll-progress" aria-hidden="true" />
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>

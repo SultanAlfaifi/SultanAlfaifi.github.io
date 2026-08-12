@@ -4,12 +4,16 @@ import { getPortfolioAsset, recommendations } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
+const recommendationLogoDimensions: Record<string, { width: number; height: number }> = {
+  ibm: { width: 1259, height: 480 },
+  uqu: { width: 1189, height: 480 }
+};
+
 export function RecommendationsSection() {
   return (
     <section id="recommendations" className="section section--recommendations">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Trusted perspectives / 09"
           title="Recommendations"
           description="Perspectives from educators and mentors who have seen me learn, build, and collaborate."
         />
@@ -44,14 +48,15 @@ export function RecommendationsSection() {
                         key={assetId}
                         src={asset.derived.color}
                         alt={asset.alt}
-                        width={132}
-                        height={54}
+                        width={recommendationLogoDimensions[assetId]?.width ?? 132}
+                        height={recommendationLogoDimensions[assetId]?.height ?? 54}
+                        style={{ height: "auto" }}
                       />
                     );
                   })}
                 </div>
               ) : null}
-              <ul className="tag-list tag-list--dark" aria-label="Recommendation themes">
+              <ul className="tag-list" aria-label="Recommendation themes">
                 {recommendation.tags.map((tag) => (
                   <li key={tag}>{tag}</li>
                 ))}

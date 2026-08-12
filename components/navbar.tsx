@@ -22,7 +22,7 @@ export function Navbar() {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target.id) setActive(visible.target.id);
       },
-      { rootMargin: "-25% 0px -60% 0px", threshold: [0.05, 0.2, 0.5] }
+      { rootMargin: "-18% 0px -72% 0px", threshold: 0 }
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -86,7 +86,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="nav">
+    <header className={`nav ${active === "home" ? "nav--hero" : ""}`}>
       <a className="nav__brand" href="#home" aria-label="Sultan Alfaifi, home">
         <Image
           src="/brand/sultan-alfaifi-mark.svg"
@@ -125,7 +125,7 @@ export function Navbar() {
 
       <div className={`nav__drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
         <nav id="mobile-navigation" aria-label="Mobile navigation">
-          {navigation.map((item, index) => (
+          {navigation.map((item) => (
             <a
               key={item.href}
               href={item.href}
@@ -133,7 +133,6 @@ export function Navbar() {
               className={active === item.href.slice(1) ? "is-active" : ""}
               onClick={closeMenu}
             >
-              <span>0{index + 1}</span>
               {item.label}
             </a>
           ))}

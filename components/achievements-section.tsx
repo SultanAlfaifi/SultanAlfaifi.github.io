@@ -4,6 +4,13 @@ import { achievements, getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
+const achievementLogoDimensions: Record<string, { width: number; height: number }> = {
+  "kaust-academy": { width: 874, height: 480 },
+  "amad-hackathon": { width: 762, height: 480 },
+  ibm: { width: 1259, height: 480 },
+  uqu: { width: 1189, height: 480 }
+};
+
 export function AchievementsSection() {
   const visible = achievements.filter((achievement) => achievement.enabled);
 
@@ -11,7 +18,6 @@ export function AchievementsSection() {
     <section id="achievements" className="section section--graph">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Signals / 06"
           title="Achievements & Recognition"
           description="Selected markers of learning, execution, and contribution."
         />
@@ -25,8 +31,9 @@ export function AchievementsSection() {
                   <Image
                     src={getPortfolioAsset(achievement.assetId)!.derived.color}
                     alt={getPortfolioAsset(achievement.assetId)!.alt}
-                    width={132}
-                    height={54}
+                    width={achievementLogoDimensions[achievement.assetId ?? ""]?.width ?? 132}
+                    height={achievementLogoDimensions[achievement.assetId ?? ""]?.height ?? 54}
+                    style={{ height: "auto" }}
                   />
                 ) : null}
               </div>

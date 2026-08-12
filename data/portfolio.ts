@@ -24,6 +24,10 @@ export type Project = {
   description: string;
   highlights: string[];
   technologies: string[];
+  metrics?: {
+    value: string;
+    label: string;
+  }[];
   outcome: Nullable<string>;
   repository: Nullable<string>;
   liveDemo: Nullable<string>;
@@ -337,7 +341,7 @@ export const portfolioAssets: PortfolioAsset[] = [
       monochrome: null
     },
     visualScale: 1,
-    objectPosition: "50% 34%",
+    objectPosition: "50% 100%",
     trim: "none",
     safePadding: 0,
     background: "transparent",
@@ -568,12 +572,13 @@ export const navigation = [
 
 export const identity = {
   name: "Sultan Alfaifi",
-  eyebrow: "Sultan Alfaifi — Full-Stack Software Engineer",
+  eyebrow: "Sultan Alfaifi / Full-Stack Software Engineer",
   role: "Full-Stack Software Engineer specializing in AI Agents",
   headline:
     "I build full-stack products powered by intelligent agents.",
   summary:
-    "I turn product ideas into complete software—from responsive interfaces and reliable backends to connected data and LLM-powered workflows.",
+    "I turn product ideas into complete software, from responsive interfaces and reliable backends to connected data and LLM-powered workflows.",
+  introVideo: "/assets/media/sultan-introduction.mp4",
   location: "Makkah, Saudi Arabia",
   education: "Software Engineering, Umm Al-Qura University",
   languages: "Arabic & English",
@@ -614,7 +619,7 @@ export const socialLinks: SocialLink[] = [
 
 export const about = {
   paragraphs: [
-    "I’m Sultan Alfaifi, a full-stack software engineer with hands-on experience building end-to-end web applications—from user interfaces and backend logic to API integrations and databases.",
+    "I’m Sultan Alfaifi, a full-stack software engineer with hands-on experience building end-to-end web applications, from user interfaces and backend logic to API integrations and databases.",
     "Alongside full-stack development, I specialize in designing AI agent systems using Python and large language models, connecting them with tools, data, and real-world workflows to build practical and intelligent products."
   ],
   portraitAssetId: "portrait",
@@ -730,7 +735,7 @@ export const expertise: Expertise[] = [
   {
     title: "Full-Stack Development",
     description:
-      "Building complete web applications—from responsive interfaces and backend logic to databases and deployment-ready integrations.",
+      "Building complete web applications, from responsive interfaces and backend logic to databases and deployment-ready integrations.",
     emphasis: true,
     signal: "UI / Server / Data"
   },
@@ -780,11 +785,11 @@ export const projects: Project[] = [
     outcome: "Approved as an Alexa skill.",
     repository: "https://github.com/SultanAlfaifi/DANNA",
     liveDemo: null,
-    screenshot: null,
+    screenshot: "/assets/projects/danna.webp",
     brandAssetId: "danna",
-    flagship: true,
+    flagship: false,
     enabled: true,
-    todo: "Add approved project screenshots or an architecture diagram."
+    todo: null
   },
   {
     slug: "tabayun",
@@ -802,7 +807,7 @@ export const projects: Project[] = [
     outcome: null,
     repository: null,
     liveDemo: null,
-    screenshot: null,
+    screenshot: "/assets/projects/tabayun.webp",
     brandAssetId: "tabayun",
     flagship: false,
     enabled: true,
@@ -826,51 +831,53 @@ export const projects: Project[] = [
       "pdfmake",
       "localStorage"
     ],
+    metrics: [
+      { value: "About 1,600", label: "Active users" },
+      { value: "1,250+", label: "CVs downloaded" }
+    ],
     outcome: "Public web application with real-time editing and PDF export.",
     repository: "https://github.com/SultanAlfaifi/Masari",
     liveDemo: "https://sultanalfaifi.github.io/Masari/",
-    screenshot: null,
+    screenshot: "/assets/projects/masari.webp",
     brandAssetId: "masari",
-    flagship: false,
+    flagship: true,
     enabled: true,
-    todo: "Add curated screenshots from the repository assets."
+    todo: null
   },
   {
-    slug: "potato-disease-cnn",
-    title: "Potato Disease Classification",
-    category: "KAUST AI Training Project",
+    slug: "kaust-ai-projects",
+    title: "KAUST AI Projects Collection",
+    category: "Machine Learning & Deep Learning Collection",
     role: "Machine Learning Development",
     description:
-      "A custom PyTorch convolutional neural network trained to classify potato leaf diseases across Early Blight, Late Blight, and Healthy categories.",
+      "A collection of hands-on Machine Learning and Deep Learning projects developed through KAUST Academy, spanning computer vision, neural networks, classification, prediction, model training, and applied AI workflows.",
     highlights: [
-      "Completed as part of the KAUST AI training program.",
-      "Used augmentation, batch normalization, and residual connections."
+      "Completed through KAUST Academy.",
+      "Selected work across Machine Learning and Deep Learning."
     ],
     technologies: [
-      "Python",
-      "PyTorch",
-      "CNN",
+      "Machine Learning",
+      "Deep Learning",
       "Computer Vision",
-      "Data Augmentation",
-      "Batch Normalization"
+      "Neural Networks",
+      "Python"
     ],
-    outcome: "98.61% best validation accuracy.",
-    repository:
-      "https://github.com/SultanAlfaifi/KAUST-AI-Projects/tree/main/potato-disease-cnn",
+    outcome: null,
+    repository: "https://github.com/SultanAlfaifi/KAUST-AI-Projects",
     liveDemo: null,
-    screenshot: null,
+    screenshot: "/assets/projects/kaust-ai-projects.webp",
     brandAssetId: "kaust-academy",
     flagship: false,
     enabled: true,
-    todo: "Add a verified model-performance visual if one is available."
+    todo: null
   }
 ];
 
 export const experience: Experience[] = [
   {
     organization: "Salla",
-    role: "Software Engineer Intern — COOP",
-    dates: "June 2026 — Present",
+    role: "Software Engineer Intern, COOP",
+    dates: "June 2026 to Present",
     location: "Makkah, Saudi Arabia",
     description:
       "Developing practical full-stack engineering skills through structured training and hands-on implementation within Salla’s engineering environment.",
@@ -930,7 +937,7 @@ export const skillGroups: SkillGroup[] = [
 
 export const achievements: Achievement[] = [
   {
-    title: "Top 5% — KAUST AI Academy",
+    title: "Top 5% at KAUST AI Academy",
     description:
       "Ranked among the top 5% of participants in the KAUST Academy AI Specialization.",
     verificationUrl: null,
@@ -938,7 +945,7 @@ export const achievements: Achievement[] = [
     assetId: "kaust-academy"
   },
   {
-    title: "Perfect Evaluation — IBM AI Lab",
+    title: "Perfect Evaluation at IBM AI Lab",
     description:
       "Afiyah, a multi-agent healthcare project, received a 5/5 evaluation across all assessment criteria.",
     verificationUrl: null,
@@ -954,7 +961,7 @@ export const achievements: Achievement[] = [
     assetId: "amad-hackathon"
   },
   {
-    title: "Best UI Designer — UQU Computer Club",
+    title: "Best UI Designer at UQU Computer Club",
     description:
       "Recognized by the Umm Al-Qura University Computer Club for excellence in user-interface design.",
     verificationUrl: null,
@@ -1149,7 +1156,7 @@ export const content = {
 };
 
 export const seo = {
-  title: "Sultan Alfaifi — Full-Stack Software Engineer & AI Agents",
+  title: "Sultan Alfaifi | Full-Stack Software Engineer & AI Agents",
   description:
     "Portfolio of Sultan Alfaifi, a full-stack software engineer specializing in AI agents, LLM applications, web development, APIs, and intelligent systems.",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sultalfaifi.com"

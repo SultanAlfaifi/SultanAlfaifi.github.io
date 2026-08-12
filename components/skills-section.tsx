@@ -7,9 +7,8 @@ export function SkillsSection() {
     <section id="skills" className="section section--white section--compact">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Working set / 05"
           title="Skills & Technology"
-          description="A focused engineering toolkit—without percentages or decorative proficiency scores."
+          description="A focused engineering toolkit without percentages or decorative proficiency scores."
         />
         <div className="skill-groups">
           {skillGroups.map((group, index) => (

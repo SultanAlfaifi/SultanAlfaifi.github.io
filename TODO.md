@@ -26,9 +26,9 @@ Items remain intentionally incomplete rather than being inferred or fabricated.
 
 - [ ] Confirm Tabayun technology stack
 - [ ] Add a Tabayun public demo or repository if available
-- [ ] Add approved DANNA screenshots or architecture evidence
-- [ ] Add curated Masari screenshots
-- [ ] Add a verified KAUST model-performance visual if available
+- [x] Add approved DANNA project visual
+- [x] Add curated Masari project visual
+- [x] Add approved KAUST AI Projects Collection visual
 
 ## Evidence and credentials
 
