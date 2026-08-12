@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import test from "node:test";
 
 const dataSource = readFileSync(
@@ -22,8 +22,24 @@ const projectsSource = readFileSync(
   new URL("../components/projects-section.tsx", import.meta.url),
   "utf8"
 );
+const programsSource = readFileSync(
+  new URL("../components/programs-section.tsx", import.meta.url),
+  "utf8"
+);
+const organizationRailSource = readFileSync(
+  new URL("../components/organization-rail.tsx", import.meta.url),
+  "utf8"
+);
 const layoutSource = readFileSync(
   new URL("../app/layout.tsx", import.meta.url),
+  "utf8"
+);
+const heroMediaSource = readFileSync(
+  new URL("../components/hero-media.tsx", import.meta.url),
+  "utf8"
+);
+const sallaStorySource = readFileSync(
+  new URL("../components/salla-experience-story.tsx", import.meta.url),
   "utf8"
 );
 
@@ -71,8 +87,48 @@ test("organization records encode explicit relationships and nullable logos", ()
   assert.match(dataSource, /export type Organization/);
   assert.match(dataSource, /relationship: "COOP Experience"/);
   assert.match(dataSource, /relationship: "Software Engineering Education"/);
-  assert.match(dataSource, /logo: null/);
   assert.doesNotMatch(dataSource, /Companies I Worked With|Trusted By|Partners/);
+});
+
+test("organization journey uses supplied brand palettes and interactive context", () => {
+  assert.match(dataSource, /name: "Salla"[\s\S]*?colors: \["#004856", "#a5ffe0"\]/);
+  assert.match(dataSource, /name: "KAUST Academy"[\s\S]*?"#efb61d"[\s\S]*?"#07a6aa"/);
+  assert.match(dataSource, /url: "https:\/\/academy\.kaust\.edu\.sa\/"/);
+  assert.doesNotMatch(dataSource, /FDM Group/);
+  assert.match(organizationRailSource, /HOVER_INTENT_DELAY = 80/);
+  assert.match(organizationRailSource, /PANEL_CLOSE_DURATION = 230/);
+  assert.match(organizationRailSource, /aria-expanded=\{active\}/);
+  assert.match(organizationRailSource, /aria-controls="organization-detail-panel"/);
+  assert.match(organizationRailSource, /displayedIndex/);
+  assert.match(organizationRailSource, /mountAndOpen/);
+  assert.match(organizationRailSource, /ResizeObserver/);
+  assert.match(organizationRailSource, /--panel-height/);
+  assert.match(organizationRailSource, /requestAnimationFrame/);
+  assert.match(organizationRailSource, /AUTO_SCROLL_SPEED = 24/);
+  assert.match(organizationRailSource, /RAIL_RESUME_DELAY = 650/);
+  assert.match(organizationRailSource, /scrollPosition \+= \(velocity \* elapsed\) \/ 1000/);
+  assert.match(organizationRailSource, /\[true, false, true\]/);
+  assert.match(organizationRailSource, /onPointerDown=\{handleRailPointerDown\}/);
+  assert.match(organizationRailSource, /onPointerMove=\{handleRailPointerMove\}/);
+  assert.match(organizationRailSource, /onPointerUp=\{finishRailPointer\}/);
+  assert.match(organizationRailSource, /prefers-reduced-motion: reduce/);
+  assert.doesNotMatch(organizationRailSource, /onMouseMove/);
+  assert.match(cssSource, /\.organization-showcase__rail\s*\{[\s\S]*?height: 108px/);
+  assert.match(cssSource, /\.journey-tile\s*\{[\s\S]*?width: clamp\(168px, 13vw, 216px\)/);
+  assert.match(cssSource, /\.organization-detail-panel\.is-open/);
+  assert.match(cssSource, /\.organization-detail-stage\.has-panel[\s\S]*?var\(--panel-height/);
+  assert.match(cssSource, /\.organization-showcase[\s\S]*?background: var\(--paper\)/);
+  assert.match(cssSource, /clip-path: inset\(0 0 100% 0\)/);
+  assert.match(cssSource, /@media \(max-width: 840px\), \(pointer: coarse\)/);
+  assert.match(cssSource, /\.organization-showcase__rail[\s\S]*?overflow-x: auto[\s\S]*?touch-action: pan-x pan-y pinch-zoom/);
+  assert.match(cssSource, /\.organization-showcase__rail\.is-dragging\s*\{[\s\S]*?cursor: grabbing/);
+  assert.match(cssSource, /\.organization-showcase__rail[\s\S]*?clip-path: polygon/);
+  assert.match(cssSource, /\.journey-logo__image[\s\S]*?-webkit-user-drag: none/);
+  assert.match(organizationRailSource, /draggable=\{false\}/);
+  assert.match(organizationRailSource, /onDragStart=\{\(event\) => event\.preventDefault\(\)\}/);
+  assert.doesNotMatch(cssSource, /\.journey-marquee__group\[aria-hidden="true"\][\s\S]*?display: none/);
+  assert.match(organizationRailSource, /Swipe the moving logos, then tap one/);
+  assert.doesNotMatch(organizationRailSource, /organization-focus-card|organization-stage-clip/);
 });
 
 test("approved supplied assets keep explicit, editable mapping decisions", () => {
@@ -85,6 +141,13 @@ test("approved supplied assets keep explicit, editable mapping decisions", () =>
     dataSource,
     /name: "(DANNA|Masari|Tabayun)"[\s\S]*?category:/
   );
+});
+
+test("flagship program uses the supplied monochrome logo without a backing tile", () => {
+  assert.match(programsSource, /program\.flagship && asset\?\.derived\.monochrome/);
+  assert.match(cssSource, /\.program-card--flagship \.program-card__logo\s*\{[\s\S]*?background: transparent/);
+  assert.match(cssSource, /\.program-card--flagship \.program-card__logo img[\s\S]*?brightness\(0\) invert\(1\)/);
+  assert.match(cssSource, /\.program-card--flagship\s*\{[\s\S]*?box-shadow: none/);
 });
 
 test("corrected community brands and achievement mappings stay explicit", () => {
@@ -106,15 +169,30 @@ test("hero thesis remains concise and direct", () => {
   );
 });
 
-test("hero content exits upward before the following section", () => {
-  assert.match(
-    cssSource,
-    /@keyframes hero-content-drift[\s\S]*?translate3d\(0, -5svh, 0\)[\s\S]*?opacity:\s*0/
-  );
+test("hero content remains pinned and visible through the end of its runway", () => {
   assert.doesNotMatch(
     cssSource,
-    /@keyframes hero-content-drift[\s\S]*?translate3d\(0, 7svh, 0\)/
+    /hero-content-drift/
   );
+  assert.match(cssSource, /\.hero__viewport\s*\{[\s\S]*?position:\s*sticky[\s\S]*?overflow:\s*hidden/);
+});
+
+test("videos use lightweight responsive sources and immediate posters", () => {
+  const mediaFiles = {
+    heroDesktop: statSync(new URL("../public/assets/media/sultan-introduction.mp4", import.meta.url)).size,
+    heroMobile: statSync(new URL("../public/assets/media/sultan-introduction-mobile.mp4", import.meta.url)).size,
+    sallaDesktop: statSync(new URL("../public/assets/media/salla-experience.mp4", import.meta.url)).size,
+    sallaMobile: statSync(new URL("../public/assets/media/salla-experience-mobile.mp4", import.meta.url)).size
+  };
+
+  assert.ok(mediaFiles.heroDesktop < 4 * 1024 * 1024);
+  assert.ok(mediaFiles.heroMobile < 2 * 1024 * 1024);
+  assert.ok(mediaFiles.sallaDesktop < 3 * 1024 * 1024);
+  assert.ok(mediaFiles.sallaMobile < 1.5 * 1024 * 1024);
+  assert.match(heroMediaSource, /preload="auto"[\s\S]*?poster=\{poster\}/);
+  assert.match(heroMediaSource, /media="\(max-width: 840px\)"/);
+  assert.match(sallaStorySource, /preload="none"[\s\S]*?salla-experience-poster\.webp/);
+  assert.match(sallaStorySource, /rootMargin: "500px 0px"/);
 });
 
 test("Masari leads selected work with user-provided usage evidence", () => {
@@ -161,5 +239,5 @@ test("responsive and reduced-motion safeguards are present", () => {
   assert.match(navbarSource, /matchMedia\("\(min-width: 841px\)"\)/);
   assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(cssSource, /organization-rail__group\[aria-hidden="true"\]/);
+  assert.match(organizationRailSource, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
 });

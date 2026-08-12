@@ -5,9 +5,11 @@ import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 
 type HeroMediaProps = {
   src: string;
+  mobileSrc: string;
+  poster: string;
 };
 
-export function HeroMedia({ src }: HeroMediaProps) {
+export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -20,7 +22,16 @@ export function HeroMedia({ src }: HeroMediaProps) {
     video.muted = true;
     void video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
 
-    return () => video.pause();
+    const handlePlay = () => setPlaying(true);
+    const handlePause = () => setPlaying(false);
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+
+    return () => {
+      video.pause();
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+    };
   }, []);
 
   async function togglePlayback() {
@@ -48,12 +59,15 @@ export function HeroMedia({ src }: HeroMediaProps) {
       <video
         ref={videoRef}
         className="hero-media__video"
+        autoPlay
         loop
         muted={muted}
         playsInline
-        preload="metadata"
+        preload="auto"
+        poster={poster}
         aria-label="Introductory video featuring Sultan Alfaifi"
       >
+        <source src={mobileSrc} media="(max-width: 840px)" type="video/mp4" />
         <source src={src} type="video/mp4" />
         Your browser does not support the introductory video.
       </video>

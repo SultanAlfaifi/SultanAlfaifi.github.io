@@ -16,21 +16,28 @@ export function ProgramsSection() {
         />
 
         <div className="program-grid">
-          {visible.map((program, index) => (
-            <Reveal
-              key={program.name}
-              className={`program-card ${program.flagship ? "program-card--flagship" : ""}`}
-              delay={Math.min(index * 55, 220)}
-            >
+          {visible.map((program, index) => {
+            const asset = getPortfolioAsset(program.assetId);
+            const logoSource =
+              program.flagship && asset?.derived.monochrome
+                ? asset.derived.monochrome
+                : asset?.derived.color;
+
+            return (
+              <Reveal
+                key={program.name}
+                className={`program-card ${program.flagship ? "program-card--flagship" : ""}`}
+                delay={Math.min(index * 55, 220)}
+              >
               <div className="program-card__issuer">
                 <span>{program.issuer}</span>
                 {program.year ? <span>{program.year}</span> : null}
               </div>
-              {getPortfolioAsset(program.assetId) ? (
+              {asset && logoSource ? (
                 <div className="program-card__logo">
                   <Image
-                    src={getPortfolioAsset(program.assetId)!.derived.color}
-                    alt={getPortfolioAsset(program.assetId)!.alt}
+                    src={logoSource}
+                    alt={asset.alt}
                     fill
                     sizes={program.flagship ? "300px" : "190px"}
                   />
@@ -60,8 +67,9 @@ export function ProgramsSection() {
                   Verify Credential <ArrowUpRight aria-hidden="true" size={15} />
                 </a>
               ) : null}
-            </Reveal>
-          ))}
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

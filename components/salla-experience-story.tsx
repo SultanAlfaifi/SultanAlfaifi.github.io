@@ -15,7 +15,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
   const storyRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const userPausedRef = useRef(false);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const story = storyRef.current;
@@ -44,7 +44,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
           video.pause();
         }
       },
-      { threshold: 0.12 }
+      { rootMargin: "500px 0px", threshold: 0 }
     );
 
     observer.observe(story);
@@ -76,14 +76,20 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
             <video
               ref={videoRef}
               className="salla-story__video"
-              src="/assets/media/salla-experience.mp4"
-              autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="none"
+              poster="/assets/media/salla-experience-poster.webp"
               aria-label="Salla brand film"
-            />
+            >
+              <source
+                src="/assets/media/salla-experience-mobile.mp4"
+                media="(max-width: 840px)"
+                type="video/mp4"
+              />
+              <source src="/assets/media/salla-experience.mp4" type="video/mp4" />
+            </video>
             <div className="salla-story__scrim" aria-hidden="true" />
             <button
               type="button"

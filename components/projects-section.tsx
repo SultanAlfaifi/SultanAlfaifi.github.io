@@ -16,6 +16,8 @@ function ProjectMedia({ project }: { project: Project }) {
           src={project.screenshot}
           alt={`${project.title} project visual`}
           fill
+          priority={project.flagship}
+          fetchPriority={project.flagship ? "high" : "auto"}
           sizes="(max-width: 840px) 100vw, 82vw"
           style={{ objectFit: "contain", objectPosition: "center" }}
         />
@@ -34,6 +36,8 @@ function ProjectMedia({ project }: { project: Project }) {
             src={asset.derived.color}
             alt={asset.alt}
             fill
+            priority={project.flagship}
+            fetchPriority={project.flagship ? "high" : "auto"}
             sizes={project.flagship ? "(max-width: 840px) 70vw, 32vw" : "220px"}
             style={{ objectPosition: asset.objectPosition }}
           />

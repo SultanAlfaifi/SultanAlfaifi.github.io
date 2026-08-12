@@ -9,6 +9,11 @@ export default defineConfig([
     ".next/**",
     ".next-build/**",
     ".next-stale-*/**",
+    ".next-motion-check/**",
+    ".next-switch-check/**",
+    ".next-scenario-check/**",
+    ".next-final-scenario/**",
+    ".next-verify-*/**",
     "out/**",
     "coverage/**",
     "next-env.d.ts"

@@ -105,6 +105,9 @@ export type Organization = {
   name: string;
   category: string;
   relationship: string;
+  journeyNote: string;
+  colors: [string, string, ...string[]];
+  foreground: "light" | "dark";
   logo: Nullable<string>;
   url: Nullable<string>;
   visible: boolean;
@@ -637,6 +640,9 @@ export const organizations: Organization[] = [
     name: "Salla",
     category: "Experience",
     relationship: "COOP Experience",
+    journeyNote: "Hands-on full-stack engineering training in Salla's development environment.",
+    colors: ["#004856", "#a5ffe0"],
+    foreground: "light",
     logo: "salla",
     url: "https://salla.com/",
     visible: true
@@ -645,6 +651,9 @@ export const organizations: Organization[] = [
     name: "Umm Al-Qura University",
     category: "Education",
     relationship: "Software Engineering Education",
+    journeyNote: "The foundation of my software engineering education and graduation journey.",
+    colors: ["#01686f", "#b08b44"],
+    foreground: "light",
     logo: "uqu",
     url: "https://uqu.edu.sa/",
     visible: true
@@ -653,6 +662,9 @@ export const organizations: Organization[] = [
     name: "KAUST Academy",
     category: "Programs",
     relationship: "AI Program",
+    journeyNote: "Advanced AI training, applied projects, and a Top 5% recognition.",
+    colors: ["#efb61d", "#cccd2b", "#f09021", "#07a6aa"],
+    foreground: "dark",
     logo: "kaust-academy",
     url: "https://academy.kaust.edu.sa/",
     visible: true
@@ -661,22 +673,20 @@ export const organizations: Organization[] = [
     name: "IBM",
     category: "Programs",
     relationship: "AI Program",
+    journeyNote: "Agentic AI learning and practical experiential lab work.",
+    colors: ["#1f70c1", "#5177fe"],
+    foreground: "light",
     logo: "ibm",
     url: "https://skillsbuild.org/",
-    visible: true
-  },
-  {
-    name: "FDM Group",
-    category: "Training",
-    relationship: "Skills Lab Training",
-    logo: null,
-    url: "https://www.fdmgroup.com/",
     visible: true
   },
   {
     name: "NVIDIA Deep Learning Institute",
     category: "Certifications",
     relationship: "Certification",
+    journeyNote: "Hands-on deep learning labs and competency-based training.",
+    colors: ["#74b200", "#37ca00"],
+    foreground: "dark",
     logo: "nvidia",
     url: "https://www.nvidia.com/en-us/training/",
     visible: true
@@ -685,6 +695,9 @@ export const organizations: Organization[] = [
     name: "DeepLearning.AI",
     category: "Certifications",
     relationship: "Certification",
+    journeyNote: "Built the mathematical foundations I use in machine learning.",
+    colors: ["#ff4a61", "#ac3f46"],
+    foreground: "light",
     logo: "deeplearning-ai",
     url: "https://www.deeplearning.ai/",
     visible: true
@@ -693,6 +706,9 @@ export const organizations: Organization[] = [
     name: "University of Michigan",
     category: "Certifications",
     relationship: "Certification",
+    journeyNote: "Applied Python and Pandas to practical data science work.",
+    colors: ["#ffcb0b", "#00274c"],
+    foreground: "light",
     logo: "university-michigan",
     url: "https://umich.edu/",
     visible: true
@@ -701,6 +717,9 @@ export const organizations: Organization[] = [
     name: "McKinsey.org",
     category: "Programs",
     relationship: "Professional Program",
+    journeyNote: "Strengthened problem-solving, communication, and workplace adaptability.",
+    colors: ["#042f87", "#051c2c"],
+    foreground: "light",
     logo: "mckinsey",
     url: "https://www.mckinsey.org/our-programs/forward/overview",
     visible: true
@@ -709,6 +728,9 @@ export const organizations: Organization[] = [
     name: "Artificial Intelligence Pioneers",
     category: "Community",
     relationship: "Teaching & Community",
+    journeyNote: "Hosted my three-day AI Agents Bootcamp for aspiring builders.",
+    colors: ["#7761a9", "#3b2066"],
+    foreground: "light",
     logo: "ai-pioneers",
     url: "https://www.aip.sa/",
     visible: true
@@ -717,6 +739,9 @@ export const organizations: Organization[] = [
     name: "Fazzah Voluntary National Association",
     category: "Community",
     relationship: "Community Workshop",
+    journeyNote: "Hosted an accessible AI workshop I delivered in Madinah.",
+    colors: ["#285572", "#d2a901"],
+    foreground: "light",
     logo: "fazzah",
     url: "https://www.fazzah.org/",
     visible: true
@@ -725,6 +750,9 @@ export const organizations: Organization[] = [
     name: "Riadiat",
     category: "Community",
     relationship: "Business AI Workshop",
+    journeyNote: "Hosted my workshop on practical AI for business workflows.",
+    colors: ["#1fb9b3", "#0a716d"],
+    foreground: "light",
     logo: "riadiat",
     url: "https://riadiat.sa/",
     visible: true
@@ -1106,7 +1134,6 @@ export const recommendations: Recommendation[] = [
     name: "Heyam AbuNaseer",
     initials: "HA",
     roles: [
-      "Skills Lab Coach, FDM Group",
       "Trainer, IBM AI Experiential Learning Lab"
     ],
     quote:

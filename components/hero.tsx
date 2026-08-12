@@ -10,7 +10,11 @@ export function Hero() {
     <>
       <section id="home" className="hero" aria-labelledby="hero-title">
         <div className="hero__viewport">
-          <HeroMedia src={identity.introVideo} />
+          <HeroMedia
+            src={identity.introVideo}
+            mobileSrc="/assets/media/sultan-introduction-mobile.mp4"
+            poster="/assets/media/sultan-introduction-poster.webp"
+          />
           <div className="hero__veil" aria-hidden="true" />
           <div className="page-shell hero__inner">
             <div className="hero__copy">

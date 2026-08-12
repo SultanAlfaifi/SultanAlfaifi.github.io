@@ -1,6 +1,11 @@
 node_modules/
 .next/
+.next-motion-check/
+.next-switch-check/
+.next-scenario-check/
+.next-final-scenario/
 .next-build/
+.next-verify-*/
 .next-stale-*/
 out/
 .env*

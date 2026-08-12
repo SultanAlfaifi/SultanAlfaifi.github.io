@@ -48,7 +48,7 @@ export function Reveal({
           applyPhase("before");
         }
       },
-      { rootMargin: "-4% 0px -7% 0px", threshold: 0.08 }
+      { rootMargin: "18% 0px 18% 0px", threshold: 0.01 }
     );
 
     observer.observe(element);

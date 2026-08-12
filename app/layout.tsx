@@ -101,6 +101,14 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${manrope.variable} ${plexMono.variable} ${spaceGrotesk.variable}`}>
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/assets/media/sultan-introduction-poster.webp"
+          fetchPriority="high"
+        />
+      </head>
       <body>
         <script
           type="application/ld+json"
