@@ -12,9 +12,7 @@ export function AboutSection() {
     <section id="about" className="section section--paper">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Profile"
-          title="About"
-          description="Engineering complete products, then extending them with intelligent behavior."
+          title="The person behind the systems."
         />
 
         <div className="about-layout">
@@ -26,8 +24,9 @@ export function AboutSection() {
                     src={portrait.derived.color}
                     alt={portrait.alt}
                     fill
-                    sizes="(max-width: 840px) 94vw, 44vw"
-                    priority={false}
+                    sizes="(max-width: 840px) 76vw, 360px"
+                    loading="eager"
+                    fetchPriority="low"
                     style={{ objectPosition: portrait.objectPosition }}
                   />
                 </div>

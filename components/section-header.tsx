@@ -6,7 +6,6 @@ type SectionHeaderProps = {
 };
 
 export function SectionHeader({
-  eyebrow,
   title,
   description,
   inverse = false
@@ -14,7 +13,6 @@ export function SectionHeader({
   return (
     <Reveal variant="title">
       <header className={`section-header ${inverse ? "section-header--inverse" : ""}`}>
-        {eyebrow ? <p className="section-header__eyebrow">{eyebrow}</p> : null}
         <div className="section-header__copy">
           <h2>{title}</h2>
           {description ? <p>{description}</p> : null}

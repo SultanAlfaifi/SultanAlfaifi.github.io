@@ -73,14 +73,16 @@ test("portfolio positioning stays specific and evidence-conscious", () => {
   assert.match(dataSource, /technology stack and add a public repository or demo/);
 });
 
-test("required long-form sections remain independent and ordered", () => {
+test("work leads the page and the full journey remains available", () => {
   const communityIndex = pageSource.indexOf("<CommunitySection");
   const recommendationsIndex = pageSource.indexOf("<RecommendationsSection");
   const ideasIndex = pageSource.indexOf("<IdeasSection");
 
   assert.ok(communityIndex >= 0);
   assert.ok(recommendationsIndex > communityIndex);
-  assert.ok(ideasIndex > recommendationsIndex);
+  assert.ok(ideasIndex > communityIndex);
+  assert.ok(pageSource.indexOf("<ProjectsSection") < pageSource.indexOf("<AboutSection"));
+  assert.match(pageSource, /Beyond the projects/);
 });
 
 test("organization records encode explicit relationships and nullable logos", () => {
@@ -165,16 +167,15 @@ test("corrected community brands and achievement mappings stay explicit", () => 
 test("hero thesis remains concise and direct", () => {
   assert.match(
     dataSource,
-    /"I build full-stack products powered by intelligent agents\."/
+    /"I build AI agents and software people can use\."/
   );
 });
 
-test("hero content remains pinned and visible through the end of its runway", () => {
-  assert.doesNotMatch(
-    cssSource,
-    /hero-content-drift/
-  );
-  assert.match(cssSource, /\.hero__viewport\s*\{[\s\S]*?position:\s*sticky[\s\S]*?overflow:\s*hidden/);
+test("intro keeps a direct route to work and contact without scroll-gated copy", () => {
+  const hero = readFileSync(new URL("../components/hero.tsx", import.meta.url), "utf8");
+  assert.match(hero, /href="#work"/);
+  assert.match(hero, /href="#contact"/);
+  assert.doesNotMatch(hero, /hero__viewport|HeroScrollCue/);
 });
 
 test("videos use lightweight responsive sources and immediate posters", () => {
@@ -189,22 +190,23 @@ test("videos use lightweight responsive sources and immediate posters", () => {
   assert.ok(mediaFiles.heroMobile < 2 * 1024 * 1024);
   assert.ok(mediaFiles.sallaDesktop < 3 * 1024 * 1024);
   assert.ok(mediaFiles.sallaMobile < 1.5 * 1024 * 1024);
-  assert.match(heroMediaSource, /preload="auto"[\s\S]*?poster=\{poster\}/);
+  assert.match(heroMediaSource, /preload="none"[\s\S]*?poster=\{poster\}/);
   assert.match(heroMediaSource, /media="\(max-width: 840px\)"/);
   assert.match(sallaStorySource, /preload="none"[\s\S]*?salla-experience-poster\.webp/);
-  assert.match(sallaStorySource, /rootMargin: "500px 0px"/);
+  assert.match(sallaStorySource, /IntersectionObserver/);
 });
 
-test("Masari leads selected work with user-provided usage evidence", () => {
+test("featured work reflects current products and preserves supplied usage evidence", () => {
   assert.match(
     dataSource,
-    /slug: "masari"[\s\S]*?value: "About 1,600"[\s\S]*?label: "Active users"[\s\S]*?value: "1,250\+"[\s\S]*?label: "CVs downloaded"[\s\S]*?flagship: true/
+    /slug: "masari"[\s\S]*?value: "About 1,600"[\s\S]*?label: "Active users"[\s\S]*?value: "1,250\+"[\s\S]*?label: "CVs downloaded"/
   );
   assert.match(dataSource, /slug: "danna"[\s\S]*?flagship: false/);
   assert.match(
     projectsSource,
-    /\["masari", "tabayun", "danna", "kaust-ai-projects"\]/
+    /filter\(\(project\) => project\.featured\)/
   );
+  for (const slug of ["mustakshif", "rajih-engine", "autoflow"]) assert.ok(dataSource.includes(`slug: "${slug}"`));
 });
 
 test("the S monogram is shared by the browser and navigation brand", () => {

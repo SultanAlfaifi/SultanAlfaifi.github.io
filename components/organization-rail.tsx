@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight, X } from "lucide-react";
+import { ArrowUpRight, Pause, Play, X } from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -78,6 +78,8 @@ function OrganizationLogo({
         fill
         draggable={false}
         sizes={color ? "(max-width: 840px) 72vw, 300px" : "180px"}
+        loading={color ? "lazy" : "eager"}
+        fetchPriority="low"
       />
     </span>
   );
@@ -111,8 +113,8 @@ function OrganizationTile({
     <article
       className={`journey-tile${active ? " is-active" : ""}`}
       style={getOrganizationStyle(organization)}
-      onMouseEnter={() => onIntent(index)}
-      onMouseLeave={onCancelIntent}
+      onPointerEnter={(event) => { if (event.pointerType === "mouse") onIntent(index); }}
+      onPointerLeave={onCancelIntent}
     >
       {clone ? (
         <button
@@ -131,7 +133,7 @@ function OrganizationTile({
           aria-controls="organization-detail-panel"
           aria-expanded={active}
           aria-label={`Explore ${organization.name}`}
-          onFocus={() => onActivate(index)}
+          onFocus={(event) => { if (event.currentTarget.matches(":focus-visible")) onActivate(index); }}
           onClick={() => onActivate(index)}
         >
           {content}
@@ -149,6 +151,8 @@ export function OrganizationRail() {
   const [displayedIndex, setDisplayedIndex] = useState<number | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelHeight, setPanelHeight] = useState(0);
+  const [railPaused, setRailPaused] = useState(false);
+  const railPausedRef = useRef(false);
   const hoverTimer = useRef<number | null>(null);
   const swapTimer = useRef<number | null>(null);
   const closeTimer = useRef<number | null>(null);
@@ -165,7 +169,8 @@ export function OrganizationRail() {
     pointerId: -1,
     pointerType: "",
     startScrollLeft: 0,
-    startX: 0
+    startX: 0,
+    startY: 0
   });
 
   const displayedOrganization =
@@ -190,7 +195,7 @@ export function OrganizationRail() {
   function scheduleRailResume() {
     clearTimer(railResumeTimer);
     railResumeTimer.current = window.setTimeout(() => {
-      railInteractingRef.current = false;
+      if (!dragRef.current.active) railInteractingRef.current = false;
       railResumeTimer.current = null;
     }, RAIL_RESUME_DELAY);
   }
@@ -205,13 +210,10 @@ export function OrganizationRail() {
       pointerId: event.pointerId,
       pointerType: event.pointerType,
       startScrollLeft: event.currentTarget.scrollLeft,
-      startX: event.clientX
+      startX: event.clientX,
+      startY: event.clientY
     };
 
-    if (event.pointerType === "mouse") {
-      event.currentTarget.setPointerCapture(event.pointerId);
-      event.currentTarget.classList.add("is-dragging");
-    }
   }
 
   function handleRailPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
@@ -219,12 +221,16 @@ export function OrganizationRail() {
     if (!drag.active || drag.pointerId !== event.pointerId) return;
 
     const distance = event.clientX - drag.startX;
-    if (Math.abs(distance) > 5 && !drag.moved) {
+    if (Math.max(Math.abs(distance), Math.abs(event.clientY - drag.startY)) > 5 && !drag.moved) {
       drag.moved = true;
       closePanel();
+      if (drag.pointerType === "mouse") {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.currentTarget.classList.add("is-dragging");
+      }
     }
 
-    if (drag.pointerType === "mouse") {
+    if (drag.pointerType === "mouse" && drag.moved) {
       event.preventDefault();
       event.currentTarget.scrollLeft = drag.startScrollLeft - distance;
     }
@@ -235,6 +241,7 @@ export function OrganizationRail() {
     if (!drag.active || drag.pointerId !== event.pointerId) return;
 
     drag.active = false;
+    if (event.type === "pointercancel") drag.moved = true;
     event.currentTarget.classList.remove("is-dragging");
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -244,7 +251,7 @@ export function OrganizationRail() {
   }
 
   function handleRailClickCapture(event: ReactMouseEvent<HTMLDivElement>) {
-    if (!dragRef.current.moved) return;
+    if (!dragRef.current.moved || event.detail === 0) return;
     event.preventDefault();
     event.stopPropagation();
   }
@@ -253,6 +260,11 @@ export function OrganizationRail() {
     if (Math.abs(event.deltaX) < 1 && !event.shiftKey) return;
     pauseRailInteraction();
     scheduleRailResume();
+  }
+
+  function handleRailScroll() {
+    // Native touch momentum continues after pointerup/pointercancel.
+    if (railInteractingRef.current) scheduleRailResume();
   }
 
   function cancelOpeningFrame() {
@@ -283,6 +295,7 @@ export function OrganizationRail() {
     if (activeIndex === index && isPanelOpen) return;
 
     setActiveIndex(index);
+    panelOpenRef.current = true;
 
     if (displayedIndex === null) {
       mountAndOpen(index);
@@ -318,6 +331,7 @@ export function OrganizationRail() {
 
     setIsPanelOpen(false);
     setActiveIndex(null);
+    panelOpenRef.current = false;
     closeTimer.current = window.setTimeout(() => {
       setDisplayedIndex(null);
       closeTimer.current = null;
@@ -346,34 +360,31 @@ export function OrganizationRail() {
   );
 
   useEffect(() => {
-    panelOpenRef.current = isPanelOpen;
-  }, [isPanelOpen]);
-
-  useEffect(() => {
     const rail = railRef.current;
     const track = marqueeRef.current;
     const firstGroup = track?.querySelector<HTMLElement>(".journey-marquee__group");
     if (!rail || !track || !firstGroup) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let isVisible = true;
+    let isVisible = false;
     let frame = 0;
     let velocity = reducedMotion.matches ? 0 : AUTO_SCROLL_SPEED;
     let previousTime = performance.now();
     let scrollPosition = rail.scrollLeft;
+    let groupWidth = 0;
 
-    const getGroupWidth = () => firstGroup.getBoundingClientRect().width;
     const normalizeScrollPosition = () => {
-      const groupWidth = getGroupWidth();
       if (!groupWidth) return;
       if (scrollPosition < groupWidth * 0.5) scrollPosition += groupWidth;
       if (scrollPosition >= groupWidth * 1.5) scrollPosition -= groupWidth;
     };
 
     const centerRail = () => {
-      const groupWidth = getGroupWidth();
-      if (!groupWidth) return;
-      if (rail.scrollLeft === 0) rail.scrollLeft = groupWidth;
+      const nextWidth = firstGroup.getBoundingClientRect().width;
+      if (!nextWidth) return;
+      const progress = groupWidth ? ((rail.scrollLeft % groupWidth) + groupWidth) % groupWidth / groupWidth : 0;
+      groupWidth = nextWidth;
+      rail.scrollLeft = groupWidth * (1 + progress);
       scrollPosition = rail.scrollLeft;
     };
 
@@ -384,13 +395,19 @@ export function OrganizationRail() {
         isVisible &&
         !document.hidden &&
         !reducedMotion.matches &&
+        !railPausedRef.current &&
         !railInteractingRef.current &&
         !panelOpenRef.current;
       const targetVelocity = shouldMove ? AUTO_SCROLL_SPEED : 0;
+      if (!shouldMove) {
+        velocity = 0;
+        scrollPosition = rail.scrollLeft;
+        frame = window.requestAnimationFrame(tick);
+        return;
+      }
       const response = 1 - Math.exp(-elapsed / 180);
       velocity += (targetVelocity - velocity) * response;
 
-      if (railInteractingRef.current) scrollPosition = rail.scrollLeft;
       normalizeScrollPosition();
       if (Math.abs(velocity) > 0.01) {
         scrollPosition += (velocity * elapsed) / 1000;
@@ -441,7 +458,7 @@ export function OrganizationRail() {
     <section
       className="organization-showcase"
       aria-labelledby="organizations-title"
-      onMouseLeave={closePanel}
+      onPointerLeave={(event) => { if (event.pointerType === "mouse") closePanel(); }}
       onBlur={handleSectionBlur}
       onKeyDown={(event) => {
         if (event.key === "Escape") closePanel();
@@ -453,6 +470,11 @@ export function OrganizationRail() {
         <p className="organization-showcase__intro">
           Explore the institutions that shaped my learning, work, and community journey.
         </p>
+        <button className="journey-motion-toggle" type="button" aria-pressed={railPaused}
+          onClick={() => { railPausedRef.current = !railPaused; setRailPaused(!railPaused); }}>
+          {railPaused ? <Play size={15} aria-hidden="true" /> : <Pause size={15} aria-hidden="true" />}
+          {railPaused ? "Resume logo motion" : "Pause logo motion"}
+        </button>
       </div>
 
       <div
@@ -466,6 +488,7 @@ export function OrganizationRail() {
         onClickCapture={handleRailClickCapture}
         onDragStart={(event) => event.preventDefault()}
         onWheel={handleRailWheel}
+        onScroll={handleRailScroll}
       >
         <div className="journey-marquee" ref={marqueeRef}>
           {[true, false, true].map((clone, groupIndex) => (

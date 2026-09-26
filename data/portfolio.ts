@@ -24,6 +24,14 @@ export type Project = {
   description: string;
   highlights: string[];
   technologies: string[];
+  featured?: boolean;
+  status?: string;
+  challenge?: string;
+  decision?: string;
+  evidence?: string;
+  imagePresentation?: "contain" | "cover" | "icon";
+  primaryAction?: Link;
+  flow?: string[];
   metrics?: {
     value: string;
     label: string;
@@ -564,12 +572,9 @@ export const sectionOrder = [
 ] as const;
 
 export const navigation = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
   { label: "Work", href: "#work" },
+  { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
-  { label: "Journey", href: "#journey" },
-  { label: "Community", href: "#community" },
   { label: "Contact", href: "#contact" }
 ] satisfies Link[];
 
@@ -578,9 +583,9 @@ export const identity = {
   eyebrow: "Sultan Alfaifi / Full-Stack Software Engineer",
   role: "Full-Stack Software Engineer specializing in AI Agents",
   headline:
-    "I build full-stack products powered by intelligent agents.",
+    "I build AI agents and software people can use.",
   summary:
-    "I turn product ideas into complete software, from responsive interfaces and reliable backends to connected data and LLM-powered workflows.",
+    "From a Windows model advisor to multi-agent workflows and Arabic interfaces, I turn ideas into working software with clear decisions and practical controls.",
   introVideo: "/assets/media/sultan-introduction.mp4",
   location: "Makkah, Saudi Arabia",
   education: "Software Engineering, Umm Al-Qura University",
@@ -792,6 +797,105 @@ export const expertise: Expertise[] = [
 
 export const projects: Project[] = [
   {
+    slug: "mustakshif",
+    title: "Mustakshif",
+    category: "Local AI Model Advisor",
+    role: "Creator · Product & Python Engineering",
+    description:
+      "A Windows app and CLI that match local AI models to a computer's hardware, language, and intended use.",
+    featured: true,
+    status: "Windows release · v0.4.0",
+    challenge:
+      "Model size alone cannot tell someone whether an AI model will fit their device or their task.",
+    decision:
+      "One explainable scoring engine serves both desktop and CLI, with an official-source catalog, offline fallback, and approval before model installation.",
+    evidence:
+      "Published Windows installer, documented scoring rules, and public tests. Recommendations are estimates; benchmark calibration is still planned.",
+    highlights: [
+      "Scans local hardware and scores models against task, language, memory, and runtime constraints.",
+      "Keeps hardware and preference answers on the device; downloads catalog metadata separately from model weights."
+    ],
+    technologies: ["Python", "Windows", "Ollama", "CLI"],
+    outcome: "Downloadable desktop and CLI release with explainable recommendations.",
+    repository: "https://github.com/SultanAlfaifi/mustakshif",
+    liveDemo: null,
+    primaryAction: {
+      label: "Download for Windows",
+      href: "https://github.com/SultanAlfaifi/mustakshif/releases/latest"
+    },
+    screenshot: "/assets/projects/mustakshif-icon.png",
+    imagePresentation: "icon",
+    flow: ["Device scan", "Your preferences", "Explainable model fit"],
+    brandAssetId: null,
+    flagship: true,
+    enabled: true,
+    todo: null
+  },
+  {
+    slug: "rajih-engine",
+    title: "RAJIH Engine",
+    category: "Multi-Agent Decision Workflow",
+    role: "Creator · Agent Architecture & Python Engineering",
+    description:
+      "An inspectable runtime that turns a challenge brief into independent ideas, structured critique, evidence annotations, and a recorded decision.",
+    featured: true,
+    status: "Engineering alpha · v0.4.1",
+    challenge:
+      "Teams need to compare ideas without losing the reasoning, evidence, and uncertainty behind their choice.",
+    decision:
+      "Keep ideators independent, let one orchestrator write shared state, and route close or insufficiently supported decisions to a human.",
+    evidence:
+      "Public CLI, provider adapters, persistent run records, and automated tests. Comparative effectiveness has not been validated.",
+    highlights: [
+      "Records idea revisions, candidate-specific evidence, and decision rationale in durable JSON and Markdown.",
+      "Supports Codex CLI execution and direct model-provider APIs through a shared backend contract."
+    ],
+    technologies: ["Python", "Multi-Agent Workflows", "Structured Outputs", "CLI"],
+    outcome: "An executable evidence loop with traceable revisions and human decision gates.",
+    repository: "https://github.com/SultanAlfaifi/rajih-engine",
+    liveDemo: null,
+    primaryAction: {
+      label: "Explore the architecture",
+      href: "https://github.com/SultanAlfaifi/rajih-engine/blob/main/docs/architecture.md"
+    },
+    screenshot: null,
+    flow: ["Independent ideas", "Structured critique", "Evidence checks", "Human decision"],
+    brandAssetId: null,
+    flagship: false,
+    enabled: true,
+    todo: null
+  },
+  {
+    slug: "autoflow",
+    title: "AutoFlow",
+    category: "Arabic Financial Automation Prototype",
+    role: "Creator · Product, Interface & AI Integration",
+    description:
+      "An Arabic interface for drafting and reviewing financial routines, with text and voice assistants that produce an inactive workflow for user review.",
+    featured: true,
+    status: "Hackathon prototype · Simulated actions",
+    challenge:
+      "A financial instruction must become a workflow the user can understand, check, and explicitly approve.",
+    decision:
+      "Text, voice, and the manual editor share one validated workflow contract. AI-generated drafts stay inactive until reviewed.",
+    evidence:
+      "Interactive demo, public source, and contract/API tests. Financial actions are simulated; there is no production bank execution.",
+    highlights: [
+      "Pairs Arabic RTL editing with a plain-language review of triggers, actions, safety conditions, and approval rules.",
+      "Uses server-side draft validation and bounded context for text and realtime voice input."
+    ],
+    technologies: ["React", "JavaScript", "OpenAI APIs", "WebRTC"],
+    outcome: "A working prototype for creating and reviewing automation drafts.",
+    repository: "https://github.com/SultanAlfaifi/AutoFlow",
+    liveDemo: "https://auto-flow-ecru.vercel.app/",
+    screenshot: null,
+    flow: ["Your request", "Validated draft", "Your review", "Simulated action"],
+    brandAssetId: null,
+    flagship: false,
+    enabled: true,
+    todo: null
+  },
+  {
     slug: "danna",
     title: "DANNA",
     category: "Arabic AI Voice Assistant",
@@ -807,10 +911,11 @@ export const projects: Project[] = [
       "Alexa Skills Kit",
       "AWS Lambda",
       "LLM Integration",
-      "OpenRouter",
+      "OpenAI API",
       "Prompt Engineering"
     ],
     outcome: "Approved as an Alexa skill.",
+    status: "Alexa skill · Public source",
     repository: "https://github.com/SultanAlfaifi/DANNA",
     liveDemo: null,
     screenshot: "/assets/projects/danna.webp",
@@ -833,6 +938,7 @@ export const projects: Project[] = [
     ],
     technologies: [],
     outcome: null,
+    status: "Graduation project",
     repository: null,
     liveDemo: null,
     screenshot: "/assets/projects/tabayun.webp",
@@ -848,6 +954,14 @@ export const projects: Project[] = [
     role: "Web Product Development",
     description:
       "An online resume builder that allows users to create professional CVs using customizable templates and real-time editing.",
+    featured: true,
+    status: "Live web application",
+    challenge:
+      "CV creation needs immediate feedback and a usable PDF without requiring an account or uploading personal details.",
+    decision:
+      "Keep editing and storage in the browser, connect the form to a live preview, and generate vector PDFs on the client.",
+    evidence:
+      "Public application and source code. The editor, preview, local storage, and PDF export can be tried directly.",
     highlights: [
       "Privacy-first editing with data stored locally in the browser.",
       "Responsive editor, real-time preview, and client-side vector PDF export."
@@ -868,7 +982,7 @@ export const projects: Project[] = [
     liveDemo: "https://sultanalfaifi.github.io/Masari/",
     screenshot: "/assets/projects/masari.webp",
     brandAssetId: "masari",
-    flagship: true,
+    flagship: false,
     enabled: true,
     todo: null
   },
@@ -891,6 +1005,7 @@ export const projects: Project[] = [
       "Python"
     ],
     outcome: null,
+    status: "Applied learning collection",
     repository: "https://github.com/SultanAlfaifi/KAUST-AI-Projects",
     liveDemo: null,
     screenshot: "/assets/projects/kaust-ai-projects.webp",

@@ -7,8 +7,10 @@ import { SocialLinks } from "./social-links";
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   async function copyEmail() {
+    setCopyError(false);
     try {
       await navigator.clipboard.writeText(identity.email);
       setCopied(true);
@@ -20,10 +22,11 @@ export function ContactSection() {
       textArea.style.opacity = "0";
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand("copy");
+      const succeeded = document.execCommand("copy");
       textArea.remove();
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2400);
+      setCopied(succeeded);
+      setCopyError(!succeeded);
+      if (succeeded) window.setTimeout(() => setCopied(false), 2400);
     }
   }
 
@@ -51,7 +54,7 @@ export function ContactSection() {
             {copied ? "Email copied" : "Copy email"}
           </button>
           <p className="contact-section__status" aria-live="polite">
-            {copied ? `${identity.email} copied to clipboard.` : ""}
+            {copied ? `${identity.email} copied to clipboard.` : copyError ? `Please copy manually: ${identity.email}` : identity.email}
           </p>
         </div>
 

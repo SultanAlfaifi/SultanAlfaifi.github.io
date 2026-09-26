@@ -8,7 +8,7 @@ export function SkillsSection() {
       <div className="page-shell">
         <SectionHeader
           title="Skills & Technology"
-          description="A focused engineering toolkit without percentages or decorative proficiency scores."
+          description="The tools and practices behind my products, integrations, and AI systems."
         />
         <div className="skill-groups">
           {skillGroups.map((group, index) => (

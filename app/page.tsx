@@ -3,7 +3,6 @@ import { AchievementsSection } from "@/components/achievements-section";
 import { CommunitySection } from "@/components/community-section";
 import { ContactSection } from "@/components/contact-section";
 import { ExperienceSection } from "@/components/experience-section";
-import { ExpertiseSection } from "@/components/expertise-section";
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { IdeasSection } from "@/components/ideas-section";
@@ -24,17 +23,23 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <Hero />
-        <AboutSection />
-        <OrganizationRail />
-        <ExpertiseSection />
         <ProjectsSection />
+        <AboutSection />
         <ExperienceSection />
-        <SkillsSection />
         <AchievementsSection />
-        <ProgramsSection />
-        <CommunitySection />
+        <OrganizationRail />
+        <div className="page-shell deeper-journey">
+          <details>
+            <summary><span>Beyond the projects</span><span>Learning, community & more <span className="deeper-journey__plus" aria-hidden="true">+</span></span></summary>
+            <div className="deeper-journey__content">
+              <SkillsSection />
+              <ProgramsSection />
+              <CommunitySection />
+              <IdeasSection />
+            </div>
+          </details>
+        </div>
         <RecommendationsSection />
-        <IdeasSection />
         <ContactSection />
       </main>
       <Footer />

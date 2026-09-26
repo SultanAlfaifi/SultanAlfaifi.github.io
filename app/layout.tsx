@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import { identity, seo, socialLinks } from "@/data/portfolio";
 import "./globals.css";
+import "./portfolio.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -109,7 +110,7 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body>
+      <body className="portfolio-v3">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}

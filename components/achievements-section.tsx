@@ -34,6 +34,8 @@ export function AchievementsSection() {
                     width={achievementLogoDimensions[achievement.assetId ?? ""]?.width ?? 132}
                     height={achievementLogoDimensions[achievement.assetId ?? ""]?.height ?? 54}
                     style={{ height: "auto" }}
+                    loading="eager"
+                    fetchPriority="low"
                   />
                 ) : null}
               </div>

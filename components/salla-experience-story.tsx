@@ -12,64 +12,135 @@ type SallaExperienceStoryProps = {
 };
 
 export function SallaExperienceStory({ experience, asset }: SallaExperienceStoryProps) {
-  const storyRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const userPausedRef = useRef(false);
+  const togglePlaybackRef = useRef<() => void>(() => undefined);
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
   useEffect(() => {
-    const story = storyRef.current;
     const video = videoRef.current;
-    if (!story || !video) return;
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    video.addEventListener("play", handlePlay);
-    video.addEventListener("pause", handlePause);
-
+    if (!video) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reducedMotion.matches) {
-      video.pause();
-      return () => {
-        video.removeEventListener("play", handlePlay);
-        video.removeEventListener("pause", handlePause);
-      };
+    let inView = false;
+    let userPaused = false;
+    let userRequested = false;
+    let pending = false;
+    let failed = false;
+    let disposed = false;
+    let requestId = 0;
+
+    video.muted = true;
+
+    const shouldPlay = () =>
+      inView && !document.hidden && !userPaused && (!reducedMotion.matches || userRequested);
+
+    function pause() {
+      requestId += 1;
+      pending = false;
+      video!.pause();
+      setIsPlaying(false);
+      setLoading(false);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !userPausedRef.current) {
-          void video.play().catch(() => undefined);
-        } else {
-          video.pause();
-        }
-      },
-      { rootMargin: "500px 0px", threshold: 0 }
-    );
+    async function play() {
+      if (!shouldPlay() || pending || !video!.paused) return;
+      const currentRequest = ++requestId;
+      pending = true;
+      setLoading(true);
+      setMessage("");
+      try {
+        await video!.play();
+        if (disposed || currentRequest !== requestId) return;
+        pending = false;
+        if (!shouldPlay()) pause();
+      } catch {
+        if (disposed || currentRequest !== requestId) return;
+        pending = false;
+        userPaused = true;
+        setIsPlaying(false);
+        setLoading(false);
+        setMessage("Video couldn’t start. Select Play to try again.");
+      }
+    }
 
-    observer.observe(story);
+    function syncPlayback() {
+      if (shouldPlay()) void play();
+      else pause();
+    }
+
+    const handlePlay = () => {
+      if (!shouldPlay()) {
+        pause();
+        return;
+      }
+      failed = false;
+      setIsPlaying(true);
+      setLoading(false);
+      setMessage("");
+    };
+    const handlePause = () => {
+      setIsPlaying(false);
+      setLoading(false);
+    };
+    const handleWaiting = () => {
+      if (shouldPlay()) setLoading(true);
+    };
+    const handleError = () => {
+      failed = true;
+      userPaused = true;
+      pause();
+      setMessage("Video couldn’t load. Select Play to retry.");
+    };
+    const handleMotionChange = () => {
+      userRequested = false;
+      syncPlayback();
+    };
+
+    togglePlaybackRef.current = () => {
+      if (!video.paused || pending) {
+        userPaused = true;
+        pause();
+      } else {
+        userPaused = false;
+        userRequested = true;
+        if (failed || video.error) {
+          failed = false;
+          video.load();
+        }
+        void play();
+      }
+    };
+
+    video.addEventListener("playing", handlePlay);
+    video.addEventListener("pause", handlePause);
+    video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("error", handleError, true);
+    document.addEventListener("visibilitychange", syncPlayback);
+    reducedMotion.addEventListener("change", handleMotionChange);
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      syncPlayback();
+    }, { threshold: 0 });
+    observer.observe(video);
+
     return () => {
+      disposed = true;
+      requestId += 1;
+      togglePlaybackRef.current = () => undefined;
       observer.disconnect();
-      video.removeEventListener("play", handlePlay);
+      document.removeEventListener("visibilitychange", syncPlayback);
+      reducedMotion.removeEventListener("change", handleMotionChange);
+      video.removeEventListener("playing", handlePlay);
       video.removeEventListener("pause", handlePause);
+      video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("error", handleError, true);
+      video.pause();
     };
   }, []);
 
-  const togglePlayback = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (video.paused) {
-      userPausedRef.current = false;
-      void video.play().catch(() => undefined);
-    } else {
-      userPausedRef.current = true;
-      video.pause();
-    }
-  };
-
   return (
-    <div ref={storyRef} className="salla-story">
+    <div className="salla-story">
       <div className="salla-story__media-runway" aria-label="Salla experience video">
         <div className="salla-story__stage">
           <div className="salla-story__frame">
@@ -94,13 +165,15 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
             <button
               type="button"
               className="salla-story__playback"
-              onClick={togglePlayback}
-              aria-label={isPlaying ? "Pause Salla video" : "Play Salla video"}
-              aria-pressed={!isPlaying}
+              onClick={() => togglePlaybackRef.current()}
+              aria-label={isPlaying || loading ? "Pause Salla video" : "Play Salla video"}
             >
-              {isPlaying ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-              <span>{isPlaying ? "Pause" : "Play"}</span>
+              {isPlaying || loading ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+              <span>{isPlaying || loading ? "Pause" : "Play"}</span>
             </button>
+            <p className="salla-story__status" role="status" aria-live="polite">
+              {message || (loading ? "Loading video…" : "")}
+            </p>
           </div>
         </div>
       </div>
@@ -108,7 +181,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
       <div className="page-shell salla-story__details">
         <Reveal className="salla-story__identity" variant="media">
           <div className="salla-story__logo">
-            <Image src={asset.derived.color} alt={asset.alt} width={260} height={104} />
+            <Image src={asset.derived.color} alt={asset.alt} width={260} height={104} loading="eager" fetchPriority="low" />
           </div>
           <p className="salla-story__organization">{experience.organization}</p>
         </Reveal>
