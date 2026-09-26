@@ -3,12 +3,8 @@ import test from "node:test";
 import { JSDOM } from "jsdom";
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
-import { tsImport } from "tsx/esm/api";
-import { register } from "tsx/cjs/api";
-
-register();
-const { OrganizationRail } = await tsImport("../components/organization-rail.tsx", import.meta.url);
-const { Reveal } = await tsImport("../components/reveal.tsx", import.meta.url);
+import { OrganizationRail } from "../components/organization-rail.tsx";
+import { Reveal } from "../components/reveal.tsx";
 
 async function mount(Component, { top = 1200 } = {}) {
   const dom = new JSDOM('<div id="root"></div>', { url: "https://portfolio.test" });

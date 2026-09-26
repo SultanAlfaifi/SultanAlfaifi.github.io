@@ -3,12 +3,8 @@ import test from "node:test";
 import { JSDOM } from "jsdom";
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
-import { tsImport } from "tsx/esm/api";
-import { register } from "tsx/cjs/api";
-
-register();
-const { HeroMedia } = await tsImport("../components/hero-media.tsx", import.meta.url);
-const { SallaExperienceStory } = await tsImport("../components/salla-experience-story.tsx", import.meta.url);
+import { HeroMedia } from "../components/hero-media.tsx";
+import { SallaExperienceStory } from "../components/salla-experience-story.tsx";
 
 async function mountMedia({ reduced = false, component = HeroMedia } = {}) {
   const dom = new JSDOM('<div id="root"></div>', { url: "https://portfolio.test" });

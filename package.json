@@ -8,7 +8,7 @@
     "start": "serve out -l 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --import tsx --test tests/*.test.mjs",
     "process:assets": "tsx scripts/process-assets.ts",
     "audit:contrast": "node scripts/contrast-audit.mjs",
     "audit:a11y": "node scripts/accessibility-audit.mjs http://localhost:3000",
