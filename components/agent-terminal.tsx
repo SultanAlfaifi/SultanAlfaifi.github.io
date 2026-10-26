@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { ArrowUp, Maximize2, Sparkles, X } from "lucide-react";
+import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
 import { buildAnchors, collectUrls } from "@/lib/agent/anchors";
-import { AgentError, agentConfigured, checkHealth, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport } from "@/lib/agent/client";
+import { OPEN_ASSISTANT } from "@/lib/agent/assistant";
+import { LEADING_TAG, textDir } from "@/lib/agent/direction";
+import { AgentError, agentConfigured, checkHealth, prepareSession, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
 import { AgentText, DraftCard, FitCard, type Draft } from "./agent-cards";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
@@ -22,6 +25,8 @@ const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements
 const BOOT_KINDS: LineKind[] = ["muted", "muted", "muted", "accent", "ok"];
 const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "warn", "muted"];
 const STEP_KINDS: Record<string, LineKind> = { plan: "muted", tool: "out", result: "ok", sources: "muted", guard: "warn", policy: "warn" };
+// Below this width the panel covers the whole page.
+const PHONE_PANEL = "(max-width: 760px)";
 
 function bootLines({ projects, achievements, ui }: PortfolioContent): Output[] {
   const count = projects.filter((project) => project.enabled).length;
@@ -148,6 +153,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const content = getContent(locale);
   const copy = content.ui.terminal;
   const agentCopy = copy.agent;
+  const panelCopy = content.ui.assistant;
   const boot = useMemo(() => bootLines(getContent(locale)), [locale]);
   const respond = useMemo(() => createResponder(getContent(locale)), [locale]);
   const anchors = useMemo(() => buildAnchors(getContent("en"), getContent("ar")), []);
@@ -157,6 +163,13 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const [booted, setBooted] = useState(false);
   const [agent, setAgent] = useState<AgentState>(agentConfigured ? "checking" : "off");
   const [busy, setBusy] = useState(false);
+  // Docked, the same console (and its conversation) moves into a panel beside the page.
+  const [docked, setDocked] = useState(false);
+  const [placeholderHeight, setPlaceholderHeight] = useState(0);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const dockButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const historyRef = useRef<string[]>([]);
   const historyIndex = useRef(-1);
   const nextId = useRef(0);
@@ -227,6 +240,24 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     if (log) log.scrollTop = log.scrollHeight;
   }, [lines]);
 
+  // The input grows with the question, up to about six lines, then scrolls.
+  useLayoutEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+    input.style.height = "auto";
+    input.style.height = `${Math.min(input.scrollHeight, 168)}px`;
+  }, [value]);
+
+  useEffect(() => {
+    if (!docked) return;
+    const root = document.documentElement;
+    root.dataset.assistant = "open";
+    inputRef.current?.focus({ preventScroll: true });
+    return () => {
+      delete root.dataset.assistant;
+    };
+  }, [docked]);
+
   function skipBoot() {
     bootStarted.current = true;
     timers.current.forEach((timer) => window.clearTimeout(timer));
@@ -236,6 +267,47 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     if (agentConfigured && !health.current) health.current = checkHealth().then((result): AgentState => (result?.agent ? "live" : result?.paused ? "budget" : "offline"));
     void announceAgent();
   }
+
+  // Starts the human check and the session as soon as the visitor shows intent, so the first
+  // question doesn't wait for them.
+  function warmUp() {
+    const slot = slotRef.current;
+    if (!slot || !health.current) return;
+    void health.current.then((state) => {
+      if (state === "live") prepareSession(slot, locale);
+    });
+  }
+
+  function openPanel() {
+    if (docked) {
+      inputRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setPlaceholderHeight(shellRef.current?.offsetHeight ?? 0);
+    if (!booted) skipBoot();
+    setDocked(true);
+    warmUp();
+  }
+
+  // Focus goes back to whatever opened the panel, or to the console itself when it's brought back.
+  function closePanel(focus: "opener" | "input" | "none" = "opener") {
+    setDocked(false);
+    const opener = openerRef.current;
+    openerRef.current = null;
+    if (focus === "none") return;
+    window.requestAnimationFrame(() => {
+      const target = focus === "input" ? inputRef.current : opener?.isConnected && !opener.closest("[inert]") ? opener : dockButtonRef.current;
+      target?.focus({ preventScroll: true });
+    });
+  }
+
+  const onOpenRequest = useEffectEvent(() => openPanel());
+  useEffect(() => {
+    const listener = () => onOpenRequest();
+    window.addEventListener(OPEN_ASSISTANT, listener);
+    return () => window.removeEventListener(OPEN_ASSISTANT, listener);
+  }, []);
 
   function scripted(input: string, gap = 40) {
     const result = respond(input);
@@ -248,8 +320,10 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
 
   function handleAction(action: AgentAction) {
     if (action.type === "open") {
+      // On a phone the panel covers the page, so it steps aside to show what it highlighted.
+      if (docked && window.matchMedia(PHONE_PANEL).matches) closePanel("none");
       revealAnchor(action.anchor);
-      const outputs: Output[] = [{ kind: "ok", text: `→ ${agentCopy.highlighted(action.label[locale])}` }];
+      const outputs: Output[] = [{ kind: "ok", text: `${locale === "ar" ? "←" : "→"} ${agentCopy.highlighted(action.label[locale])}` }];
       if (action.external) outputs.push({ kind: "out", text: "", card: { type: "link", href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } });
       append(outputs);
     } else if (action.type === "fit_report") {
@@ -364,8 +438,12 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     submit(value);
   }
 
-  function handleKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
-    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+  function handleKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    // Enter sends, Shift+Enter adds a line. Arrow keys walk the history only while the input is one line.
+    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    } else if ((event.key === "ArrowUp" || event.key === "ArrowDown") && !value.includes("\n")) {
       event.preventDefault();
       const history = historyRef.current;
       const next = Math.min(history.length - 1, Math.max(-1, historyIndex.current + (event.key === "ArrowUp" ? 1 : -1)));
@@ -380,7 +458,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     }
   }
 
-  function renderLine(line: Line) {
+  function renderLine(line: Line, dir: string) {
     if (line.card?.type === "link") {
       return <a className="terminal__action" href={line.card.href} target="_blank" rel="noreferrer noopener">{line.card.label}</a>;
     }
@@ -393,65 +471,112 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     if (line.kind === "answer") {
       return line.streaming ? line.text : <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} />;
     }
-    const step = line.step ? <span className="terminal__step">{agentCopy.steps[line.step] ?? line.step} → </span> : null;
+    const tag = LEADING_TAG.exec(line.text)?.[0];
+    const text = tag ? line.text.slice(tag.length) : line.text;
+    const step = line.step ? <span className="terminal__step">{agentCopy.steps[line.step] ?? line.step} {dir === "rtl" ? "←" : "→"} </span> : null;
     return (
       <>
         {line.kind === "input" ? <span className="terminal__prompt" aria-hidden="true">❯ </span> : null}
+        {tag ? <><span className="terminal__tag" dir="ltr">{tag.trim()}</span> </> : null}
         {step}
-        {line.href ? <a href={line.href} target={line.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer noopener">{line.text}</a> : line.text}
+        {line.href ? <a href={line.href} target={line.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer noopener">{text}</a> : text}
       </>
     );
   }
 
   const live = agent === "live";
   return (
-    <div className="terminal-shell">
-      <div ref={rootRef} className="terminal glow-card" data-cursor={copy.cursor}>
-        <div className="terminal__bar" dir="ltr">
-          <span className="terminal__dots" aria-hidden="true"><i /><i /><i /></span>
-          <p>{copy.title}</p>
-          {!booted ? <button type="button" onClick={skipBoot}>{copy.skip}</button> : <span className={`terminal__live${live ? " terminal__live--agent" : ""}`}>{live ? "agent" : copy.live}</span>}
+    <div className="terminal-slot">
+      {docked ? (
+        <div className="terminal-placeholder" style={{ minHeight: placeholderHeight || undefined }}>
+          <p>{panelCopy.docked}</p>
+          <button type="button" onClick={() => closePanel("input")}>{panelCopy.bringBack}</button>
         </div>
-        <div ref={logRef} className="terminal__log" role="log" aria-live={booted ? "polite" : "off"} aria-label={copy.log}>
-          {lines.map((line) => line.card ? (
-            <div key={line.id} className="terminal__card" aria-live="off">{renderLine(line)}</div>
-          ) : (
-            <p key={line.id} className={`terminal__line terminal__line--${line.kind}`} dir="auto" aria-hidden={line.streaming || undefined}>
-              {renderLine(line)}
-            </p>
-          ))}
-        </div>
-        <form className="terminal__input" onSubmit={handleSubmit} dir="ltr">
-          <label htmlFor="terminal-input" className="sr-only">{copy.input}</label>
-          <span className="terminal__prompt" aria-hidden="true">❯</span>
-          <input
-            id="terminal-input"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            onKeyDown={handleKeyDown}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            maxLength={6000}
-            placeholder={live ? agentCopy.placeholder : copy.placeholder}
-            dir="auto"
-          />
-        </form>
-        <div ref={slotRef} className="agent-turnstile" />
-        <div className="terminal__chips" aria-label={copy.chipsAria} dir="ltr">
-          {copy.chips.map((command) => (
-            <button key={command} type="button" onClick={() => { if (!booted) skipBoot(); submit(command); }}>{command}</button>
-          ))}
-        </div>
-        {live ? (
-          <div className="terminal__chips terminal__chips--agent" aria-label={agentCopy.chipsAria} dir="auto">
-            {agentCopy.chips.map((question) => (
-              <button key={question} type="button" disabled={busy} onClick={() => submit(question)}>{question}</button>
+      ) : null}
+      <div
+        ref={shellRef}
+        className={`terminal-shell${docked ? " terminal-shell--docked" : ""}`}
+        role={docked ? "region" : undefined}
+        aria-label={docked ? panelCopy.panel : undefined}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && docked) {
+            event.preventDefault();
+            closePanel();
+          }
+        }}
+      >
+        <div ref={rootRef} className="terminal glow-card" data-cursor={copy.cursor}>
+          <div className="terminal__bar" dir="ltr">
+            <span className="terminal__dots" aria-hidden="true"><i /><i /><i /></span>
+            <p dir="auto">{docked ? panelCopy.panel : copy.title}</p>
+            {!booted ? (
+              <button type="button" onClick={skipBoot}>{copy.skip}</button>
+            ) : (
+              <span className={`terminal__live${live ? " terminal__live--agent" : ""}`} dir="auto">
+                {live ? <><Sparkles size={13} aria-hidden="true" /> {panelCopy.badge}</> : copy.live}
+              </span>
+            )}
+            <button
+              ref={dockButtonRef}
+              type="button"
+              className="terminal__dock"
+              onClick={() => (docked ? closePanel() : openPanel())}
+              aria-label={docked ? panelCopy.close : panelCopy.expand}
+              title={docked ? panelCopy.close : panelCopy.expand}
+            >
+              {docked ? <X size={16} aria-hidden="true" /> : <Maximize2 size={15} aria-hidden="true" />}
+            </button>
+          </div>
+          <div ref={logRef} className="terminal__log" role="log" aria-live={booted ? "polite" : "off"} aria-label={copy.log}>
+            {lines.map((line) => {
+              if (line.card) return <div key={line.id} className="terminal__card" aria-live="off">{renderLine(line, "auto")}</div>;
+              const dir = textDir(line.text.replace(LEADING_TAG, ""));
+              return (
+                <p key={line.id} className={`terminal__line terminal__line--${line.kind}`} dir={dir} aria-hidden={line.streaming || undefined}>
+                  {renderLine(line, dir)}
+                </p>
+              );
+            })}
+          </div>
+          <form className="terminal__input" onSubmit={handleSubmit}>
+            <label htmlFor="terminal-input" className="sr-only">{copy.input}</label>
+            <span className="terminal__prompt" aria-hidden="true">❯</span>
+            <textarea
+              ref={inputRef}
+              id="terminal-input"
+              rows={1}
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={warmUp}
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              enterKeyHint="send"
+              maxLength={6000}
+              placeholder={live ? agentCopy.placeholder : copy.placeholder}
+              dir="auto"
+            />
+            <button type="submit" className="terminal__send" aria-label={panelCopy.send} disabled={!value.trim()}>
+              <ArrowUp size={18} aria-hidden="true" />
+            </button>
+          </form>
+          <div ref={slotRef} className="agent-turnstile" />
+          <div className="terminal__chips" aria-label={copy.chipsAria} dir="ltr">
+            {copy.chips.map((command) => (
+              <button key={command} type="button" onClick={() => { if (!booted) skipBoot(); submit(command); }}>{command}</button>
             ))}
           </div>
-        ) : null}
+          {live ? (
+            <div className="terminal__chips terminal__chips--agent" aria-label={agentCopy.chipsAria} dir="auto">
+              {agentCopy.chips.map((question) => (
+                <button key={question} type="button" disabled={busy} onClick={() => submit(question)}>{question}</button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        {agentConfigured ? <p className="terminal__privacy">{agentCopy.privacy} <a href="/agent-evals/">{agentCopy.evalsLink}</a></p> : null}
       </div>
-      {agentConfigured ? <p className="terminal__privacy">{agentCopy.privacy} <a href="/agent-evals/">{agentCopy.evalsLink}</a></p> : null}
     </div>
   );
 }

@@ -201,7 +201,7 @@ html[data-motion="off"] .cursor-ring { display: none; }
 @keyframes orb-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Secrets game + confetti ---------- */
-.secrets { position: fixed; z-index: 130; left: 18px; bottom: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.secrets { position: fixed; z-index: 130; inset-inline-start: 18px; bottom: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .secrets__pill { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid rgb(125 226 209 / 45%); border-radius: 999px; background: rgb(20 25 24 / 92%); color: var(--paper); font: 600 0.74rem var(--font-mono), monospace; cursor: pointer; animation: toast-in 400ms cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(10px); }
 .secrets__pill svg { color: var(--mint); }
 .secrets.is-complete .secrets__pill { border-color: var(--mint); background: var(--mint); color: var(--ink); }
@@ -226,7 +226,7 @@ html[data-motion="off"] .cursor-ring { display: none; }
   .timeline__head p { margin-top: 12px; }
   .timeline__stop { width: min(78vw, 300px); }
   .contact-orb { margin: 0 0 18px; }
-  .secrets { left: 12px; bottom: 12px; }
+  .secrets { inset-inline-start: 12px; bottom: 12px; }
 }
 
 /* The portrait is now a full photo, so it fills its circle edge to edge (the old cut-out needed an offset). */

@@ -2,6 +2,7 @@ import type { Locale } from "@/data/i18n";
 import { getContent } from "@/data/i18n";
 import { AboutSection } from "./about-section";
 import { AchievementsSection } from "./achievements-section";
+import { AssistantLauncher } from "./assistant-launcher";
 import { CommandPalette } from "./command-palette";
 import { CommunitySection } from "./community-section";
 import { ContactSection } from "./contact-section";
@@ -63,6 +64,7 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
       </main>
       <Footer locale={locale} />
       <CommandPalette locale={locale} />
+      <AssistantLauncher locale={locale} />
       <InteractionLayer />
       <CursorRing />
       <SecretsTracker locale={locale} />

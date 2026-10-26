@@ -8,6 +8,12 @@ const cards = read("../components/agent-cards.tsx");
 const cvSection = read("../components/cv-section.tsx");
 const client = read("../lib/agent/client.ts");
 const workflow = read("../.github/workflows/deploy-pages.yml");
+const hero = read("../components/hero.tsx");
+const home = read("../components/home-page.tsx");
+const palette = read("../components/command-palette.tsx");
+const launcher = read("../components/assistant-launcher.tsx");
+const styles = read("../app/signature.css") + read("../app/agent.css");
+const { LEADING_TAG, textDir } = await import("../lib/agent/direction.ts");
 
 test("the console keeps its scripted replies whenever the agent can't answer", () => {
   assert.match(client, /export const agentConfigured = Boolean\(AGENT_URL && SITE_KEY\)/);
@@ -20,6 +26,42 @@ test("the console keeps its scripted replies whenever the agent can't answer", (
 test("the boot plays once, even if the visitor types before the console scrolls into view", () => {
   assert.match(terminal, /if \(bootStarted\.current\) return;\s*bootStarted\.current = true;/);
   assert.match(terminal, /function skipBoot\(\) \{\s*bootStarted\.current = true;/);
+});
+
+test("visitors reach the AI assistant from the hero, a floating button, and the palette, without losing their place", () => {
+  assert.match(hero, /<AssistantButton locale=\{locale\} \/>/);
+  assert.match(home, /<AssistantLauncher locale=\{locale\} \/>/);
+  assert.match(palette, /run: openAssistant/);
+  assert.match(launcher, /onClick=\{openAssistant\}/);
+  assert.match(terminal, /window\.addEventListener\(OPEN_ASSISTANT, listener\)/);
+});
+
+test("the panel closes with Escape, hands focus back, and steps aside on phones to show what it highlighted", () => {
+  assert.match(terminal, /event\.key === "Escape" && docked/);
+  assert.match(terminal, /opener\?\.isConnected/);
+  assert.match(terminal, /if \(docked && window\.matchMedia\(PHONE_PANEL\)\.matches\) closePanel\("none"\)/);
+});
+
+test("the human check and the session start before the first question, not after it", () => {
+  assert.match(terminal, /onFocus=\{warmUp\}/);
+  assert.match(terminal, /function openPanel\(\) \{[\s\S]*?warmUp\(\);\s*\}/);
+  assert.match(client, /pendingSession \?\?=/, "a question asked mid-preparation reuses the same session");
+});
+
+test("typing is comfortable: a growing 16px input where Enter sends and Shift+Enter adds a line", () => {
+  assert.match(terminal, /<textarea/);
+  assert.match(terminal, /event\.key === "Enter" && !event\.shiftKey && !event\.nativeEvent\.isComposing/);
+  // iOS zooms the page into any input set below 16px.
+  assert.match(styles, /\.terminal__input textarea \{[^}]*font-size: 1rem;/);
+});
+
+test("console lines take the direction of their main script, and a [tag] stays at the start", () => {
+  assert.equal(textDir("المشاريع: 11 · الإنجازات: 6"), "rtl");
+  assert.equal(textDir("أنصحك تبدأ بمشروع AccessFinish لأنه يصلح الأخطاء"), "rtl");
+  assert.equal(textDir("github ✓ · linkedin ✓ · x ✓"), "ltr");
+  assert.equal(textDir("✓ 11"), "auto");
+  assert.equal("[memory] المشاريع".replace(LEADING_TAG, ""), "المشاريع");
+  assert.match(terminal, /<span className="terminal__tag" dir="ltr">/);
 });
 
 test("answers are announced once, complete, not word by word", () => {
