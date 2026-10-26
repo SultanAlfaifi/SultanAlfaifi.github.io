@@ -1,3 +1,4 @@
+import type { CvTarget } from "../../data/cv";
 import { resolveSelection, trimSelection, type CvSelection } from "./select";
 import { buildCvDocument, type CvDocument } from "./document";
 
@@ -28,4 +29,22 @@ export function cvDate(date = new Date()) {
 
 export function generalFooter(date: string) {
   return `Generated on ${date} from verified data at sultalfaifi.com`;
+}
+
+// The footer names the field in plain English when the visitor gave a role.
+export const CV_FIELD_FOOTERS: Record<Exclude<CvTarget, "general">, string> = {
+  backend: "back-end roles",
+  "ai-agents": "AI agent and LLM roles",
+  "full-stack": "full-stack roles",
+  ml: "machine learning roles",
+  teaching: "teaching and community roles"
+};
+
+// "Prepared for Salla" when the visitor named the company. The PDF font has no Arabic shaping, so a name
+// written in Arabic is left off the page rather than printed broken; the field stands in for it.
+export function preparedFooter(date: string, company: string, target: CvTarget) {
+  const name = company.trim().slice(0, 60);
+  const printable = name && !/\p{Script=Arabic}/u.test(name) ? name : "";
+  const label = printable || (target === "general" ? "" : CV_FIELD_FOOTERS[target]);
+  return label ? `Prepared for ${label} on ${date} from verified data at sultalfaifi.com` : generalFooter(date);
 }

@@ -18,18 +18,22 @@ export type CvDocument = Record<string, unknown> & { content: Node[] };
 
 const INK = "#111111";
 const MUTED = "#4a4a4a";
-const RULE = "#9a9a9a";
+// One dark teal for headings' rules and links: it prints near-black and still reads as a link on screen.
+const ACCENT = "#0b5c55";
+// A4 is 595.28pt wide; the side margins are 34pt each.
+const PAGE_WIDTH = 527;
 
 export function cvFileName(company?: string) {
   const slug = (company ?? "").normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 40);
   return slug ? `Sultan-Alfaifi-CV-${slug}.pdf` : "Sultan-Alfaifi-CV.pdf";
 }
 
+function rule(width: number, color: string, margin: number[]): Node {
+  return { canvas: [{ type: "line", x1: 0, y1: 0, x2: PAGE_WIDTH, y2: 0, lineWidth: width, lineColor: color }], margin };
+}
+
 function heading(text: string): Node[] {
-  return [
-    { text: text.toUpperCase(), style: "heading" },
-    { canvas: [{ type: "line", x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.6, lineColor: RULE }], margin: [0, 1, 0, 3] }
-  ];
+  return [{ text: text.toUpperCase(), style: "heading" }, rule(0.9, ACCENT, [0, 1, 0, 3])];
 }
 
 function bullets(lines: CvLine[]): Node {
@@ -60,6 +64,7 @@ export function buildCvDocument(cv: ResolvedCv, footerText: string, onPageCount?
     { text: header.name, style: "name" },
     { text: header.headline, style: "headline" },
     { text: contact, style: "contact" },
+    rule(1.6, INK, [0, 0, 0, 0]),
     ...heading("Summary"),
     { text: cv.summary.text, style: "summary" },
     ...heading("Skills"),
@@ -79,7 +84,7 @@ export function buildCvDocument(cv: ResolvedCv, footerText: string, onPageCount?
 
   return {
     pageSize: "A4",
-    pageMargins: [40, 30, 40, 32],
+    pageMargins: [34, 26, 34, 28],
     info: {
       title: "Sultan Alfaifi CV",
       author: "Sultan Alfaifi",
@@ -88,20 +93,20 @@ export function buildCvDocument(cv: ResolvedCv, footerText: string, onPageCount?
     },
     defaultStyle: { font: CV_FONT, fontSize: 9, lineHeight: 1.02, color: INK },
     styles: {
-      name: { fontSize: 19, bold: true, characterSpacing: 0.4 },
-      headline: { fontSize: 10.5, margin: [0, 1, 0, 2] },
-      contact: { fontSize: 8.4, color: MUTED, margin: [0, 0, 0, 4] },
-      heading: { fontSize: 9.6, bold: true, characterSpacing: 0.8, margin: [0, 5, 0, 0] },
+      name: { fontSize: 23, bold: true, characterSpacing: 0.2, lineHeight: 0.95 },
+      headline: { fontSize: 11, color: ACCENT, margin: [0, 1, 0, 1.5] },
+      contact: { fontSize: 8.4, color: MUTED, margin: [0, 0, 0, 5] },
+      heading: { fontSize: 10.2, bold: true, characterSpacing: 1.1, margin: [0, 5.5, 0, 0] },
       summary: { margin: [0, 0, 0, 1] },
       skill: { margin: [0, 0, 0, 0.5] },
-      entry: { margin: [0, 2, 0, 0.5] },
+      entry: { fontSize: 9.3, margin: [0, 2.5, 0, 0.5] },
       bullets: { margin: [0, 0, 0, 1.5] },
-      link: { color: "#0b4f8a", decoration: "underline" }
+      link: { color: ACCENT, decoration: "underline" }
     },
     content,
     footer: (currentPage: number, pageCount: number) => {
       onPageCount?.(pageCount);
-      return { text: footerText, alignment: "center", fontSize: 7.4, color: MUTED, margin: [40, 12, 40, 0] };
+      return { text: footerText, alignment: "center", fontSize: 7.4, color: MUTED, margin: [34, 9, 34, 0] };
     }
   };
 }

@@ -54,9 +54,12 @@ rules are managed from one typed configuration file.
     against a job description, and drafts emails that only the visitor can send. When the
     Worker is down or out of budget, the console falls back to its scripted replies.
     Evals, failures included, are published at `/agent-evals/`.
-- **"Want the CV?"**: a one-page, ATS-readable English CV that downloads instantly, plus a
-  tailored version built in the browser with pdfmake from an approved bullet library. The
-  AI may only pick and order library IDs; the Worker rejects anything else.
+- **"My CV"**: one download button for a one-page, ATS-readable English CV. If the visitor
+  adds a company or a role (optional), the same button downloads a version prepared for it,
+  built in the browser with pdfmake from an approved bullet library while they look at the
+  live 3D preview. The AI may only pick and order library IDs; the Worker rejects anything
+  else. `npm run cv` also writes `public/cv/fitted.json`, so the preview shows exactly the
+  lines that fit on the page.
   - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
     a variable-weight footer wordmark that swells near the cursor.
   - A Konami-code easter egg, plus a Motion toggle that, like
