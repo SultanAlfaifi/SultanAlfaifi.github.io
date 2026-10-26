@@ -8,6 +8,7 @@ import "./signature.css";
 import "./experience.css";
 import "./agent.css";
 import "./cv.css";
+import "./welcome.css";
 import "./rtl.css";
 
 // One family for the whole site, in both languages: IBM Plex Sans Arabic carries Arabic and Latin glyphs.

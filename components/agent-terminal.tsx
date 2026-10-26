@@ -8,6 +8,7 @@ import { OPEN_ASSISTANT } from "@/lib/agent/assistant";
 import { LEADING_TAG, textDir } from "@/lib/agent/direction";
 import { AgentError, agentConfigured, checkHealth, prepareSession, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
+import { useVisitor } from "./use-visitor";
 import { AgentText, DraftCard, FitCard, type Draft } from "./agent-cards";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
 import { foundSecrets, SECRET_IDS, secretCopy, unlockSecret } from "./secrets";
@@ -154,6 +155,8 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const copy = content.ui.terminal;
   const agentCopy = copy.agent;
   const panelCopy = content.ui.assistant;
+  const visitor = useVisitor();
+  const agentChips = (visitor && agentCopy.chipsFor[visitor]) || agentCopy.chips;
   const boot = useMemo(() => bootLines(getContent(locale)), [locale]);
   const respond = useMemo(() => createResponder(getContent(locale)), [locale]);
   const anchors = useMemo(() => buildAnchors(getContent("en"), getContent("ar")), []);
@@ -569,7 +572,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
           </div>
           {live ? (
             <div className="terminal__chips terminal__chips--agent" aria-label={agentCopy.chipsAria} dir="auto">
-              {agentCopy.chips.map((question) => (
+              {agentChips.map((question) => (
                 <button key={question} type="button" disabled={busy} onClick={() => submit(question)}>{question}</button>
               ))}
             </div>

@@ -7,6 +7,7 @@ import { DecodeText } from "./decode-text";
 import { HeroMedia } from "./hero-media";
 import { LiveClock } from "./live-clock";
 import { SocialLinks } from "./social-links";
+import { VisitorNote } from "./visitor-note";
 
 export function Hero({ locale = "en" }: { locale?: Locale }) {
   const { achievements, identity, projects, ui } = getContent(locale);
@@ -38,12 +39,16 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
           <h1 id="hero-title"><DecodeText text={identity.headline} highlight={ui.hero.highlight} /></h1>
           <p className="identity-hero__summary">{identity.summary}</p>
           <div className="identity-hero__actions">
-            <a className="button button--signal" href="#work" data-magnetic>{ui.hero.explore} <ArrowDown size={18} aria-hidden="true" /></a>
+            {/* Both versions are in the HTML; the visitor's choice (set before first paint) shows one. */}
+            <a className="button button--signal" href="#work" data-magnetic data-visitor-hide="hiring">{ui.hero.explore} <ArrowDown size={18} aria-hidden="true" /></a>
+            <a className="button button--signal" href="#cv" data-magnetic data-visitor-only="hiring">{ui.hero.getCv} <ArrowDown size={18} aria-hidden="true" /></a>
             <AssistantButton locale={locale} />
-            <a className="identity-hero__contact" href="#contact" data-magnetic>{ui.hero.talk} <ArrowUpRight size={18} aria-hidden="true" /></a>
+            <a className="identity-hero__contact" href="#contact" data-magnetic data-visitor-hide="collaborate">{ui.hero.talk} <ArrowUpRight size={18} aria-hidden="true" /></a>
+            <a className="identity-hero__contact" href="#contact" data-magnetic data-visitor-only="collaborate">{ui.hero.talkIdea} <ArrowUpRight size={18} aria-hidden="true" /></a>
             <p className="identity-hero__palette-hint">
               <PaletteTrigger locale={locale} /> <span>{ui.hero.paletteHint}</span>
             </p>
+            <VisitorNote locale={locale} />
           </div>
         </div>
         <div className="intro-film" data-tilt>
