@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, AudioLines, Check, Cpu, Download, FileText, F
 import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
 import type { Project } from "@/data/portfolio";
 import { GitHubIcon } from "./brand-icons";
+import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -138,7 +139,7 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
               <Reveal variant="media" className="work-story__visual"><ProjectVisual project={project} copy={copy} /></Reveal>
               <div className="work-story__copy">
                 <p className="work-story__index" aria-hidden="true" dir="ltr"><span>{String(index + 1).padStart(2, "0")}</span> / {total}</p>
-                <p className="work-status"><span aria-hidden="true" />{project.status}</p>
+                <p className="work-status"><span aria-hidden="true" /><MetaParts text={project.status} /></p>
                 <h3>{project.title}</h3>
                 <p className="work-description">{project.description}</p>
                 <p className="work-role">{project.role}</p>
@@ -166,7 +167,7 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
             {additional.map((project, index) => (
               <Reveal key={project.slug} delay={index * 50} className="lab-card-shell">
                 <article className="lab-card glow-card" id={`project-${project.slug}`}>
-                  <p className="lab-card__status">{project.status}</p>
+                  <p className="lab-card__status"><MetaParts text={project.status} /></p>
                   <h4>{project.title}</h4>
                   <p className="lab-card__category">{project.category}</p>
                   <p className="lab-card__description">{project.description}</p>

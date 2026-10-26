@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { motionAllowed } from "./motion-preference";
 
 type RevealProps = {
   children: ReactNode;
@@ -19,14 +20,15 @@ export function Reveal({ children, className = "", delay = 0, variant = "soft" }
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     // Hydrated content already on screen must never jump back to an entrance frame.
     const bounds = element.getBoundingClientRect();
-    if (preference.matches || (bounds.height > 0 && bounds.top < window.innerHeight && bounds.bottom > 0)) return;
+    // The OS setting and the site's own Motion toggle both turn it off.
+    if (!motionAllowed() || (bounds.height > 0 && bounds.top < window.innerHeight && bounds.bottom > 0)) return;
     let animation: Animation | undefined;
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
       observer.disconnect();
-      if (preference.matches) return;
-      const frames = [{ transform: `translateY(${variant === "title" ? 8 : 12}px)`, opacity: 0.8 }, { transform: "translateY(0)", opacity: 1 }];
-      animation = element.animate(frames, { duration: 420, delay: Math.min(delay, 60), easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" });
+      if (!motionAllowed()) return;
+      const frames = [{ transform: `translateY(${variant === "title" ? 16 : 28}px)`, opacity: 0.35 }, { transform: "translateY(0)", opacity: 1 }];
+      animation = element.animate(frames, { duration: 640, delay: Math.min(delay, 240), easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" });
     }, { threshold: 0, rootMargin: "0px 0px 64px 0px" });
     const stopMotion = () => { if (preference.matches) animation?.cancel(); };
     preference.addEventListener("change", stopMotion);

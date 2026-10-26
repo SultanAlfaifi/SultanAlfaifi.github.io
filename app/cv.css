@@ -74,8 +74,8 @@
 /* The page itself: a sheet under a desk light. It rests at a slight angle and follows the pointer. */
 .cv-stage {
   --tilt-x: 4deg; --tilt-y: -6deg; --light-x: 22%; --light-y: 8%;
-  position: relative; padding: clamp(26px, 4vw, 52px) clamp(22px, 4vw, 56px);
-  border-radius: 28px;
+  position: relative; overflow: hidden; padding: clamp(26px, 4vw, 52px) clamp(22px, 4vw, 56px);
+  border-radius: 24px;
   background:
     radial-gradient(90% 70% at var(--light-x) var(--light-y), rgb(125 226 209 / 16%), transparent 60%),
     radial-gradient(120% 90% at 50% 0%, #26302d 0%, var(--ink) 65%);

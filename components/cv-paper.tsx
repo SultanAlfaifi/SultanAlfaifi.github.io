@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type PointerEvent, type ReactNode } from "react";
 import type { CvLine } from "@/data/cv";
 import type { ResolvedCv } from "@/lib/cv/select";
 import { motionAllowed } from "./motion-preference";
@@ -37,6 +37,23 @@ export function CvPaper({ cv, footer, label }: { cv: ResolvedCv; footer: string;
     });
     positions.current = next;
   }, [cv]);
+
+  // The first time the stage scrolls into view, the sheet drops onto the one beneath it. A page opened
+  // straight at the CV (it's already on screen) skips this.
+  useEffect(() => {
+    const stage = stageRef.current;
+    const paper = paperRef.current;
+    if (!stage || !paper || !motionAllowed() || typeof paper.animate !== "function") return;
+    const box = stage.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      paper.animate([{ translate: "0 14%", rotate: "x 30deg", opacity: 0 }, { translate: "0 0", rotate: "x 0deg", opacity: 1 }], { duration: 950, easing: EASE, fill: "backwards" });
+    }, { threshold: 0.25 });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
 
   function tilt(event: PointerEvent<HTMLDivElement>) {
     const stage = stageRef.current;

@@ -13,6 +13,10 @@
 [dir="rtl"] :is(h1, h2, h3):not([dir="ltr"] *) { line-height: 1.32; }
 [dir="rtl"] .identity-hero h1 { max-width: 15ch; line-height: 1.28; }
 [dir="rtl"] .split-word { padding-block: 0.14em 0.34em; margin-block: -0.14em -0.34em; }
+/* The recommendations heading has its own tighter rule; Arabic needs the same room as the rest. */
+[dir="rtl"] #recommendations .section-header h2 { line-height: 1.32; }
+/* Parts of a "a · b · c" line read in written order, even when two neighbours are English (components/meta-parts.tsx). */
+.meta-part { unicode-bidi: isolate; }
 [dir="rtl"] .work-story h3,
 [dir="rtl"] .proof-card__signal,
 [dir="rtl"] .proof-card--lead .proof-card__signal { line-height: 1.25; }
