@@ -4,21 +4,27 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEven
 import { ArrowDownToLine, X } from "lucide-react";
 import { CV_FIELDS, type CvTarget } from "@/data/cv";
 import { getContent, type Locale } from "@/data/i18n";
-import { cvFooterFields } from "@/data/ui";
 import { AgentError, agentConfigured, checkHealth, confirmCvCode, notifyCvDownload, requestCvCode, tailorCv, turnstileToken, withSession } from "@/lib/agent/client";
 import { renderCvPdf, saveBlob } from "@/lib/cv/browser-render";
 import { cvFileName } from "@/lib/cv/document";
-import { cvDate, generalFooter } from "@/lib/cv/fit";
-import { decodeSelection, encodeSelection, resolveSelection, selectForTarget, selectForText, type CvSelection, type ResolvedCv } from "@/lib/cv/select";
+import { cvDate, generalFooter, preparedFooter } from "@/lib/cv/fit";
+import { decodeSelection, encodeSelection, resolveSelection, roleTarget, selectForTarget, selectForText, type CvSelection } from "@/lib/cv/select";
+import { CvPaper } from "./cv-paper";
 import { SectionHeader } from "./section-header";
 
 const GENERAL_CV = "/cv/Sultan-Alfaifi-CV.pdf";
-const DRAFT_KEY = "cv-draft-v1";
+// Written by scripts/build-cv.ts: which lines each field's CV keeps once it fits on one page.
+const FITTED = "/cv/fitted.json";
+const DRAFT_KEY = "cv-draft-v2";
 const OFFER_KEY = "cv-offer-shown";
 const IDLE_MS = 45_000;
+const POSTING_MIN = 40;
+// Typing pauses this long before the PDF is prepared in the background, so the download is instant.
+const PREPARE_MS = 650;
 
-type Source = "general" | "field" | "ai" | "keywords" | "link";
-type Draft = { target: CvTarget | null; description: string; company: string; savedAt: number };
+type Draft = { company: string; role: string; posting: string; savedAt: number };
+type Pick = { selection: CvSelection; cover: { message: string; signature: string } | null; from: "ai" | "link" };
+type Prepared = { key: string; blob: Blob; selection: CvSelection };
 
 function readDraft(): Draft | null {
   try {
@@ -31,48 +37,11 @@ function readDraft(): Draft | null {
 
 function writeDraft(draft: Omit<Draft, "savedAt">) {
   try {
-    if (!draft.target && !draft.description && !draft.company) window.localStorage.removeItem(DRAFT_KEY);
+    if (!draft.company && !draft.role && !draft.posting) window.localStorage.removeItem(DRAFT_KEY);
     else window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, savedAt: Date.now() }));
   } catch {
     // Storage can be blocked; the form still works, it just won't remember.
   }
-}
-
-function CvPreview({ cv, footer, label }: { cv: ResolvedCv; footer: string; label: string }) {
-  const entry = (title: string, meta: string, extras: (string | undefined)[], links: { label: string; href: string }[]) => (
-    <p className="cv-paper__entry">
-      <strong>{title}</strong>, {meta}
-      {extras.filter(Boolean).map((extra) => <span key={extra}> | {extra}</span>)}
-      {links.map((link, index) => <span key={link.href}>{index ? " · " : " | "}<a href={link.href} target="_blank" rel="noreferrer noopener" tabIndex={-1}>{link.label}</a></span>)}
-    </p>
-  );
-  const list = (items: { id: string; text: string }[]) => <ul>{items.map((item) => <li key={item.id}>{item.text}</li>)}</ul>;
-  return (
-    <article className="cv-paper" lang="en" dir="ltr" aria-label={label}>
-      <h3>{cv.header.name}</h3>
-      <p className="cv-paper__headline">{cv.header.headline}</p>
-      <p className="cv-paper__contact">{[cv.header.location, cv.header.email, ...cv.header.links.map((link) => link.label)].join(" | ")}</p>
-      <h4>Summary</h4>
-      <p>{cv.summary.text}</p>
-      <h4>Skills</h4>
-      {cv.skills.map((skill) => {
-        const [name, ...rest] = skill.text.split(": ");
-        return <p key={skill.id} className="cv-paper__skill"><strong>{name}:</strong> {rest.join(": ")}</p>;
-      })}
-      <h4>Experience</h4>
-      {cv.experience.map(({ entry: item, bullets }) => <div key={item.id}>{entry(item.title, item.meta, [item.dates, item.location], item.links)}{list(bullets)}</div>)}
-      {cv.target === "teaching" && cv.teaching.length ? <><h4>Teaching and community</h4>{list(cv.teaching)}</> : null}
-      <h4>Projects</h4>
-      {cv.projects.map(({ entry: item, bullets }) => <div key={item.id}>{entry(item.title, item.meta, [item.dates], item.links)}{list(bullets)}</div>)}
-      {cv.target !== "teaching" && cv.teaching.length ? <><h4>Teaching and community</h4>{list(cv.teaching)}</> : null}
-      <h4>Recognition</h4>
-      {list(cv.recognition)}
-      <h4>Education</h4>
-      <p>{cv.education.text}</p>
-      {cv.training.length ? <><h4>Training</h4>{list(cv.training)}</> : null}
-      <p className="cv-paper__footer">{footer}</p>
-    </article>
-  );
 }
 
 export function CvSection({ locale = "en" }: { locale?: Locale }) {
@@ -81,12 +50,14 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   const id = useId();
   const sectionRef = useRef<HTMLElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
-  const [target, setTarget] = useState<CvTarget | null>(null);
-  const [description, setDescription] = useState("");
   const [company, setCompany] = useState("");
-  const [selection, setSelection] = useState<CvSelection>(() => selectForTarget("general"));
-  const [source, setSource] = useState<Source>("general");
-  const [cover, setCover] = useState<{ message: string; signature: string } | null>(null);
+  const [role, setRole] = useState("");
+  const [posting, setPosting] = useState("");
+  const [postingOpen, setPostingOpen] = useState(false);
+  const [fitted, setFitted] = useState<Partial<Record<CvTarget, CvSelection>>>({});
+  const [pick, setPick] = useState<Pick | null>(null);
+  const [prepared, setPrepared] = useState<Prepared | null>(null);
+  const [aiLive, setAiLive] = useState(false);
   const [jdState, setJdState] = useState<"idle" | "working" | "done" | "offline" | "failed">("idle");
   const [download, setDownload] = useState<"idle" | "building" | "done" | "failed">("idle");
   const [email, setEmail] = useState("");
@@ -101,12 +72,22 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   const pendingOffer = useRef(false);
   const idleTimer = useRef<number | null>(null);
 
+  // What goes on the page. With nothing typed it's the general CV; a role picks the field's lines; a
+  // pasted posting reorders them by its keywords; the AI or a CV link can hand over an exact pick.
   const date = useMemo(() => cvDate(), []);
-  const footerFor = useMemo(() => {
-    const label = company.trim() || (source === "general" ? "" : target ? cvFooterFields[target] : "this role");
-    return label ? copy.footer(label, date) : generalFooter(date);
-  }, [company, source, target, copy, date]);
-  const resolved = useMemo(() => resolveSelection(selection), [selection]);
+  const target = useMemo(() => roleTarget(role), [role]);
+  const hasPosting = posting.trim().length >= POSTING_MIN;
+  const personal = Boolean(company.trim() || role.trim() || hasPosting || pick);
+  const selection = useMemo(() => {
+    if (pick) return pick.selection;
+    if (hasPosting) return selectForText(`${role}\n${posting}`, target).selection;
+    return fitted[target] ?? selectForTarget(target);
+  }, [pick, hasPosting, role, posting, target, fitted]);
+  const footer = personal ? preparedFooter(date, company, selection.target) : generalFooter(date);
+  const key = `${encodeSelection(selection)}|${footer}`;
+  const ready = prepared?.key === key ? prepared : null;
+  const shown = ready?.selection ?? selection;
+  const resolved = useMemo(() => resolveSelection(shown), [shown]);
 
   const showOffer = useCallback(() => {
     if (completed.current) return;
@@ -126,6 +107,25 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     idleTimer.current = window.setTimeout(() => { if (!completed.current) showOffer(); }, IDLE_MS);
   }, [showOffer]);
 
+  useEffect(() => {
+    let cancelled = false;
+    fetch(FITTED)
+      .then((response) => (response.ok ? (response.json() as Promise<Record<string, unknown>>) : {}))
+      .then((data) => {
+        if (cancelled) return;
+        const next: Partial<Record<CvTarget, CvSelection>> = {};
+        for (const [name, encoded] of Object.entries(data)) {
+          const decoded = typeof encoded === "string" ? decodeSelection(encoded) : null;
+          if (decoded && decoded.target === name) next[decoded.target] = decoded;
+        }
+        setFitted(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // A CV link from an email, or a saved draft, is read once after the page has rendered.
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -133,21 +133,16 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
       const fromLink = params.get("cv");
       const linked = fromLink ? decodeSelection(fromLink) : null;
       if (linked) {
-        setSelection(linked);
-        setSource("link");
-        setTarget(linked.target === "general" ? null : linked.target);
+        setPick({ selection: linked, cover: null, from: "link" });
         setCompany((params.get("for") ?? "").slice(0, 60));
         return;
       }
       const draft = readDraft();
       if (!draft) return;
-      setTarget(draft.target);
-      setDescription(draft.description);
       setCompany(draft.company);
-      if (draft.target) {
-        setSelection(selectForTarget(draft.target));
-        setSource("field");
-      }
+      setRole(draft.role);
+      setPosting(draft.posting);
+      setPostingOpen(Boolean(draft.posting));
       setRestored(true);
       started.current = true;
     });
@@ -155,18 +150,35 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   }, []);
 
   useEffect(() => {
-    if (started.current) writeDraft({ target, description, company });
-  }, [target, description, company]);
+    if (started.current) writeDraft({ company, role, posting });
+  }, [company, role, posting]);
+
+  // Prepares the visitor's PDF while they look at the preview; the preview then shows exactly the lines
+  // that fit on the page.
+  useEffect(() => {
+    if (!personal) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      renderCvPdf(selection, footer)
+        .then(({ output, selection: fittedSelection }) => {
+          if (!cancelled) setPrepared({ key, blob: output, selection: fittedSelection });
+        })
+        .catch(() => undefined);
+    }, PREPARE_MS);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [personal, selection, footer, key]);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    let checked = false;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (!checked && agentConfigured) {
-          checked = true;
-          health.current ??= checkHealth().then((result) => Boolean(result?.agent));
+        if (!health.current && agentConfigured) {
+          health.current = checkHealth().then((result) => Boolean(result?.agent));
+          void health.current.then(setAiLive);
         }
         if (pendingOffer.current) {
           pendingOffer.current = false;
@@ -190,59 +202,52 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     };
   }, [showOffer]);
 
-  function pickField(next: CvTarget) {
+  // A new role or posting replaces whatever the AI or a link picked for the old one.
+  function changeWhatFor(update: () => void) {
     touch();
-    setTarget(next);
-    setSelection(selectForTarget(next));
-    setSource("field");
-    setCover(null);
+    update();
+    setPick(null);
     setJdState("idle");
     setDownload("idle");
   }
 
-  async function tailorToDescription(event: FormEvent) {
-    event.preventDefault();
+  function finish() {
+    completed.current = true;
+    setOffer(false);
+    writeDraft({ company: "", role: "", posting: "" });
+  }
+
+  async function matchWithAi() {
     touch();
-    if (description.trim().length < 40) return;
-    setDownload("idle");
-    const local = selectForText(description);
-    setSelection(local.selection);
-    setTarget(local.selection.target === "general" ? null : local.selection.target);
-    setSource("keywords");
-    setCover(null);
-    if (agentConfigured) health.current ??= checkHealth().then((result) => Boolean(result?.agent));
-    if (!health.current || !(await health.current) || !slotRef.current) {
-      setJdState("offline");
-      return;
-    }
+    if (!hasPosting || !slotRef.current) return;
     setJdState("working");
     try {
-      const result = await withSession(slotRef.current, locale, (token) => tailorCv(token, description.trim(), company.trim(), locale));
+      const result = await withSession(slotRef.current, locale, (token) => tailorCv(token, posting.trim(), company.trim(), locale));
       const picked = decodeSelection(result.encoded);
       if (!picked) throw new AgentError("selection_rejected");
-      setSelection(picked);
-      setTarget(picked.target === "general" ? null : picked.target);
-      setSource("ai");
-      setCover(result.coverMessage ? { message: result.coverMessage, signature: result.signature } : null);
+      setPick({ selection: picked, cover: result.coverMessage ? { message: result.coverMessage, signature: result.signature } : null, from: "ai" });
       setJdState("done");
     } catch (error) {
       setJdState(error instanceof AgentError && (error.code === "agent_offline" || error.code === "budget" || error.code === "offline") ? "offline" : "failed");
     }
   }
 
-  async function downloadTailored() {
+  async function downloadPrepared() {
     touch();
     setDownload("building");
     try {
-      const { output, selection: fitted } = await renderCvPdf(selection, footerFor);
-      saveBlob(output, cvFileName(company.trim()));
-      setSelection(fitted);
+      let pdf = ready;
+      if (!pdf) {
+        const built = await renderCvPdf(selection, footer);
+        pdf = { key, blob: built.output, selection: built.selection };
+      }
+      setPrepared(pdf);
+      saveBlob(pdf.blob, cvFileName(company.trim()));
       setDownload("done");
-      completed.current = true;
-      setOffer(false);
-      writeDraft({ target: null, description: "", company: "" });
+      finish();
       if (agentConfigured && slotRef.current) {
-        const payload = { selection: encodeSelection(fitted), company: company.trim(), ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
+        const cover = pick?.cover;
+        const payload = { selection: encodeSelection(pdf.selection), company: company.trim(), ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
         void withSession(slotRef.current, locale, (token) => notifyCvDownload(token, payload)).catch(() => undefined);
       }
     } catch {
@@ -273,7 +278,8 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     if (!slotRef.current) return;
     setEmailState("confirming");
     try {
-      const payload = { email: email.trim(), code: code.trim(), selection: encodeSelection(selection), company: company.trim(), ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
+      const cover = pick?.cover;
+      const payload = { email: email.trim(), code: code.trim(), selection: encodeSelection(shown), company: company.trim(), ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
       await withSession(slotRef.current, locale, (token) => confirmCvCode(token, payload));
       setEmailState("done");
       completed.current = true;
@@ -283,21 +289,29 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     }
   }
 
-  const jdMessage = jdState === "working" ? copy.jdWorking : jdState === "offline" ? copy.jdOffline : jdState === "failed" ? copy.jdFailed : "";
+  const jdMessage = { idle: "", working: copy.jdWorking, done: copy.jdDone, offline: copy.jdOffline, failed: copy.jdFailed }[jdState];
+  const name = company.trim();
 
   return (
     <section ref={sectionRef} id="cv" className="section cv-section" aria-label={copy.title}>
       <div className="page-shell">
         <SectionHeader title={copy.title} description={copy.description} />
         <div className="cv-layout">
-          <div className="cv-controls">
-            <div className="cv-general">
-              <a className="button cv-button--primary cv-general__link" href={GENERAL_CV} download>
-                <ArrowDownToLine size={18} aria-hidden="true" /> {copy.general}
+          <div className="cv-get">
+            {personal ? (
+              <button type="button" className="button cv-button--primary cv-download" onClick={downloadPrepared} disabled={download === "building"}>
+                <ArrowDownToLine size={20} aria-hidden="true" /> {download === "building" ? copy.building : name ? copy.downloadFor(name) : copy.download}
+              </button>
+            ) : (
+              <a className="button cv-button--primary cv-download" href={GENERAL_CV} download onClick={() => { finish(); setDownload("done"); }}>
+                <ArrowDownToLine size={20} aria-hidden="true" /> {copy.download}
               </a>
-              <p>{copy.generalNote}</p>
-            </div>
-
+            )}
+            <p className="cv-get__note">{copy.downloadNote}</p>
+            {download === "done" ? <p className="cv-note" role="status">{copy.downloaded}</p> : null}
+            {download === "failed" ? (
+              <p className="cv-note cv-note--warn" role="status">{copy.downloadFailed} <a href={GENERAL_CV} download>{copy.generalInstead}</a></p>
+            ) : null}
             {offer ? (
               <div className="cv-offer" role="status">
                 <p>{copy.hesitation}</p>
@@ -306,43 +320,59 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
               </div>
             ) : null}
             {restored ? <p className="cv-note" role="status">{copy.restored}</p> : null}
+          </div>
 
-            <h3>{copy.tailorTitle}</h3>
-            <fieldset className="cv-fields">
-              <legend>{copy.fieldLegend}</legend>
+          <div className="cv-for">
+            <h3>{copy.forTitle}</h3>
+            <p className="cv-for__hint">{copy.forHint}</p>
+            <div className="cv-for__fields">
+              <div className="cv-field">
+                <label htmlFor={`${id}-company`}>{copy.company}</label>
+                <input id={`${id}-company`} className="cv-input" value={company} onChange={(event) => { touch(); setCompany(event.target.value); setDownload("idle"); }} placeholder={copy.companyPlaceholder} maxLength={60} autoComplete="organization" dir="auto" />
+              </div>
+              <div className="cv-field">
+                <label htmlFor={`${id}-role`}>{copy.role}</label>
+                <input id={`${id}-role`} className="cv-input" value={role} onChange={(event) => changeWhatFor(() => setRole(event.target.value))} placeholder={copy.rolePlaceholder} maxLength={80} autoComplete="organization-title" dir="auto" />
+              </div>
+            </div>
+            <div className="cv-suggest" role="group" aria-labelledby={`${id}-suggest`}>
+              <span id={`${id}-suggest`}>{copy.suggestions}</span>
               {CV_FIELDS.map((field) => (
-                <label key={field} className={`cv-chip${target === field && source === "field" ? " is-active" : ""}`}>
-                  <input type="radio" name={`${id}-field`} value={field} checked={target === field && source === "field"} onChange={() => pickField(field)} />
+                <button key={field} type="button" aria-pressed={role === copy.fields[field]} onClick={() => changeWhatFor(() => setRole(copy.fields[field]))}>
                   {copy.fields[field]}
-                </label>
+                </button>
               ))}
-            </fieldset>
-
-            <form className="cv-jd" onSubmit={tailorToDescription}>
-              <label htmlFor={`${id}-jd`}>{copy.jdLabel}</label>
-              <textarea id={`${id}-jd`} value={description} onChange={(event) => { touch(); setDescription(event.target.value); }} placeholder={copy.jdPlaceholder} rows={5} maxLength={8000} dir="auto" />
-              <button type="submit" className="button cv-button--secondary" disabled={description.trim().length < 40 || jdState === "working"}>{jdState === "working" ? copy.jdWorking : copy.jdButton}</button>
-              {jdMessage ? <p className="cv-note" role="status">{jdMessage}</p> : null}
-            </form>
-
-            <label className="cv-company" htmlFor={`${id}-company`}>{copy.company}</label>
-            <input id={`${id}-company`} className="cv-input" value={company} onChange={(event) => { touch(); setCompany(event.target.value); }} placeholder={copy.companyPlaceholder} maxLength={60} dir="auto" />
-
-            {cover ? (
+            </div>
+            <details className="cv-posting" open={postingOpen} onToggle={(event) => setPostingOpen(event.currentTarget.open)}>
+              <summary>{copy.postingTitle}</summary>
+              <div className="cv-posting__body">
+                <label htmlFor={`${id}-posting`} className="sr-only">{copy.postingLabel}</label>
+                <textarea id={`${id}-posting`} value={posting} onChange={(event) => changeWhatFor(() => setPosting(event.target.value))} placeholder={copy.postingPlaceholder} rows={5} maxLength={8000} dir="auto" />
+                {aiLive ? (
+                  <button type="button" className="button cv-button--secondary" onClick={matchWithAi} disabled={!hasPosting || jdState === "working"}>
+                    {jdState === "working" ? copy.jdWorking : copy.postingAi}
+                  </button>
+                ) : null}
+                {jdMessage ? <p className="cv-note" role="status">{jdMessage}</p> : null}
+              </div>
+            </details>
+            {pick?.cover ? (
               <div className="cv-cover">
                 <p className="cv-cover__title">{copy.cover}</p>
-                <p lang="en" dir="ltr">{cover.message}</p>
+                <p lang="en" dir="ltr">{pick.cover.message}</p>
                 <p className="cv-note">{copy.coverHint}</p>
               </div>
             ) : null}
+          </div>
 
-            <button type="button" className="button cv-button--primary cv-download" onClick={downloadTailored} disabled={download === "building"}>
-              <ArrowDownToLine size={18} aria-hidden="true" /> {download === "building" ? copy.building : copy.download}
-            </button>
-            {download === "done" ? <p className="cv-note" role="status">{copy.downloaded}</p> : null}
+          <div className="cv-preview">
+            <CvPaper cv={resolved} footer={footer} label={copy.previewAria} />
+            <p className="cv-preview__caption">{copy.previewCaption}</p>
+          </div>
 
-            <div className="cv-email">
-              <p className="cv-email__title">{copy.emailTitle}</p>
+          <div className="cv-extra">
+            <details className="cv-email">
+              <summary>{copy.emailTitle}</summary>
               {emailState === "sent" || emailState === "confirming" || emailState === "bad" || emailState === "done" ? (
                 <form onSubmit={confirmCode}>
                   <p className="cv-note" role="status">{copy.codeSent(email.trim())}{devCode ? ` (dev: ${devCode})` : ""}</p>
@@ -365,14 +395,9 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
                   {emailState === "failed" ? <p className="cv-note cv-note--warn" role="status">{copy.emailFailed}</p> : null}
                 </form>
               )}
-              <div ref={slotRef} className="agent-turnstile" />
-            </div>
+            </details>
+            <div ref={slotRef} className="agent-turnstile" />
             <p className="cv-privacy">{copy.privacy}</p>
-          </div>
-
-          <div className="cv-preview">
-            <p className="cv-preview__title">{copy.previewTitle}</p>
-            <CvPreview cv={resolved} footer={footerFor} label={copy.previewAria} />
           </div>
         </div>
       </div>

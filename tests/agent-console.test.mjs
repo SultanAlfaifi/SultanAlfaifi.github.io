@@ -90,6 +90,17 @@ test("the CV hesitation offer is inline, dismissible, once per session, and neve
   assert.doesNotMatch(cvSection, /DRAFT_KEY[^\n]*email/, "the email address is never stored in the draft");
 });
 
+test("the CV is one download first; who it's for is optional and never framed as tailoring", async () => {
+  const { getContent } = await import("../data/i18n.ts");
+  assert.ok(cvSection.indexOf("cv-download") < cvSection.indexOf("cv-for"), "the download comes before the optional fields");
+  for (const locale of ["en", "ar"]) {
+    const words = JSON.stringify(getContent(locale).ui.cv);
+    assert.doesNotMatch(words, /tailor|فصّل|فصل/i, locale);
+  }
+  // The preview shows the lines the prepared PDF kept, so it matches the download.
+  assert.match(cvSection, /const shown = ready\?\.selection \?\? selection;/);
+});
+
 test("the email field is optional and last, after the download", () => {
   assert.ok(cvSection.indexOf("cv-download") < cvSection.indexOf("cv-email"));
   assert.doesNotMatch(cvSection, /type="email"[^>]*required/);

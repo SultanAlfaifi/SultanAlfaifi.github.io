@@ -95,12 +95,33 @@ function keywordHits(text: string, keywords: string[]) {
   return keywords.filter((keyword) => haystack.includes(` ${keyword} `) || haystack.includes(` ${keyword}s `));
 }
 
-// The no-AI path for a pasted job description: infer the closest field, then lift the projects and
-// bullets whose wording overlaps the description.
-export function selectForText(description: string): { selection: CvSelection; matched: string[] } {
+// Arabic words a visitor might type for a role. Matched after stripping diacritics, so "تعلّم" and
+// "تعلم" both count. English goes through TARGET_KEYWORDS.
+const ARABIC_ROLE_WORDS: Record<Exclude<CvTarget, "general">, string[]> = {
+  backend: ["باك", "خلفي", "خلفية", "خوادم", "قواعد البيانات"],
+  "ai-agents": ["وكلاء", "وكيل", "ذكاء", "نماذج اللغة"],
+  "full-stack": ["فل ستاك", "فول ستاك", "متكامل", "فرونت", "واجهات", "الويب"],
+  ml: ["تعلم الآلة", "التعلم العميق", "رؤية حاسوبية", "علم البيانات"],
+  teaching: ["تدريب", "مدرب", "تعليم", "مجتمع", "ورش"]
+};
+
+// The field a typed role points to, in English or Arabic; "general" when nothing matches.
+export function roleTarget(role: string): CvTarget {
+  const plain = role.normalize("NFC").replace(/\p{Mn}/gu, "");
+  const hits = (Object.keys(TARGET_KEYWORDS) as Exclude<CvTarget, "general">[]).map((target) => ({
+    target,
+    count: keywordHits(plain, TARGET_KEYWORDS[target]).length + ARABIC_ROLE_WORDS[target].filter((word) => plain.includes(word)).length
+  }));
+  const best = hits.sort((a, b) => b.count - a.count)[0];
+  return best.count ? best.target : "general";
+}
+
+// The no-AI path for a pasted job description: infer the closest field (unless the visitor named the
+// role), then lift the projects and bullets whose wording overlaps the description.
+export function selectForText(description: string, preferred?: CvTarget): { selection: CvSelection; matched: string[] } {
   const hits = Object.entries(TARGET_KEYWORDS).map(([target, keywords]) => ({ target: target as CvTarget, found: keywordHits(description, keywords) }));
-  const best = hits.sort((a, b) => b.found.length - a.found.length)[0];
-  const target: CvTarget = best && best.found.length ? best.target : "general";
+  const best = [...hits].sort((a, b) => b.found.length - a.found.length)[0];
+  const target: CvTarget = preferred && preferred !== "general" ? preferred : best && best.found.length ? best.target : "general";
   const matched = [...new Set(hits.flatMap((hit) => hit.found))];
   const base = selectForTarget(target);
   if (!matched.length) return { selection: base, matched };

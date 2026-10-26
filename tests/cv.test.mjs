@@ -6,9 +6,9 @@ const library = await import("../data/cv.ts");
 const { getContent } = await import("../data/i18n.ts");
 const { buildAnchors } = await import("../lib/agent/anchors.ts");
 const { buildCvDocument } = await import("../lib/cv/document.ts");
-const { fitToOnePage } = await import("../lib/cv/fit.ts");
+const { fitToOnePage, preparedFooter } = await import("../lib/cv/fit.ts");
 const { renderCvBuffer } = await import("../lib/cv/node-render.ts");
-const { cvLibrary, decodeSelection, encodeSelection, resolveSelection, selectForTarget, selectForText, validateSelection } = await import("../lib/cv/select.ts");
+const { cvLibrary, decodeSelection, encodeSelection, resolveSelection, roleTarget, selectForTarget, selectForText, validateSelection } = await import("../lib/cv/select.ts");
 
 const siteText = ["../data/portfolio.ts", "../data/ui.ts"].map((file) => readFileSync(new URL(file, import.meta.url), "utf8")).join("\n");
 const allLines = () => [
@@ -125,4 +125,42 @@ test("a pasted job description picks the closest field without any AI", () => {
   assert.equal(selection.target, "backend");
   assert.ok(matched.includes("laravel"));
   assert.equal(selectForText("We sell flowers.").selection.target, "general");
+});
+
+test("a typed role points to its field, in English or Arabic, with or without diacritics", () => {
+  assert.equal(roleTarget("Senior Backend Engineer (Laravel)"), "backend");
+  assert.equal(roleTarget("AI agents & LLMs"), "ai-agents");
+  assert.equal(roleTarget("مطوّر باك اند"), "backend");
+  assert.equal(roleTarget("مهندس تعلّم الآلة"), "ml");
+  assert.equal(roleTarget("مهندس تعلم الآلة"), "ml");
+  assert.equal(roleTarget("وكلاء الذكاء الاصطناعي"), "ai-agents");
+  assert.equal(roleTarget("التدريب والمجتمع"), "teaching");
+  assert.equal(roleTarget("Product owner"), "general");
+  // Every suggestion chip on both pages maps back to its own field.
+  for (const locale of ["en", "ar"]) {
+    for (const [field, label] of Object.entries(getContent(locale).ui.cv.fields)) assert.equal(roleTarget(label), field, `${locale}: ${label}`);
+  }
+});
+
+test("a role the visitor names wins over the posting's keywords", () => {
+  const posting = "We need someone strong in React, TypeScript, HTML and CSS to build web UI.";
+  assert.equal(selectForText(posting).selection.target, "full-stack");
+  assert.equal(selectForText(posting, "backend").selection.target, "backend");
+});
+
+test("the footer names the company only when the PDF can print it", () => {
+  assert.equal(preparedFooter("26 Oct 2026", "Salla", "backend"), "Prepared for Salla on 26 Oct 2026 from verified data at sultalfaifi.com");
+  // The PDF font has no Arabic shaping, so an Arabic name falls back to the field, then to the general line.
+  assert.equal(preparedFooter("26 Oct 2026", "سلة", "backend"), "Prepared for back-end roles on 26 Oct 2026 from verified data at sultalfaifi.com");
+  assert.equal(preparedFooter("26 Oct 2026", "سلة", "general"), "Generated on 26 Oct 2026 from verified data at sultalfaifi.com");
+});
+
+test("the on-page preview uses the PDF's own sizes and margins", () => {
+  const doc = readFileSync(new URL("../lib/cv/document.ts", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../app/cv.css", import.meta.url), "utf8");
+  const [left, top, , bottom] = doc.match(/pageMargins: \[(\d+), (\d+), (\d+), (\d+)\]/).slice(1).map(Number);
+  assert.ok(css.includes(`padding: calc(${top} * var(--pt)) calc(${left} * var(--pt)) calc(${bottom} * var(--pt))`), "page margins");
+  const sizes = [...doc.matchAll(/(name|headline|contact|heading|entry): \{ fontSize: ([\d.]+)/g)];
+  assert.equal(sizes.length, 5);
+  for (const [, style, size] of sizes) assert.ok(css.includes(`font-size: calc(${size} * var(--pt))`), `${style} is ${size}pt in the PDF`);
 });
