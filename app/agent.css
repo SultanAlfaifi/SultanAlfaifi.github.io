@@ -132,7 +132,7 @@ html[data-assistant="open"] .portfolio-v3 .runtime-section { isolation: auto; }
   width: min(580px, calc(100vw - 24px));
   grid-template-rows: minmax(0, 1fr) auto;
   padding: 10px 10px 14px;
-  border: 1px solid rgb(255 255 255 / 10%); border-radius: 22px;
+  border: 1px solid rgb(255 255 255 / 10%); border-radius: 24px;
   background: var(--ink); color: var(--paper);
   box-shadow: 0 30px 120px rgb(0 0 0 / 50%);
   --assistant-from: 28px;

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getContent, type Locale } from "@/data/i18n";
+import { MetaParts } from "./meta-parts";
 
 // On wide screens with scroll-driven animation support, the track is pinned and slides sideways as you scroll.
 // Everywhere else it is a native horizontal scroller with snap points.
@@ -20,7 +21,7 @@ export function JourneyTimeline({ locale = "en" }: { locale?: Locale }) {
                 <time>{stop.date}</time>
                 <span className="timeline__kind">{ui.timeline.kinds[stop.kind] ?? stop.kind}</span>
                 <h3>{stop.title}</h3>
-                <p>{stop.detail}</p>
+                <p><MetaParts text={stop.detail} /></p>
                 <span className="timeline__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               </li>
             ))}

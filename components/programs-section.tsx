@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
+import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -49,7 +50,7 @@ export function ProgramsSection({ locale = "en" }: { locale?: Locale }) {
               <div className="program-card__story">
                 <div>
                   <span>{ui.programs.learned}</span>
-                  <p>{program.focus.join(" · ")}</p>
+                  <p><MetaParts text={program.focus.join(" · ")} /></p>
                 </div>
                 <div>
                   <span>{ui.programs.applied}</span>

@@ -66,6 +66,9 @@ html[data-welcome="show"] .welcome,
 .welcome__enter { min-height: 54px; padding-inline: 30px; border: 0; background: var(--mint); color: var(--ink); font-size: 1rem; font-weight: 700; }
 .welcome__enter:hover { background: #a8f0e3; }
 
+/* The hero waits behind the welcome screen and arrives as it fades. */
+html[data-welcome="show"] :is(.identity-hero__copy, .intro-film) { animation-play-state: paused; }
+
 /* Hero: the visitor's choice swaps a call to action without a flash, because it's set before paint. */
 .identity-hero__actions [data-visitor-only] { display: none; }
 html[data-visitor="hiring"] .identity-hero__actions [data-visitor-hide="hiring"],

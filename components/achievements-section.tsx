@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
+import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -35,7 +36,7 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
                     <span className="sr-only">{`${metric.prefix ?? ""}${formatted}${metric.suffix ?? ""}`}</span>
                     <span aria-hidden="true" dir="ltr">{metric.prefix}<span data-count-value>{formatted}</span>{metric.suffix}</span>
                   </strong>
-                  <small>{metric.source}</small>
+                  <small><MetaParts text={metric.source} /></small>
                 </dd>
               </Reveal>
             );
@@ -62,7 +63,7 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
                   ) : null}
                 </div>
                 <h3>{achievement.title}</h3>
-                <p className="proof-card__issuer">{achievement.issuer}{achievement.date ? ` · ${achievement.date}` : ""}</p>
+                <p className="proof-card__issuer"><MetaParts text={[achievement.issuer, achievement.date].filter(Boolean).join(" · ")} /></p>
                 <p>{achievement.description}</p>
                 {achievement.verificationUrl ? (
                   <a href={achievement.verificationUrl} target="_blank" rel="noreferrer noopener">

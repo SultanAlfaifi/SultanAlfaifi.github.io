@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BriefcaseBusiness, Compass, Handshake, type LucideIcon } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { markWelcome, rememberLanguage, saveVisitor, WELCOME_EVENT, type Visitor, type VisitorDetail } from "@/lib/visitor";
+import { motionAllowed } from "./motion-preference";
 
 const OPTIONS: { visitor: Exclude<Visitor, "skip">; Icon: LucideIcon }[] = [
   { visitor: "hiring", Icon: BriefcaseBusiness },
@@ -40,10 +41,17 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     return () => window.removeEventListener(WELCOME_EVENT, reopen);
   }, []);
 
+  // The page is arranged and the hero starts arriving at once; the screen fades out over it.
   function finish(detail: VisitorDetail) {
-    dialogRef.current?.close();
-    markWelcome(false);
+    const dialog = dialogRef.current;
     saveVisitor(detail);
+    markWelcome(false);
+    if (!dialog?.open) return;
+    const close = () => dialog.close();
+    if (!motionAllowed() || typeof dialog.animate !== "function") return close();
+    dialog.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(1.03)" }], { duration: 420, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" }).finished.then(close, close);
+    // A tab in the background may not run the animation; the screen still goes.
+    window.setTimeout(close, 700);
   }
 
   function choose(visitor: Exclude<Visitor, "skip">) {

@@ -6,6 +6,7 @@ import { PaletteTrigger } from "./command-palette";
 import { DecodeText } from "./decode-text";
 import { HeroMedia } from "./hero-media";
 import { LiveClock } from "./live-clock";
+import { MetaParts } from "./meta-parts";
 import { SocialLinks } from "./social-links";
 import { VisitorNote } from "./visitor-note";
 
@@ -63,10 +64,10 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
       <div className="hero-ticker" aria-label={ui.hero.highlights} dir="ltr">
         <div className="hero-ticker__track">
           <ul className="hero-ticker__group">
-            {tickerItems.map((item) => <li key={item} dir="auto">{item}</li>)}
+            {tickerItems.map((item) => <li key={item} dir="auto"><MetaParts text={item} /></li>)}
           </ul>
           <ul className="hero-ticker__group" aria-hidden="true">
-            {tickerItems.map((item) => <li key={item} dir="auto">{item}</li>)}
+            {tickerItems.map((item) => <li key={item} dir="auto"><MetaParts text={item} /></li>)}
           </ul>
         </div>
       </div>
