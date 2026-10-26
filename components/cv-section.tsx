@@ -9,6 +9,7 @@ import { renderCvPdf, saveBlob } from "@/lib/cv/browser-render";
 import { cvFileName } from "@/lib/cv/document";
 import { cvDate, generalFooter, preparedFooter } from "@/lib/cv/fit";
 import { decodeSelection, encodeSelection, resolveSelection, roleTarget, selectForTarget, selectForText, type CvSelection } from "@/lib/cv/select";
+import { VISITOR_EVENT, type VisitorDetail } from "@/lib/visitor";
 import { CvPaper } from "./cv-paper";
 import { SectionHeader } from "./section-header";
 
@@ -152,6 +153,20 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   useEffect(() => {
     if (started.current) writeDraft({ company, role, posting });
   }, [company, role, posting]);
+
+  // A hiring visitor who named their company or role on the welcome screen finds the CV ready for it.
+  useEffect(() => {
+    const prefill = (event: Event) => {
+      const { company: name, role: title } = (event as CustomEvent<VisitorDetail>).detail;
+      if (!name && !title) return;
+      started.current = true;
+      setCompany((name ?? "").slice(0, 60));
+      setRole((title ?? "").slice(0, 80));
+      setPick(null);
+    };
+    window.addEventListener(VISITOR_EVENT, prefill);
+    return () => window.removeEventListener(VISITOR_EVENT, prefill);
+  }, []);
 
   // Prepares the visitor's PDF while they look at the preview; the preview then shows exactly the lines
   // that fit on the page.

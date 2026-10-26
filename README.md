@@ -60,6 +60,13 @@ rules are managed from one typed configuration file.
   live 3D preview. The AI may only pick and order library IDs; the Worker rejects anything
   else. `npm run cv` also writes `public/cv/fitted.json`, so the preview shows exactly the
   lines that fit on the page.
+- **Welcome and language:** a first visit to `/` from a device set to Arabic opens `/ar/`,
+  unless the visitor ever picked a language. A first visit to either home page asks why they
+  came (hiring, working together, or browsing; skippable). The answer reorders the sections,
+  swaps the hero's calls to action and the assistant's suggested questions, and can hand the
+  CV a company and a role. The `<head>` boot script applies a returning visitor's choice before
+  first paint. Crawlers and links to a specific place never see the welcome; `/?welcome`
+  always shows it.
   - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
     a variable-weight footer wordmark that swells near the cursor.
   - A Konami-code easter egg, plus a Motion toggle that, like

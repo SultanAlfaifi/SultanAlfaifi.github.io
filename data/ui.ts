@@ -8,13 +8,15 @@ const en = {
     mobile: "Mobile navigation",
     open: "Open navigation menu",
     close: "Close navigation menu",
-    language: { short: "ع", href: "/ar/", label: "اقرأ بالعربية", hrefLang: "ar" }
+    language: { short: "عربي", href: "/ar/", label: "اقرأ بالعربية", hrefLang: "ar" }
   },
   motion: { pause: "Pause page motion", resume: "Resume page motion", pauseTitle: "Pause motion", resumeTitle: "Resume motion" },
   hero: {
     highlight: "AI agents",
     explore: "See my work",
+    getCv: "Get my CV",
     talk: "Say hi",
+    talkIdea: "Tell me your idea",
     paletteHint: "to jump anywhere",
     filmCaption: "Hi, I’m Sultan.",
     clockCity: "Makkah",
@@ -112,6 +114,25 @@ const en = {
     aria: "Timeline since 2023, scroll sideways",
     cursor: "Scroll",
     kinds: { Education: "Education", Recognition: "Recognition", Learning: "Course", Product: "Product", Career: "Work", "Open source": "Public repo", Hackathon: "Hackathon", Now: "Focus" } as Record<string, string>
+  },
+  welcome: {
+    brand: "Sultan Alfaifi",
+    hello: "Welcome",
+    title: "What brings you here?",
+    lead: "Pick one and the site arranges itself around what matters to you. You can change it anytime.",
+    options: {
+      hiring: { title: "I'm hiring", detail: "Looking for an engineer for my team. Show me the experience and the CV first." },
+      collaborate: { title: "I want to work together", detail: "I have a product, an idea, or a program, and want to see what Sultan can build." },
+      browse: { title: "Just browsing", detail: "Here to look around the projects, no particular goal." }
+    },
+    skip: "Skip",
+    companyTitle: "Want the CV ready with your company's name?",
+    companyLead: "Optional. Add the company or the role, and the CV further down comes ready for it.",
+    enter: "Enter the site",
+    back: "Back",
+    arranged: { hiring: "Arranged for hiring", collaborate: "Arranged for working together" } as Record<string, string>,
+    change: "Change",
+    personalize: "Arrange the site for you"
   },
   assistant: {
     open: "Ask my AI assistant",
@@ -335,6 +356,11 @@ const en = {
       openDemo: (title: string) => `Open ${title} ↗`,
       highlighted: (label: string) => `Highlighted ${label} on the page`,
       chips: ["Which project should I try first?", "fit AI engineer intern", "I want to email Sultan about a role"],
+      // Suggested questions for visitors who said why they came.
+      chipsFor: {
+        hiring: ["What does Sultan do at Salla?", "fit Back-end engineer, Laravel", "I want to email Sultan about a role"],
+        collaborate: ["Which project should I try first?", "Can Sultan build an AI agent for my product?", "I want to email Sultan about an idea"]
+      } as Record<string, string[]>,
       placeholder: "ask anything, or type help",
       busy: "still answering the last question…",
       chipsAria: "Questions to ask the assistant",
@@ -431,13 +457,15 @@ const ar: UiStrings = {
     mobile: "قائمة الجوال",
     open: "افتح القائمة",
     close: "أغلق القائمة",
-    language: { short: "EN", href: "/", label: "Read in English", hrefLang: "en" }
+    language: { short: "English", href: "/", label: "Read in English", hrefLang: "en" }
   },
   motion: { pause: "أوقف حركة الصفحة", resume: "شغّل حركة الصفحة", pauseTitle: "إيقاف الحركة", resumeTitle: "تشغيل الحركة" },
   hero: {
     highlight: "وكلاء ذكاء اصطناعي",
     explore: "شوف أعمالي",
+    getCv: "خذ سيرتي",
     talk: "راسلني",
+    talkIdea: "كلّمني عن فكرتك",
     paletteHint: "للانتقال إلى أي مكان",
     filmCaption: "هلا، أنا سلطان.",
     clockCity: "مكة",
@@ -535,6 +563,25 @@ const ar: UiStrings = {
     aria: "محطاتي منذ 2023، مرّر أفقيًا",
     cursor: "مرّر",
     kinds: { Education: "دراسة", Recognition: "إنجاز", Learning: "دورة", Product: "منتج", Career: "عمل", "Open source": "مستودع عام", Hackathon: "هاكاثون", Now: "تركيزي" }
+  },
+  welcome: {
+    brand: "سلطان الفيفي",
+    hello: "حيّاك الله",
+    title: "وش يجيبك هنا؟",
+    lead: "اختر وحدة، ويترتّب لك الموقع على اللي يهمك. وتقدر تغيّرها متى ما بغيت.",
+    options: {
+      hiring: { title: "أوظّف", detail: "أدوّر مهندس لفريقي. أبي الخبرة والسيرة أول شي." },
+      collaborate: { title: "أبي أتعاون", detail: "عندي منتج أو فكرة أو برنامج، وأبي أشوف وش يقدر سلطان يبني." },
+      browse: { title: "أتصفح", detail: "جيت أتفرّج على المشاريع، بدون هدف معيّن." }
+    },
+    skip: "تخطي",
+    companyTitle: "تبغى السيرة جاهزة باسم شركتك؟",
+    companyLead: "اختياري. اكتب الشركة أو الوظيفة، وتلقى السيرة تحت جاهزة لها.",
+    enter: "ادخل الموقع",
+    back: "رجوع",
+    arranged: { hiring: "مرتّب لك كمسؤول توظيف", collaborate: "مرتّب لك للتعاون" },
+    change: "غيّر",
+    personalize: "رتّب الموقع لك"
   },
   assistant: {
     open: "اسأل مساعدي الذكي",
@@ -758,6 +805,10 @@ const ar: UiStrings = {
       openDemo: (title: string) => `افتح ${title} ↗`,
       highlighted: (label: string) => `ميّزت ${label} في الصفحة`,
       chips: ["أي مشروع أجرب أول؟", "fit متدرّب هندسة ذكاء اصطناعي", "أبغى أراسل سلطان عن وظيفة"],
+      chipsFor: {
+        hiring: ["وش يسوي سلطان في سلة؟", "fit مطوّر Back-end بـ Laravel", "أبغى أراسل سلطان عن وظيفة"],
+        collaborate: ["أي مشروع أجرب أول؟", "يقدر سلطان يبني وكيل ذكاء اصطناعي لمنتجي؟", "أبغى أراسل سلطان عن فكرة"]
+      },
       placeholder: "اسأل أي شيء، أو اكتب help",
       busy: "لسا أجاوب على السؤال اللي قبل…",
       chipsAria: "أسئلة تقدر تسألها للمساعد",

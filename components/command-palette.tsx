@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { ArrowUpRight, AtSign, Command, CornerDownLeft, FolderGit2, Hash, Sparkles, Terminal, Waves } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { openAssistant } from "@/lib/agent/assistant";
+import { rememberLanguage } from "@/lib/visitor";
 import { motionAllowed, openPalette, PALETTE_EVENT, setMotionEnabled, toast } from "./motion-preference";
 import { unlockSecret } from "./secrets";
 
@@ -109,7 +110,10 @@ export function CommandPalette({ locale = "en" }: { locale?: Locale }) {
         label: copy.language,
         hint: copy.languageHint,
         keywords: "language arabic english عربي لغة",
-        run: () => { window.location.href = ui.nav.language.href; }
+        run: () => {
+          rememberLanguage(ui.nav.language.hrefLang);
+          window.location.href = ui.nav.language.href;
+        }
       },
       ...socialLinks.map((link) => ({
         id: `social-${link.platform}`,
@@ -123,7 +127,7 @@ export function CommandPalette({ locale = "en" }: { locale?: Locale }) {
         }
       }))
     ];
-  }, [isOpen, copy, identity, projects, socialLinks, ui.nav.language.href]);
+  }, [isOpen, copy, identity, projects, socialLinks, ui.nav.language.href, ui.nav.language.hrefLang]);
 
   const results = useMemo(() => items
     .map((item) => ({ item, rank: score(query, `${item.label} ${item.hint ?? ""} ${item.keywords ?? ""}`) }))

@@ -19,12 +19,14 @@ import { JourneyTimeline } from "./journey-timeline";
 import { KineticBand } from "./kinetic-band";
 import { Navbar } from "./navbar";
 import { OrganizationRail } from "./organization-rail";
+import { PersonalOrder } from "./personal-order";
 import { ProgramsSection } from "./programs-section";
 import { ProjectsSection } from "./projects-section";
 import { RecommendationsSection } from "./recommendations-section";
 import { RuntimeSection } from "./runtime-section";
 import { SecretsTracker } from "./secrets-tracker";
 import { SkillsSection } from "./skills-section";
+import { WelcomeScreen } from "./welcome-screen";
 
 export function HomePage({ locale = "en" }: { locale?: Locale }) {
   const { dir, ui } = getContent(locale);
@@ -38,29 +40,39 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
       <Navbar locale={locale} />
       <main id="main-content">
         <Hero locale={locale} />
-        <ProjectsSection locale={locale} />
-        <KineticBand locale={locale} />
-        <AchievementsSection locale={locale} />
-        <AboutSection locale={locale} />
-        <JourneyTimeline locale={locale} />
-        <RuntimeSection locale={locale} />
-        <ExperienceSection locale={locale} />
-        <OrganizationRail locale={locale} />
-        <div className="page-shell deeper-journey">
-          <details>
-            <summary><span>{ui.deeper.title}</span><span>{ui.deeper.subtitle} <span className="deeper-journey__plus" aria-hidden="true">+</span></span></summary>
-            <div className="deeper-journey__content">
-              <SkillsSection locale={locale} />
-              <ProgramsSection locale={locale} />
-              <CommunitySection locale={locale} />
-              <IdeasSection locale={locale} />
-            </div>
-          </details>
-        </div>
-        <RecommendationsSection locale={locale} />
-        <CvSection locale={locale} />
-        <HelpSection locale={locale} />
-        <ContactSection locale={locale} />
+        {/* The usual order; PersonalOrder rearranges it for visitors who said why they came. */}
+        <PersonalOrder
+          sections={[
+            { id: "work", node: <ProjectsSection locale={locale} /> },
+            { id: "band", node: <KineticBand locale={locale} /> },
+            { id: "achievements", node: <AchievementsSection locale={locale} /> },
+            { id: "about", node: <AboutSection locale={locale} /> },
+            { id: "journey", node: <JourneyTimeline locale={locale} /> },
+            { id: "runtime", node: <RuntimeSection locale={locale} /> },
+            { id: "experience", node: <ExperienceSection locale={locale} /> },
+            { id: "organizations", node: <OrganizationRail locale={locale} /> },
+            {
+              id: "deeper",
+              node: (
+                <div className="page-shell deeper-journey">
+                  <details>
+                    <summary><span>{ui.deeper.title}</span><span>{ui.deeper.subtitle} <span className="deeper-journey__plus" aria-hidden="true">+</span></span></summary>
+                    <div className="deeper-journey__content">
+                      <SkillsSection locale={locale} />
+                      <ProgramsSection locale={locale} />
+                      <CommunitySection locale={locale} />
+                      <IdeasSection locale={locale} />
+                    </div>
+                  </details>
+                </div>
+              )
+            },
+            { id: "recommendations", node: <RecommendationsSection locale={locale} /> },
+            { id: "cv", node: <CvSection locale={locale} /> },
+            { id: "help", node: <HelpSection locale={locale} /> },
+            { id: "contact", node: <ContactSection locale={locale} /> }
+          ]}
+        />
       </main>
       <Footer locale={locale} />
       <CommandPalette locale={locale} />
@@ -68,6 +80,7 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
       <InteractionLayer />
       <CursorRing />
       <SecretsTracker locale={locale} />
+      <WelcomeScreen locale={locale} />
     </div>
   );
 }

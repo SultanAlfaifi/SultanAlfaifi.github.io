@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
+import { rememberLanguage } from "@/lib/visitor";
 import { PaletteTrigger } from "./command-palette";
 import { MotionToggle } from "./motion-toggle";
 
@@ -115,7 +116,7 @@ export function Navbar({ locale = "en" }: { locale?: Locale }) {
       </nav>
 
       <div className="nav__tools">
-        <a className="language-switch" href={ui.nav.language.href} hrefLang={ui.nav.language.hrefLang} lang={ui.nav.language.hrefLang} aria-label={ui.nav.language.label} title={ui.nav.language.label}>
+        <a className="language-switch" href={ui.nav.language.href} hrefLang={ui.nav.language.hrefLang} lang={ui.nav.language.hrefLang} aria-label={ui.nav.language.label} title={ui.nav.language.label} onClick={() => rememberLanguage(ui.nav.language.hrefLang)}>
           {ui.nav.language.short}
         </a>
         <MotionToggle locale={locale} />
