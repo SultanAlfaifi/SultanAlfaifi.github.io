@@ -110,18 +110,34 @@ async function request<T>(path: string, body: unknown, init: { token?: string; s
   return (await response.json()) as T;
 }
 
+let pendingSession: Promise<string> | null = null;
+
 export async function ensureSession(slot: HTMLElement, locale: "en" | "ar") {
   if (!agentConfigured) throw new AgentError("not_configured");
   const cached = storedSession();
   if (cached) return cached.token;
-  const token = await turnstileToken(slot, locale, "session");
-  session = await request<{ token: string; expiresAt: number }>("/session", { turnstileToken: token });
-  try {
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch {
-    // See storedSession.
-  }
-  return session.token;
+  // A question asked while prepareSession is still running waits for that same session.
+  pendingSession ??= (async () => {
+    const token = await turnstileToken(slot, locale, "session");
+    session = await request<{ token: string; expiresAt: number }>("/session", { turnstileToken: token });
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    } catch {
+      // See storedSession.
+    }
+    return session.token;
+  })().finally(() => {
+    pendingSession = null;
+  });
+  return pendingSession;
+}
+
+// The human check and the session take a few round trips. Starting them when the visitor opens the
+// assistant or focuses the input means the first question goes straight to the model. Failures are
+// ignored here: the question runs ensureSession again and reports them.
+export function prepareSession(slot: HTMLElement, locale: "en" | "ar") {
+  if (!agentConfigured || storedSession()) return;
+  ensureSession(slot, locale).catch(() => undefined);
 }
 
 export function dropSession() {

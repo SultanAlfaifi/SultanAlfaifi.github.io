@@ -1,10 +1,11 @@
 /* ---------- Agent console: answers, trace, and cards ---------- */
-.terminal-shell { display: grid; gap: 12px; min-width: 0; }
-.terminal-shell .terminal__log { height: clamp(330px, 48vh, 460px); }
+.terminal-slot, .terminal-shell { min-width: 0; }
+.terminal-shell { display: grid; gap: 12px; }
+.terminal-shell .terminal__log { height: clamp(360px, 54vh, 540px); overscroll-behavior: contain; }
 .terminal__step { color: #8fa39b; }
-.terminal__line--answer { margin-top: 6px; color: var(--paper); font-family: var(--font-arabic), sans-serif; font-size: 0.92rem; line-height: 1.7; }
+.terminal__line--answer { margin-top: 6px; color: var(--paper); font-family: var(--font-arabic), sans-serif; font-size: 1.02rem; line-height: 1.8; }
 .terminal__line--answer a { color: var(--mint); }
-.terminal__live--agent { color: var(--mint); text-transform: lowercase; }
+.terminal__live--agent { color: var(--mint); }
 .terminal__card { margin: 8px 0; }
 .terminal__action {
   display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px;
@@ -15,7 +16,7 @@
 .terminal__chips--agent { padding-top: 0; font-family: var(--font-arabic), sans-serif; }
 .terminal__chips--agent button { border-color: rgb(125 226 209 / 40%); }
 .terminal__chips button:disabled { opacity: 0.55; cursor: progress; }
-.terminal__privacy { margin: 0; color: #c5cfcb; font-family: var(--font-arabic), sans-serif; font-size: 0.8rem; line-height: 1.6; }
+.terminal__privacy { margin: 0; color: #c5cfcb; font-family: var(--font-arabic), sans-serif; font-size: 0.84rem; line-height: 1.6; }
 .agent-turnstile:empty { display: none; }
 .agent-turnstile { padding: 8px 20px 0; }
 
@@ -93,5 +94,92 @@
 .evals-result__trace { color: var(--muted); font-size: 0.85rem; }
 .evals-result__meta { color: var(--muted); font-size: 0.8rem; }
 .evals-result summary { cursor: pointer; }
-.terminal__privacy a { color: var(--mint); text-underline-offset: 3px; }
+.terminal__privacy a { color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
 .evals-result__review { margin: 0 0 8px; padding: 8px 12px; border-inline-start: 3px solid var(--line); background: var(--paper); font-size: 0.9rem; line-height: 1.6; }
+
+/* ---------- AI assistant: how visitors find it, and the larger panel ---------- */
+.terminal__input .terminal__prompt { align-self: flex-end; line-height: 40px; }
+[dir="rtl"] .terminal__prompt { display: inline-block; transform: scaleX(-1); }
+.terminal__tag { color: #8fa39b; }
+/* On the Arabic page every line lines up on the right, including the ones written in English. */
+[dir="rtl"] .terminal__line[dir="ltr"] { text-align: right; }
+.terminal__live svg { flex: none; }
+.terminal__live--agent::before { display: none; }
+.terminal__bar .terminal__dock { display: inline-grid; place-items: center; width: 32px; padding: 0; }
+.terminal__send {
+  flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px;
+  border: 0; border-radius: 50%; background: var(--mint); color: var(--ink); cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms var(--ease-arrive);
+}
+.terminal__send:hover:not(:disabled) { transform: translateY(-2px); }
+.terminal__send:disabled { background: rgb(255 255 255 / 10%); color: #8a9c95; cursor: default; }
+
+.terminal-placeholder {
+  display: grid; place-content: center; justify-items: center; gap: 14px; padding: 32px;
+  border: 1px dashed rgb(125 226 209 / 40%); border-radius: 18px; color: #c5cfcb; text-align: center;
+}
+.terminal-placeholder p { margin: 0; }
+.terminal-placeholder button {
+  min-height: 44px; padding: 0 18px; border: 1px solid var(--mint); border-radius: 999px;
+  background: transparent; color: var(--mint); font: inherit; cursor: pointer;
+}
+.terminal-placeholder button:hover { background: var(--mint); color: var(--ink); }
+
+/* The section isolates its noise layer; while the panel is open it must stack above the nav instead. */
+html[data-assistant="open"] .portfolio-v3 .runtime-section { isolation: auto; }
+.terminal-shell--docked {
+  position: fixed; z-index: 135; inset-block: 12px; inset-inline-end: 12px;
+  width: min(580px, calc(100vw - 24px));
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 10px 10px 14px;
+  border: 1px solid rgb(255 255 255 / 10%); border-radius: 22px;
+  background: var(--ink); color: var(--paper);
+  box-shadow: 0 30px 120px rgb(0 0 0 / 50%);
+  --assistant-from: 28px;
+}
+[dir="rtl"] .terminal-shell--docked { --assistant-from: -28px; }
+.terminal-shell--docked .terminal { display: flex; flex-direction: column; min-height: 0; box-shadow: none; }
+.terminal-shell--docked .terminal__log { flex: 1; height: auto; min-height: 0; }
+.terminal-shell--docked .terminal__privacy { padding-inline: 8px; }
+
+.assistant-cta {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px;
+  border: 1px solid rgb(125 226 209 / 60%); border-radius: 999px;
+  background: rgb(125 226 209 / 10%); color: var(--paper);
+  font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.assistant-cta svg { color: var(--mint); transition: color 200ms ease; }
+.assistant-cta:hover { border-color: var(--mint); background: var(--mint); color: var(--ink); }
+.assistant-cta:hover svg { color: var(--ink); }
+
+.assistant-launcher {
+  position: fixed; z-index: 125; inset-block-end: 20px; inset-inline-end: 20px;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding-inline: 16px 20px;
+  border: 1px solid rgb(125 226 209 / 55%); border-radius: 999px;
+  background: var(--ink); color: var(--paper);
+  font: inherit; font-family: var(--font-arabic), sans-serif; font-size: 0.95rem; font-weight: 600;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 30%), 0 0 0 6px rgb(125 226 209 / 10%);
+  cursor: pointer;
+  transition: opacity 220ms ease, transform 260ms var(--ease-arrive), visibility 220ms, background-color 200ms ease, color 200ms ease;
+}
+.assistant-launcher svg { color: var(--mint); transition: color 200ms ease; }
+.assistant-launcher:hover { background: var(--mint); color: var(--ink); }
+.assistant-launcher:hover svg { color: var(--ink); }
+.assistant-launcher[data-hidden], html[data-assistant="open"] .assistant-launcher { visibility: hidden; opacity: 0; transform: translateY(16px); pointer-events: none; }
+.assistant-launcher__short { display: none; }
+
+@media (max-width: 760px) {
+  .terminal-shell--docked { inset: 0; width: auto; padding: 0 0 12px; border: 0; border-radius: 0; }
+  .terminal-shell--docked .terminal { border-width: 0 0 1px; border-radius: 0; }
+  .terminal-shell--docked .terminal__privacy { padding-inline: 16px; }
+}
+@media (max-width: 560px) {
+  .assistant-launcher { inset-block-end: 14px; inset-inline-end: 14px; min-height: 48px; padding-inline: 14px 16px; font-size: 0.9rem; }
+  .assistant-launcher__long { display: none; }
+  .assistant-launcher__short { display: inline; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .terminal-shell--docked { animation: assistant-in 280ms var(--ease-arrive) both; }
+}
+@keyframes assistant-in { from { opacity: 0; transform: translateX(var(--assistant-from)); } }

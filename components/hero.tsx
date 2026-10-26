@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { AgentField } from "./agent-field";
+import { AssistantButton } from "./assistant-launcher";
 import { PaletteTrigger } from "./command-palette";
 import { DecodeText } from "./decode-text";
 import { HeroMedia } from "./hero-media";
@@ -38,6 +39,7 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
           <p className="identity-hero__summary">{identity.summary}</p>
           <div className="identity-hero__actions">
             <a className="button button--signal" href="#work" data-magnetic>{ui.hero.explore} <ArrowDown size={18} aria-hidden="true" /></a>
+            <AssistantButton locale={locale} />
             <a className="identity-hero__contact" href="#contact" data-magnetic>{ui.hero.talk} <ArrowUpRight size={18} aria-hidden="true" /></a>
             <p className="identity-hero__palette-hint">
               <PaletteTrigger locale={locale} /> <span>{ui.hero.paletteHint}</span>

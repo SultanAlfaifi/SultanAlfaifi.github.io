@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { ArrowUpRight, AtSign, Command, CornerDownLeft, FolderGit2, Hash, Sparkles, Terminal, Waves } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
+import { openAssistant } from "@/lib/agent/assistant";
 import { motionAllowed, openPalette, PALETTE_EVENT, setMotionEnabled, toast } from "./motion-preference";
 import { unlockSecret } from "./secrets";
 
@@ -87,11 +88,8 @@ export function CommandPalette({ locale = "en" }: { locale?: Locale }) {
         group: "Actions",
         label: copy.console,
         hint: copy.consoleHint,
-        keywords: "terminal cli shell run",
-        run: () => {
-          jump("#runtime");
-          window.setTimeout(() => document.getElementById("terminal-input")?.focus({ preventScroll: true }), 450);
-        }
+        keywords: "ai assistant agent chat ask terminal cli shell run",
+        run: openAssistant
       },
       {
         id: "motion",
