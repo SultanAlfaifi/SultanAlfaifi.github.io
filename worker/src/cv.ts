@@ -1,6 +1,6 @@
 import { CV_FIELDS } from "../../data/cv";
 import { cvAsText, decodeSelection, encodeSelection, isCvTarget, resolveSelection, validateSelection, type CvSelection } from "../../lib/cv/select";
-import { sendEmail } from "./email";
+import { mailLocale, replyAddress, sendEmail } from "./email";
 import type { Env } from "./env";
 import { CV_CATALOG, KNOWLEDGE } from "./generated/knowledge";
 import { HttpError, cleanLine, cleanText, clientIp, isEmail, readJson } from "./http";
@@ -8,6 +8,7 @@ import { enforceLimits, modelPaused } from "./limits";
 import { completeTurn, type ChatMessage } from "./openrouter";
 import { CV_RULES } from "./prompt";
 import { requireSession, sha256Hex, sign, signingSecret, verifySignature, verifyTurnstile } from "./security";
+import type { Block, Mail } from "./templates";
 
 const SELECT_CV = {
   type: "function",
@@ -118,10 +119,10 @@ export async function handleTailor(request: Request, env: Env) {
   throw new HttpError(422, "selection_rejected");
 }
 
-function cvLink(env: Env, encoded: string, company: string) {
+function cvLink(env: Env, encoded: string, company: string, locale: "en" | "ar" = "en") {
   const params = new URLSearchParams({ cv: encoded });
   if (company) params.set("for", company);
-  return `${env.SITE_URL}/?${params.toString()}#cv`;
+  return `${env.SITE_URL}${locale === "ar" ? "/ar/" : "/"}?${params.toString()}#cv`;
 }
 
 async function readCv(env: Env, body: Record<string, unknown>) {
@@ -135,16 +136,21 @@ async function readCv(env: Env, body: Record<string, unknown>) {
 }
 
 const fieldName = (selection: CvSelection) => (isCvTarget(selection.target) ? selection.target : "general");
+// The field as Sultan reads it in his notifications.
+const FIELD_LABELS: Record<string, string> = { general: "عامة", backend: "Back-end", "ai-agents": "وكلاء الذكاء الاصطناعي", "full-stack": "Full-stack", ml: "تعلّم الآلة", teaching: "التدريب والمجتمع" };
+const fieldLabel = (selection: CvSelection) => FIELD_LABELS[fieldName(selection)] ?? fieldName(selection);
 
-function ownerNote(env: Env, cv: Awaited<ReturnType<typeof readCv>>, visitorEmail?: string) {
-  return [
-    `Company: ${cv.company || "(not given)"}`,
-    `Field: ${fieldName(cv.selection)}`,
-    visitorEmail ? `Visitor email (verified with a code): ${visitorEmail}` : "Visitor email: not given",
-    cv.cover ? `\nCover note the assistant wrote:\n${cv.cover}` : "",
-    `\nOpen the exact PDF they got: ${cvLink(env, cv.encoded, cv.company)}`,
-    `\n---\n${cvAsText(resolveSelection(cv.selection))}`
-  ].filter(Boolean).join("\n");
+// Sultan's note, in Arabic: who, for which company and field, the cover note, and the exact PDF.
+function ownerMail(env: Env, cv: Awaited<ReturnType<typeof readCv>>, heading: string, visitorEmail?: string): Mail {
+  const blocks: Block[] = [
+    { kind: "facts", rows: [["الشركة", cv.company || "لم تُذكر"], ["المجال", fieldLabel(cv.selection)], ["بريد الزائر", visitorEmail ? `${visitorEmail} (تحقّق بالرمز)` : "لم يُذكر"]] }
+  ];
+  if (cv.cover) blocks.push({ kind: "small", text: "كلمة كتبها المساعد الذكي:" }, { kind: "quote", text: cv.cover });
+  blocks.push(
+    { kind: "button", label: "افتح نفس ملف PDF", href: cvLink(env, cv.encoded, cv.company, "ar") },
+    { kind: "pre", title: "السيرة كما وصلته", text: cvAsText(resolveSelection(cv.selection)) }
+  );
+  return { locale: "ar", siteUrl: env.SITE_URL, preheader: `${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`, heading, blocks, footer: "إشعار تلقائي من موقعك." };
 }
 
 // Sultan gets the company, the field, and the CV whenever a tailored CV is downloaded.
@@ -155,12 +161,32 @@ export async function handleNotify(request: Request, env: Env) {
   await enforceLimits(env, "notify", clientIp(request));
   return sendEmail(env, {
     to: KNOWLEDGE.owner.email,
-    subject: `Tailored CV downloaded · ${cv.company || "no company given"} · ${fieldName(cv.selection)}`,
-    text: ownerNote(env, cv)
+    channel: "owner",
+    sender: "sultalfaifi.com",
+    tag: "cv_downloaded",
+    subject: `تحميل سيرة · ${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`,
+    mail: ownerMail(env, cv, "أحد حمّل سيرتك")
   });
 }
 
 const codeHash = async (env: Env, email: string, code: string) => sha256Hex(`${signingSecret(env) ?? ""}|code|${email.toLowerCase()}|${code}`);
+
+const CODE_MAIL = {
+  en: {
+    subject: (code: string) => `${code} is your code for Sultan Alfaifi's CV`,
+    heading: "Your verification code",
+    lead: "Enter this code on the site to get a copy of the CV by email. It expires in 10 minutes.",
+    ignore: "If you didn't ask for this, ignore this email and nothing else will be sent.",
+    footer: "You received this because someone entered this address on sultalfaifi.com."
+  },
+  ar: {
+    subject: (code: string) => `${code} رمزك لسيرة سلطان الفيفي`,
+    heading: "رمز التحقق",
+    lead: "اكتب هذا الرمز في الموقع، وتوصلك نسخة من السيرة على بريدك. ينتهي بعد 10 دقائق.",
+    ignore: "إذا ما طلبته أنت، تجاهل هذه الرسالة ولن يُرسل لك شيء آخر.",
+    footer: "وصلتك هذه الرسالة لأن أحدًا كتب بريدك في موقع sultalfaifi.com."
+  }
+};
 
 export async function handleCodeStart(request: Request, env: Env) {
   const body = await readJson<Record<string, unknown>>(request);
@@ -168,20 +194,44 @@ export async function handleCodeStart(request: Request, env: Env) {
   if (!(await verifyTurnstile(env, body.turnstileToken, ip))) throw new HttpError(403, "turnstile_failed");
   const email = cleanLine(body.email, 254).toLowerCase();
   if (!isEmail(email)) throw new HttpError(400, "invalid_email");
+  const locale = mailLocale(body.locale);
   const emailHash = await sha256Hex(`email|${email}`);
   await enforceLimits(env, "code", ip, emailHash.slice(0, 24));
   const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000).padStart(6, "0");
   await env.DB.prepare("INSERT INTO codes (email_hash, code_hash, expires_at, attempts) VALUES (?1, ?2, ?3, 0) ON CONFLICT (email_hash) DO UPDATE SET code_hash = ?2, expires_at = ?3, attempts = 0")
     .bind(emailHash, await codeHash(env, email, code), Date.now() + 10 * 60_000)
     .run();
+  const copy = CODE_MAIL[locale];
   const result = await sendEmail(env, {
     to: email,
-    subject: `${code} is your code for Sultan Alfaifi's CV`,
-    text: `Your code is ${code}. It expires in 10 minutes.\n\nYou asked for a copy of Sultan Alfaifi's tailored CV on ${env.SITE_URL}. If that wasn't you, ignore this email and nothing else will be sent.`
+    channel: "visitor",
+    sender: locale === "ar" ? "سلطان الفيفي" : "Sultan Alfaifi",
+    tag: "cv_code",
+    subject: copy.subject(code),
+    mail: { locale, siteUrl: env.SITE_URL, preheader: copy.lead, heading: copy.heading, blocks: [{ kind: "text", text: copy.lead }, { kind: "code", code }, { kind: "small", text: copy.ignore }], footer: copy.footer }
   });
   // Local testing only: with no Resend key, hand the code back so the flow can be tried end to end.
   return env.ENVIRONMENT === "development" && result.dryRun ? { ...result, devCode: code } : result;
 }
+
+const COPY_MAIL = {
+  en: {
+    subject: (company: string) => `Sultan Alfaifi's CV${company ? ` for ${company}` : ""}`,
+    heading: "Sultan Alfaifi's CV",
+    lead: (company: string) => `Here's the one-page CV you prepared${company ? ` for ${company}` : ""} on sultalfaifi.com. Every line comes from the verified data on the site.`,
+    button: "Download the PDF",
+    reply: "Reply to this email and it reaches Sultan directly.",
+    footer: "You received this because you asked for a copy on sultalfaifi.com and confirmed it with a code."
+  },
+  ar: {
+    subject: (company: string) => `سيرة سلطان الفيفي${company ? ` لشركة ${company}` : ""}`,
+    heading: "سيرة سلطان الفيفي",
+    lead: (company: string) => `هذه السيرة ذات الصفحة الواحدة التي جهّزتها${company ? ` لشركة ${company}` : ""} في موقع sultalfaifi.com. وكل سطر فيها من بيانات الموقع الموثّقة.`,
+    button: "حمّل ملف PDF",
+    reply: "ردّ على هذه الرسالة ويوصل ردّك لسلطان مباشرة.",
+    footer: "وصلتك هذه الرسالة لأنك طلبت نسخة من sultalfaifi.com وأكّدتها بالرمز."
+  }
+};
 
 export async function handleCodeConfirm(request: Request, env: Env) {
   await requireSession(request, env);
@@ -200,19 +250,36 @@ export async function handleCodeConfirm(request: Request, env: Env) {
 
   const cv = await readCv(env, body);
   await enforceLimits(env, "notify", clientIp(request));
-  const resolved = resolveSelection(cv.selection);
-  const forLine = cv.company ? ` for ${cv.company}` : "";
+  const locale = mailLocale(body.locale);
+  const words = COPY_MAIL[locale];
   const copy = await sendEmail(env, {
     to: email,
-    replyTo: KNOWLEDGE.owner.email,
-    subject: `Sultan Alfaifi's CV${forLine}`,
-    text: `Here's the CV you tailored${forLine} on ${env.SITE_URL}.\n\nDownload the exact one-page PDF: ${cvLink(env, cv.encoded, cv.company)}\n\nEvery line comes from the verified data on the site. Reply to this email to reach Sultan directly.\n\n---\n${cvAsText(resolved)}`
+    channel: "visitor",
+    replyTo: replyAddress(env),
+    sender: locale === "ar" ? "سلطان الفيفي" : "Sultan Alfaifi",
+    tag: "cv_copy",
+    subject: words.subject(cv.company),
+    mail: {
+      locale,
+      siteUrl: env.SITE_URL,
+      preheader: words.lead(cv.company),
+      heading: words.heading,
+      blocks: [
+        { kind: "text", text: words.lead(cv.company) },
+        { kind: "button", label: words.button, href: cvLink(env, cv.encoded, cv.company, locale) },
+        { kind: "small", text: words.reply }
+      ],
+      footer: words.footer
+    }
   });
   await sendEmail(env, {
     to: KNOWLEDGE.owner.email,
+    channel: "owner",
     replyTo: email,
-    subject: `Tailored CV emailed · ${cv.company || "no company given"} · ${fieldName(cv.selection)}`,
-    text: ownerNote(env, cv, email)
+    sender: "sultalfaifi.com",
+    tag: "cv_emailed",
+    subject: `إرسال سيرة بالبريد · ${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`,
+    mail: ownerMail(env, cv, "أحد طلب سيرتك على بريده", email)
   });
   return copy;
 }
