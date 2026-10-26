@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { achievements, getPortfolioAsset } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -11,48 +12,67 @@ const achievementLogoDimensions: Record<string, { width: number; height: number 
   uqu: { width: 1189, height: 480 }
 };
 
-export function AchievementsSection() {
+export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
+  const { achievements, proofMetrics, ui } = getContent(locale);
   const visible = achievements.filter((achievement) => achievement.enabled);
 
   return (
-    <section id="achievements" className="section section--graph">
+    <section id="achievements" className="section proof-section">
       <div className="page-shell">
         <SectionHeader
-          title="Achievements & Recognition"
-          description="Selected markers of learning, execution, and contribution."
+          title={ui.proof.title}
+          description={ui.proof.description}
         />
 
-        <div className="achievement-grid">
-          {visible.map((achievement, index) => (
-            <Reveal key={achievement.title} className="achievement-card" delay={index * 60}>
-              <div className="achievement-card__top">
-                <span className="achievement-card__index">A{index + 1}</span>
-                {getPortfolioAsset(achievement.assetId) ? (
-                  <Image
-                    src={getPortfolioAsset(achievement.assetId)!.derived.color}
-                    alt={getPortfolioAsset(achievement.assetId)!.alt}
-                    width={achievementLogoDimensions[achievement.assetId ?? ""]?.width ?? 132}
-                    height={achievementLogoDimensions[achievement.assetId ?? ""]?.height ?? 54}
-                    style={{ height: "auto" }}
-                    loading="eager"
-                    fetchPriority="low"
-                  />
+        <dl className="proof-metrics">
+          {proofMetrics.map((metric, index) => {
+            const formatted = metric.value.toLocaleString("en-US");
+            return (
+              <Reveal key={metric.label} className="proof-metric glow-card" delay={index * 60}>
+                <dt>{metric.label}</dt>
+                <dd>
+                  <strong data-count={metric.value}>
+                    <span className="sr-only">{`${metric.prefix ?? ""}${formatted}${metric.suffix ?? ""}`}</span>
+                    <span aria-hidden="true" dir="ltr">{metric.prefix}<span data-count-value>{formatted}</span>{metric.suffix}</span>
+                  </strong>
+                  <small>{metric.source}</small>
+                </dd>
+              </Reveal>
+            );
+          })}
+        </dl>
+
+        <ol className="proof-grid" aria-label={ui.proof.recognition}>
+          {visible.map((achievement, index) => {
+            const asset = getPortfolioAsset(achievement.assetId);
+            return (
+              <li key={achievement.title} className={`proof-card glow-card ${index === 0 ? "proof-card--lead" : ""}`}>
+                <div className="proof-card__top">
+                  <p className="proof-card__signal">{achievement.signal}</p>
+                  {asset ? (
+                    <Image
+                      src={asset.derived.color}
+                      alt={asset.alt}
+                      width={achievementLogoDimensions[asset.id]?.width ?? 132}
+                      height={achievementLogoDimensions[asset.id]?.height ?? 54}
+                      style={{ height: "auto" }}
+                      loading="eager"
+                      fetchPriority="low"
+                    />
+                  ) : null}
+                </div>
+                <h3>{achievement.title}</h3>
+                <p className="proof-card__issuer">{achievement.issuer}{achievement.date ? ` · ${achievement.date}` : ""}</p>
+                <p>{achievement.description}</p>
+                {achievement.verificationUrl ? (
+                  <a href={achievement.verificationUrl} target="_blank" rel="noreferrer noopener">
+                    {ui.proof.evidence} <ArrowUpRight aria-hidden="true" size={15} />
+                  </a>
                 ) : null}
-              </div>
-              <h3>{achievement.title}</h3>
-              <p>{achievement.description}</p>
-              {achievement.verificationUrl ? (
-                <a
-                  href={achievement.verificationUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  View evidence <ArrowUpRight aria-hidden="true" size={15} />
-                </a>
-              ) : null}
-            </Reveal>
-          ))}
-        </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

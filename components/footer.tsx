@@ -1,14 +1,17 @@
-import { identity, socialLinks } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
 
-export function Footer() {
+const wordmark = ["SULTAN", "/", "ALFAIFI"];
+
+export function Footer({ locale = "en" }: { locale?: Locale }) {
+  const { identity, socialLinks, ui } = getContent(locale);
   return (
     <footer className="footer">
       <div className="page-shell footer__inner">
         <div>
-          <p>Designed &amp; Built by Sultan Alfaifi</p>
-          <p>© 2026 Sultan Alfaifi. All rights reserved.</p>
+          <p>{ui.footer.designed}</p>
+          <p>{ui.footer.rights}</p>
         </div>
-        <nav aria-label="Footer links">
+        <nav aria-label={ui.footer.links}>
           {socialLinks.map((link) => (
             <a
               key={link.platform}
@@ -20,13 +23,20 @@ export function Footer() {
             </a>
           ))}
         </nav>
-        <a href="#home" aria-label={`Return to the top of ${identity.name}'s portfolio`}>
-          Return to top ↑
+        <a href="#home" aria-label={ui.footer.topAria}>
+          {ui.footer.top}
         </a>
       </div>
-      <p className="footer__wordmark" aria-hidden="true">
-        SULTAN <span>/</span> ALFAIFI
+      <p className="footer__wordmark" aria-hidden="true" data-proximity data-cursor={ui.footer.cursor} dir="ltr">
+        {wordmark.map((word, wordIndex) => (
+          <span key={word} className={word === "/" ? "footer__slash" : undefined}>
+            {Array.from(word).map((character, index) => (
+              <span key={`${wordIndex}-${index}`} className="px-char">{character}</span>
+            ))}
+          </span>
+        ))}
       </p>
+      <p className="footer__arabic" lang="ar" dir="rtl">{identity.arabicName} · {identity.arabicRole}</p>
     </footer>
   );
 }

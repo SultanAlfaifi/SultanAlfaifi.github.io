@@ -1,9 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
-import { community } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-export function CommunitySection() {
+export function CommunitySection({ locale = "en" }: { locale?: Locale }) {
+  const { community, ui } = getContent(locale);
   const mainWorkshop = community.workshops.find((workshop) => workshop.primary);
   const supportingWorkshops = community.workshops.filter(
     (workshop) => !workshop.primary
@@ -13,13 +14,12 @@ export function CommunitySection() {
     <section id="community" className="section section--community">
       <div className="page-shell">
         <SectionHeader
-          eyebrow="Knowledge in motion"
-          title="Community & Teaching"
-          description="Sharing practical knowledge through bootcamps, workshops, and volunteer initiatives focused on artificial intelligence and technology."
+          title={ui.community.title}
+          description={ui.community.description}
           inverse
         />
 
-        <div className="community-metrics" aria-label="Community impact">
+        <div className="community-metrics" aria-label={ui.community.impact}>
           {community.metrics.map((metric, index) => (
             <Reveal key={metric.label} className="community-metric" delay={index * 80}>
               <strong>{metric.value}</strong>
@@ -40,15 +40,11 @@ export function CommunitySection() {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  Visit organization <ArrowUpRight aria-hidden="true" size={15} />
+                  {ui.community.visit} <ArrowUpRight aria-hidden="true" size={15} />
                 </a>
               ) : null}
               <div className="workshop__diagram" aria-hidden="true">
-                <span>Fundamentals</span>
-                <span>Tools</span>
-                <span>Memory</span>
-                <span>Planning</span>
-                <span>Build</span>
+                {ui.community.diagram.map((step) => <span key={step}>{step}</span>)}
               </div>
             </Reveal>
           ) : null}
@@ -62,18 +58,15 @@ export function CommunitySection() {
               </Reveal>
             ))}
             <Reveal className="volunteer-note">
-              <span>Volunteer record</span>
-              <p>
-                Participated in 11 volunteer initiatives, contributing more than 180
-                hours across community, educational, and technology-focused activities.
-              </p>
+              <span>{ui.community.volunteerTitle}</span>
+              <p>{ui.community.volunteerText}</p>
               {community.volunteerRecordUrl ? (
                 <a
                   href={community.volunteerRecordUrl}
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  View Volunteer Record
+                  {ui.community.volunteerLink}
                 </a>
               ) : null}
             </Reveal>

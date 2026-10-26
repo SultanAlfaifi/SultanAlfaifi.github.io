@@ -3,9 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { navigation } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { PaletteTrigger } from "./command-palette";
+import { MotionToggle } from "./motion-toggle";
 
-export function Navbar() {
+export function Navbar({ locale = "en" }: { locale?: Locale }) {
+  const { navigation, ui } = getContent(locale);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -27,7 +30,7 @@ export function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [navigation]);
 
   useEffect(() => {
     if (!open) return;
@@ -87,7 +90,7 @@ export function Navbar() {
 
   return (
     <header className={`nav ${active === "home" ? "nav--hero" : ""}`}>
-      <a className="nav__brand" href="#home" aria-label="Sultan Alfaifi, home">
+      <a className="nav__brand" href="#home" aria-label={ui.nav.home}>
         <Image
           src="/brand/sultan-alfaifi-mark.svg"
           alt=""
@@ -95,10 +98,10 @@ export function Navbar() {
           height={36}
           priority
         />
-        <small>Full-stack × agents</small>
+        <small>{ui.nav.brandTag}</small>
       </a>
 
-      <nav className="nav__desktop" aria-label="Primary navigation">
+      <nav className="nav__desktop" aria-label={ui.nav.primary}>
         {navigation.map((item) => (
           <a
             key={item.href}
@@ -106,16 +109,24 @@ export function Navbar() {
             className={active === item.href.slice(1) ? "is-active" : ""}
             aria-current={active === item.href.slice(1) ? "location" : undefined}
           >
-            {item.label}
+            <span data-scramble>{item.label}</span>
           </a>
         ))}
       </nav>
+
+      <div className="nav__tools">
+        <a className="language-switch" href={ui.nav.language.href} hrefLang={ui.nav.language.hrefLang} lang={ui.nav.language.hrefLang} aria-label={ui.nav.language.label} title={ui.nav.language.label}>
+          {ui.nav.language.short}
+        </a>
+        <MotionToggle locale={locale} />
+        <PaletteTrigger locale={locale} />
+      </div>
 
       <button
         ref={menuButtonRef}
         className="nav__menu-button"
         type="button"
-        aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+        aria-label={open ? ui.nav.close : ui.nav.open}
         aria-expanded={open}
         aria-controls="mobile-navigation"
         onClick={() => setOpen((value) => !value)}
@@ -124,7 +135,7 @@ export function Navbar() {
       </button>
 
       <div className={`nav__drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
-        <nav id="mobile-navigation" aria-label="Mobile navigation">
+        <nav id="mobile-navigation" aria-label={ui.nav.mobile}>
           {navigation.map((item) => (
             <a
               key={item.href}

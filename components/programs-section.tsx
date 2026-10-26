@@ -1,18 +1,20 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { getPortfolioAsset, programs } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-export function ProgramsSection() {
+export function ProgramsSection({ locale = "en" }: { locale?: Locale }) {
+  const { certifications, programs, ui } = getContent(locale);
   const visible = programs.filter((program) => program.enabled);
 
   return (
     <section id="journey" className="section section--paper">
       <div className="page-shell">
         <SectionHeader
-          title="Learning, Applied."
-          description="A curated collection of programs that strengthened my technical foundations, AI capabilities, and professional mindset."
+          title={ui.programs.title}
+          description={ui.programs.description}
         />
 
         <div className="program-grid">
@@ -46,16 +48,16 @@ export function ProgramsSection() {
               <h3>{program.name}</h3>
               <div className="program-card__story">
                 <div>
-                  <span>Learned</span>
+                  <span>{ui.programs.learned}</span>
                   <p>{program.focus.join(" · ")}</p>
                 </div>
                 <div>
-                  <span>Applied</span>
+                  <span>{ui.programs.applied}</span>
                   <p>{program.summary}</p>
                 </div>
                 <div>
-                  <span>Achieved</span>
-                  <p>{program.recognition ?? "Program completed"}</p>
+                  <span>{ui.programs.achieved}</span>
+                  <p>{program.recognition ?? ui.programs.completed}</p>
                 </div>
               </div>
               {program.credentialUrl ? (
@@ -64,12 +66,29 @@ export function ProgramsSection() {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  Verify Credential <ArrowUpRight aria-hidden="true" size={15} />
+                  {ui.programs.verifyCredential} <ArrowUpRight aria-hidden="true" size={15} />
                 </a>
               ) : null}
               </Reveal>
             );
           })}
+        </div>
+
+        <div className="certifications">
+          <h3>{ui.programs.alsoCertified}</h3>
+          <ul>
+            {certifications.map((certification) => (
+              <li key={certification.name}>
+                <span lang="en" dir="ltr">{certification.name}</span>
+                <span>{certification.issuer} · {certification.date}</span>
+                {certification.credentialUrl ? (
+                  <a href={certification.credentialUrl} target="_blank" rel="noreferrer noopener" aria-label={ui.programs.verifyAria(certification.name)}>
+                    {ui.programs.verify} <ArrowUpRight aria-hidden="true" size={14} />
+                  </a>
+                ) : <span aria-hidden="true" />}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

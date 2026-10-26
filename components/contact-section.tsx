@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { Check, Clipboard, Mail, MapPin } from "lucide-react";
-import { identity } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { SplitWords } from "./section-header";
 import { SocialLinks } from "./social-links";
 
-export function ContactSection() {
+export function ContactSection({ locale = "en" }: { locale?: Locale }) {
+  const { identity, ui } = getContent(locale);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
 
@@ -34,16 +36,21 @@ export function ContactSection() {
     <section id="contact" className="contact-section" aria-labelledby="contact-title">
       <div className="page-shell contact-section__inner">
         <div className="contact-section__copy">
-          <h2 id="contact-title">Let&apos;s build something meaningful.</h2>
-          <p>
-            Have a software opportunity, AI project, collaboration, consultation, or
-            speaking invitation? I&apos;d be glad to hear from you.
-          </p>
+          <h2 id="contact-title" className="split-heading"><SplitWords text={ui.contact.title} /></h2>
+          <p>{ui.contact.body}</p>
         </div>
 
         <div className="contact-section__actions">
-          <a className="button button--signal" href={`mailto:${identity.email}`}>
-            <Mail aria-hidden="true" size={18} /> Send Me an Email
+          <a className="contact-orb" href={`mailto:${identity.email}`} data-magnetic aria-label={ui.contact.orbAria}>
+            <svg className="contact-orb__ring" viewBox="0 0 200 200" aria-hidden="true" direction="ltr">
+              <defs><path id="contact-orb-path" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
+              <text><textPath href="#contact-orb-path">{ui.contact.orbRing}</textPath></text>
+            </svg>
+            <span className="contact-orb__core" aria-hidden="true">
+              <Mail size={22} />
+              <span lang="ar">{ui.contact.orbWord}</span>
+              <small>{ui.contact.orbSmall}</small>
+            </span>
           </a>
           <button className="button button--ghost" type="button" onClick={copyEmail}>
             {copied ? (
@@ -51,19 +58,19 @@ export function ContactSection() {
             ) : (
               <Clipboard aria-hidden="true" size={18} />
             )}
-            {copied ? "Email copied" : "Copy email"}
+            {copied ? ui.contact.copiedButton : ui.contact.copy}
           </button>
           <p className="contact-section__status" aria-live="polite">
-            {copied ? `${identity.email} copied to clipboard.` : copyError ? `Please copy manually: ${identity.email}` : identity.email}
+            {copied ? ui.contact.copied(identity.email) : copyError ? ui.contact.manual(identity.email) : identity.email}
           </p>
         </div>
 
         <div className="contact-section__meta">
           <p>
             <MapPin aria-hidden="true" size={17} />
-            Based in {identity.location}
+            {ui.contact.based(identity.location)}
           </p>
-          <SocialLinks includeEmail />
+          <SocialLinks includeEmail locale={locale} />
         </div>
       </div>
     </section>

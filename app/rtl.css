@@ -1,0 +1,75 @@
+/* One typeface everywhere: every role the older layers name (sans, display, mono) resolves to IBM Plex Sans Arabic. */
+:root {
+  --font-sans: var(--font-arabic), system-ui, sans-serif;
+  --font-display: var(--font-arabic), system-ui, sans-serif;
+  --font-mono: var(--font-arabic), system-ui, sans-serif;
+}
+:where(time, .live-clock, .work-story__index, .proof-metric strong, .intro-curtain__count, .work-metrics dd) { font-variant-numeric: tabular-nums; }
+
+/* Arabic is cursive: tracking breaks letter joins, and its marks need taller lines. */
+[dir="rtl"] :is(h1, h2, h3, h4, h5, p, li, a, span, strong, small, em, dt, dd, button, summary, label, blockquote, figcaption, time, kbd, input):not([dir="ltr"], [dir="ltr"] *) {
+  letter-spacing: 0 !important;
+}
+[dir="rtl"] :is(h1, h2, h3):not([dir="ltr"] *) { line-height: 1.32; }
+[dir="rtl"] .identity-hero h1 { max-width: 15ch; line-height: 1.28; }
+[dir="rtl"] .split-word { padding-block: 0.14em 0.34em; margin-block: -0.14em -0.34em; }
+[dir="rtl"] .work-story h3,
+[dir="rtl"] .proof-card__signal,
+[dir="rtl"] .proof-card--lead .proof-card__signal { line-height: 1.25; }
+[dir="rtl"] .proof-card--lead .proof-card__signal { font-size: clamp(3rem, 6vw, 5.4rem); }
+
+/* Directional icons mirror; anything explicitly LTR keeps its orientation. */
+[dir="rtl"] :is(.lucide-arrow-up-right, .lucide-arrow-right, .lucide-arrow-left, .lucide-corner-down-left):not([dir="ltr"] *) { scale: -1 1; }
+
+/* Physical offsets from the LTR layers, flipped. */
+[dir="rtl"] .portfolio-v3 .nav__desktop,
+.portfolio-v3 [dir="rtl"] .nav__desktop { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .nav__tools { margin-left: 0; margin-right: 10px; }
+[dir="rtl"] .palette__option > small { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .palette__foot svg { margin-left: 0; margin-right: 8px; }
+[dir="rtl"] .palette__foot svg:first-child { margin-right: 0; }
+[dir="rtl"] .secrets { left: auto; right: 18px; align-items: flex-end; }
+[dir="rtl"] .contact-orb { margin: 0 auto 20px 0; }
+[dir="rtl"] .automation-blueprint__review > svg:last-child,
+[dir="rtl"] .resume-blueprint__export svg:last-child { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .agent-blueprint li::before { left: auto; right: 4px; }
+[dir="rtl"] .work-case ul { padding: 0 20px 20px 0; }
+[dir="rtl"] .timeline__dot { left: auto; right: 22px; }
+[dir="rtl"] .timeline__index { right: auto; left: 16px; }
+[dir="rtl"] .timeline__progress span { transform-origin: right; }
+[dir="rtl"] .organization-detail-panel__close { right: auto; left: 18px; }
+
+/* Motion reads right-to-left on Arabic pages. */
+[dir="rtl"] .hero-ticker__track:not(.x),
+[dir="rtl"] .kinetic-band__row:not(.x) { animation-direction: reverse; }
+@supports (animation-timeline: view()) {
+  @media (min-width: 841px) and (prefers-reduced-motion: no-preference) {
+    html:not([data-motion="off"]) [dir="rtl"] .timeline__track { animation-name: timeline-slide-rtl; }
+  }
+}
+@keyframes timeline-slide-rtl { to { transform: translateX(calc(100% - 100vw + 40px)); } }
+
+/* Language switch in the navigation. */
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 999px;
+  color: var(--paper);
+  font: 600 0.8rem var(--font-arabic), sans-serif;
+  text-decoration: none;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.language-switch:hover { border-color: var(--mint); background: var(--mint); color: var(--ink); }
+
+.recommendation-card__translated { margin: 10px 0 0; color: var(--muted); font-size: 0.74rem; }
+
+@media (max-width: 840px) {
+  [dir="rtl"] .nav__tools { margin-right: auto; margin-left: 8px; }
+  [dir="rtl"] .contact-orb { margin: 0 0 18px; }
+  [dir="rtl"] .secrets { right: 12px; }
+}

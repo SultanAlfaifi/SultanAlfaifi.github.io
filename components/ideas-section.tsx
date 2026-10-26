@@ -1,9 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
-import { content, socialLinks } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-export function IdeasSection() {
+export function IdeasSection({ locale = "en" }: { locale?: Locale }) {
+  const { content, socialLinks, ui } = getContent(locale);
   const contentSocials = socialLinks.filter(
     (link) => link.platform === "X" || link.platform === "LinkedIn"
   );
@@ -12,18 +13,14 @@ export function IdeasSection() {
     <section id="ideas" className="section section--ideas">
       <div className="page-shell">
         <SectionHeader
-          title="Ideas, Explained."
-          description="From complex systems to clear, practical knowledge."
+          title={ui.ideas.title}
+          description={ui.ideas.description}
           inverse
         />
 
         <div className="ideas-intro">
           <Reveal>
-            <p>
-              Creating practical Arabic content that makes artificial intelligence,
-              AI agents, software systems, and programming easier to understand and
-              apply.
-            </p>
+            <p>{ui.ideas.intro}</p>
           </Reveal>
           <div className="ideas-metrics">
             {content.metrics.map((metric, index) => (
@@ -46,7 +43,7 @@ export function IdeasSection() {
         </div>
 
         <div className="ideas-footer">
-          <ul aria-label="Content categories">
+          <ul aria-label={ui.ideas.categories}>
             {content.categories.map((category) => (
               <li key={category}>{category}</li>
             ))}
@@ -59,7 +56,7 @@ export function IdeasSection() {
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                Follow on {link.platform} <ArrowUpRight aria-hidden="true" size={15} />
+                {ui.ideas.follow(link.label)} <ArrowUpRight aria-hidden="true" size={15} />
               </a>
             ))}
           </div>

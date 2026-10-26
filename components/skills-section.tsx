@@ -1,14 +1,15 @@
-import { skillGroups } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-export function SkillsSection() {
+export function SkillsSection({ locale = "en" }: { locale?: Locale }) {
+  const { skillGroups, ui } = getContent(locale);
   return (
     <section id="skills" className="section section--white section--compact">
       <div className="page-shell">
         <SectionHeader
-          title="Skills & Technology"
-          description="The tools and practices behind my products, integrations, and AI systems."
+          title={ui.skills.title}
+          description={ui.skills.description}
         />
         <div className="skill-groups">
           {skillGroups.map((group, index) => (

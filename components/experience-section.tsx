@@ -1,11 +1,13 @@
 import Image from "next/image";
-import { experience, getPortfolioAsset } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SallaExperienceStory } from "./salla-experience-story";
 import { SectionHeader } from "./section-header";
 
-export function ExperienceSection() {
-  const sallaExperience = experience.find((item) => item.organization === "Salla");
+export function ExperienceSection({ locale = "en" }: { locale?: Locale }) {
+  const { experience, ui } = getContent(locale);
+  const sallaExperience = experience.find((item) => item.assetId === "salla");
   const sallaAsset = sallaExperience ? getPortfolioAsset(sallaExperience.assetId) : null;
   const remainingExperience = experience.filter((item) => item !== sallaExperience);
 
@@ -13,13 +15,13 @@ export function ExperienceSection() {
     <section id="experience" className="section section--paper experience-section">
       <div className="page-shell">
         <SectionHeader
-          title="Experience"
-          description="Professional learning grounded in implementation, feedback, and engineering workflows."
+          title={ui.experience.title}
+          description={ui.experience.description}
         />
       </div>
 
       {sallaExperience && sallaAsset ? (
-        <SallaExperienceStory experience={sallaExperience} asset={sallaAsset} />
+        <SallaExperienceStory experience={sallaExperience} asset={sallaAsset} locale={locale} />
       ) : null}
 
       {remainingExperience.length > 0 ? (
@@ -53,7 +55,7 @@ export function ExperienceSection() {
                     <li key={responsibility}>{responsibility}</li>
                   ))}
                 </ul>
-                <ul className="tag-list tag-list--dark" aria-label="Experience technologies">
+                <ul className="tag-list tag-list--dark" aria-label={ui.media.salla.tech}>
                   {item.technologies.map((technology) => (
                     <li key={technology}>{technology}</li>
                   ))}

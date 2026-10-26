@@ -1,0 +1,16 @@
+# Copy this file to worker/.dev.vars and fill it in yourself. .dev.vars is gitignored.
+# Leave a line empty to see how the site degrades without it.
+
+# OpenRouter key with a credit limit (openrouter.ai/settings/keys).
+OPENROUTER_API_KEY=
+
+# Cloudflare's public Turnstile TEST secret: always passes, for local development only.
+# Production uses the real secret via `npx wrangler secret put TURNSTILE_SECRET_KEY`.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+
+# Resend key. Empty = dry run: emails are printed in the wrangler console instead of sent.
+RESEND_API_KEY=
+
+# Any long random string; signs console sessions and CV links. Generate one with:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+SESSION_SECRET=

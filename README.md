@@ -41,6 +41,32 @@ rules are managed from one typed configuration file.
 
 ## Highlights
 
+- **Agent-runtime signature layer** (no animation libraries):
+  - Live canvas agent graph in the hero — project nodes pass message packets,
+    react to the pointer, and ripple on click.
+  - Decoding headline, proof ticker, and a live Makkah clock.
+  - `⌘K` / `Ctrl+K` / `/` command palette for sections, projects, and actions.
+  - An interactive console (`help`, `run`, `projects`, `sudo hire sultan`…)
+    that answers from `data/portfolio.ts` and refuses destructive commands.
+  - A real AI agent inside that console (Claude Sonnet 5.5 through OpenRouter, behind a
+    Cloudflare Worker): it answers only from the site's own data in English or Arabic, cites
+    the section each fact comes from, opens projects on the page, runs an honest fit check
+    against a job description, and drafts emails that only the visitor can send. When the
+    Worker is down or out of budget, the console falls back to its scripted replies.
+    Evals, failures included, are published at `/agent-evals/`.
+- **"Want the CV?"**: a one-page, ATS-readable English CV that downloads instantly, plus a
+  tailored version built in the browser with pdfmake from an approved bullet library. The
+  AI may only pick and order library IDs; the Worker rejects anything else.
+  - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
+    a variable-weight footer wordmark that swells near the cursor.
+  - A Konami-code easter egg, plus a Motion toggle that, like
+    `prefers-reduced-motion`, stops every effect and persists per visitor.
+- "Proof, not adjectives" section with count-up metrics, each with its source.
+- Cinematic first-visit intro (the Arabic name written stroke by stroke), aurora, cursor ring,
+  scroll-linked bilingual type band, pinned horizontal journey timeline, word-by-word headings,
+  card glare, a circular contact orb, and a six-secret exploration game with confetti.
+- **Full Arabic edition** at [`/ar/`](https://sultalfaifi.com/ar/): right-to-left layout, mirrored
+  motion and icons, translated content and interface, `hreflang` alternates, and a sitemap entry.
 - System-architecture hero connecting interfaces, backend logic, APIs, data,
   and AI agents.
 - Responsive editorial layout with independent, full-width sections.
@@ -68,8 +94,7 @@ systems:
 | Paper | `#F4F3EC` | Editorial reading surfaces |
 | Protocol blue | `#2F55B7` | Links, labels, and information signals |
 | Chartreuse | `#C8FF3D` | Active states and high-contrast accents |
-| Manrope | Display and body | Clear editorial typography |
-| IBM Plex Mono | Utility and metadata | Technical labels and system notation |
+| IBM Plex Sans Arabic | Every role, both languages | One family for display, body, labels, and the console |
 
 All approved foreground/background combinations are documented in
 [`contrast-audit.md`](./contrast-audit.md).
@@ -173,6 +198,16 @@ Every asset record can control:
 }
 ```
 
+Arabic content lives in [`data/portfolio-ar.ts`](./data/portfolio-ar.ts) and is merged onto the
+English records by [`data/i18n.ts`](./data/i18n.ts), so URLs and assets stay single-sourced.
+Interface copy for both languages lives in [`data/ui.ts`](./data/ui.ts).
+
+To replace the portrait, save the photo as `public/assets/portrait/new-portrait.jpg` and run:
+
+```powershell
+npm run portrait
+```
+
 Original supplied files remain unchanged outside the repository. To regenerate
 approved web derivatives:
 
@@ -216,6 +251,20 @@ The generated accessibility report is available in
 - Accessible organization names and hidden duplicate marquee items
 - Static wrapping organization grid for `prefers-reduced-motion`
 - Intentional portrait cropping with preserved faces and aspect ratio
+
+## AI agent and CV backend
+
+The console agent and the CV emails run on a small Cloudflare Worker in [`worker/`](./worker),
+which holds the OpenRouter and Resend keys so the static site never sees them. Setup, local
+development, costs, limits, privacy, and evals are in
+[`docs/agent-setup.md`](./docs/agent-setup.md).
+
+```powershell
+npm run knowledge      # regenerate the agent's knowledge from data/*.ts
+npm run cv             # build the general CV into public/cv/
+npm run agent:dev      # run the Worker locally (wrangler dev)
+npm run evals          # run the eval set against the local Worker
+```
 
 ## Deployment
 

@@ -2,14 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { getContent, type Locale } from "@/data/i18n";
 
 type HeroMediaProps = {
   src: string;
   mobileSrc: string;
   poster: string;
+  locale?: Locale;
 };
 
-export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
+export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaProps) {
+  const copy = getContent(locale).ui.media;
   const videoRef = useRef<HTMLVideoElement>(null);
   const togglePlaybackRef = useRef<() => void>(() => undefined);
   const [playing, setPlaying] = useState(false);
@@ -59,7 +62,7 @@ export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
         userPaused = true;
         setPlaying(false);
         setLoading(false);
-        setMessage("Video couldn’t start. Select Play to try again.");
+        setMessage(copy.failedStart);
       }
     }
 
@@ -89,7 +92,7 @@ export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
       failed = true;
       userPaused = true;
       pause();
-      setMessage("Video couldn’t load. Select Play to retry.");
+      setMessage(copy.failedLoad);
     };
     const handleMotionChange = () => {
       userRequested = false;
@@ -137,6 +140,7 @@ export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
       video.removeEventListener("error", handleError, true);
       video.pause();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- copy is static per locale
   }, []);
 
   function toggleMute() {
@@ -156,22 +160,22 @@ export function HeroMedia({ src, mobileSrc, poster }: HeroMediaProps) {
         playsInline
         preload="none"
         poster={poster}
-        aria-label="Introductory video featuring Sultan Alfaifi"
+        aria-label={copy.video}
       >
         <source src={mobileSrc} media="(max-width: 840px)" type="video/mp4" />
         <source src={src} type="video/mp4" />
         Your browser does not support the introductory video.
       </video>
-      <div className="hero-media__controls" aria-label="Introductory video controls">
-        <button type="button" onClick={() => togglePlaybackRef.current()} aria-label={playing || loading ? "Pause introductory video" : "Play introductory video"}>
+      <div className="hero-media__controls" aria-label={copy.controls}>
+        <button type="button" onClick={() => togglePlaybackRef.current()} aria-label={playing || loading ? copy.pause : copy.play}>
           {playing || loading ? <Pause aria-hidden="true" size={16} /> : <Play aria-hidden="true" size={16} />}
         </button>
-        <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute introductory video" : "Mute introductory video"}>
+        <button type="button" onClick={toggleMute} aria-label={muted ? copy.unmute : copy.mute}>
           {muted ? <VolumeX aria-hidden="true" size={16} /> : <Volume2 aria-hidden="true" size={16} />}
         </button>
       </div>
       <p className="hero-media__status" role="status" aria-live="polite">
-        {message || (loading ? "Loading video…" : "")}
+        {message || (loading ? copy.loading : "")}
       </p>
     </div>
   );

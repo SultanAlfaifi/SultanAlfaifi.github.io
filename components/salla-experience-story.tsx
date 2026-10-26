@@ -3,15 +3,18 @@
 import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { getContent, type Locale } from "@/data/i18n";
 import type { Experience, PortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 
 type SallaExperienceStoryProps = {
   experience: Experience;
   asset: PortfolioAsset;
+  locale?: Locale;
 };
 
-export function SallaExperienceStory({ experience, asset }: SallaExperienceStoryProps) {
+export function SallaExperienceStory({ experience, asset, locale = "en" }: SallaExperienceStoryProps) {
+  const copy = getContent(locale).ui.media;
   const videoRef = useRef<HTMLVideoElement>(null);
   const togglePlaybackRef = useRef<() => void>(() => undefined);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -59,7 +62,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
         userPaused = true;
         setIsPlaying(false);
         setLoading(false);
-        setMessage("Video couldn’t start. Select Play to try again.");
+        setMessage(copy.failedStart);
       }
     }
 
@@ -89,7 +92,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
       failed = true;
       userPaused = true;
       pause();
-      setMessage("Video couldn’t load. Select Play to retry.");
+      setMessage(copy.failedLoad);
     };
     const handleMotionChange = () => {
       userRequested = false;
@@ -137,11 +140,12 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
       video.removeEventListener("error", handleError, true);
       video.pause();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- copy is static per locale
   }, []);
 
   return (
     <div className="salla-story">
-      <div className="salla-story__media-runway" aria-label="Salla experience video">
+      <div className="salla-story__media-runway" aria-label={copy.salla.runway}>
         <div className="salla-story__stage">
           <div className="salla-story__frame">
             <video
@@ -152,7 +156,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
               playsInline
               preload="none"
               poster="/assets/media/salla-experience-poster.webp"
-              aria-label="Salla brand film"
+              aria-label={copy.salla.film}
             >
               <source
                 src="/assets/media/salla-experience-mobile.mp4"
@@ -166,13 +170,13 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
               type="button"
               className="salla-story__playback"
               onClick={() => togglePlaybackRef.current()}
-              aria-label={isPlaying || loading ? "Pause Salla video" : "Play Salla video"}
+              aria-label={isPlaying || loading ? copy.salla.pause : copy.salla.play}
             >
               {isPlaying || loading ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-              <span>{isPlaying || loading ? "Pause" : "Play"}</span>
+              <span>{isPlaying || loading ? copy.salla.pauseShort : copy.salla.playShort}</span>
             </button>
             <p className="salla-story__status" role="status" aria-live="polite">
-              {message || (loading ? "Loading video…" : "")}
+              {message || (loading ? copy.loading : "")}
             </p>
           </div>
         </div>
@@ -202,7 +206,7 @@ export function SallaExperienceStory({ experience, asset }: SallaExperienceStory
               ))}
             </ul>
 
-            <ul className="tag-list tag-list--dark" aria-label="Experience technologies">
+            <ul className="tag-list tag-list--dark" aria-label={copy.salla.tech}>
               {experience.technologies.map((technology) => (
                 <li key={technology}>{technology}</li>
               ))}
