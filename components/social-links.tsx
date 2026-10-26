@@ -1,5 +1,5 @@
 import { Mail } from "lucide-react";
-import { socialLinks } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
 import { GitHubIcon, LinkedInIcon } from "./brand-icons";
 
 const iconMap = {
@@ -12,12 +12,15 @@ const iconMap = {
 type SocialLinksProps = {
   compact?: boolean;
   includeEmail?: boolean;
+  locale?: Locale;
 };
 
 export function SocialLinks({
   compact = false,
-  includeEmail = false
+  includeEmail = false,
+  locale = "en"
 }: SocialLinksProps) {
+  const { socialLinks, ui } = getContent(locale);
   return (
     <div className={`social-links ${compact ? "social-links--compact" : ""}`}>
       {socialLinks
@@ -30,7 +33,7 @@ export function SocialLinks({
             <a
               key={link.platform}
               href={link.href}
-              aria-label={`Visit Sultan Alfaifi on ${link.platform}`}
+              aria-label={ui.social.visit(link.label)}
               target={external ? "_blank" : undefined}
               rel={external ? "noreferrer noopener" : undefined}
             >

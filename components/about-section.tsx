@@ -1,10 +1,12 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { about, getPortfolioAsset, identity } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-export function AboutSection() {
+export function AboutSection({ locale = "en" }: { locale?: Locale }) {
+  const { about, identity, ui } = getContent(locale);
   const portrait = getPortfolioAsset(about.portraitAssetId);
   const educationLogo = getPortfolioAsset(about.educationAssetId);
 
@@ -12,7 +14,7 @@ export function AboutSection() {
     <section id="about" className="section section--paper">
       <div className="page-shell">
         <SectionHeader
-          title="The person behind the systems."
+          title={ui.about.title}
         />
 
         <div className="about-layout">
@@ -46,7 +48,7 @@ export function AboutSection() {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  Download Resume <ArrowUpRight aria-hidden="true" size={16} />
+                  {ui.about.resume} <ArrowUpRight aria-hidden="true" size={16} />
                 </a>
               ) : null}
             </Reveal>
@@ -61,7 +63,7 @@ export function AboutSection() {
                 ))}
                 {educationLogo ? (
                   <div className="about-metadata__education-mark">
-                    <dt>Education mark</dt>
+                    <dt>{ui.about.educationMark}</dt>
                     <dd>
                       <Image
                         src={educationLogo.derived.color}

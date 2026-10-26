@@ -36,16 +36,17 @@ Items remain intentionally incomplete rather than being inferred or fabricated.
 - [ ] Verify achievement dates
 - [ ] Verify issuing organizations
 - [ ] Add achievement evidence links
-- [ ] Verify the exact year and issuer details for Best UI Designer
+- [x] Verify the exact year and issuer details for Best UI Designer (LinkedIn: First Place, Program Interface Design Challenge, UQU Computer Club, Oct 2025)
 - [ ] Add program years
-- [ ] Add credential verification URLs
+- [ ] Add credential verification URLs (Coursera links added for University of Michigan and Google; KAUST, IBM, NVIDIA, DeepLearning.AI, and McKinsey still missing)
 - [ ] Add volunteer-record verification link
 
 ## Recommendations and content
 
-- [ ] Add the exact public LinkedIn recommendation URL for Heyam AbuNaseer
+- [ ] Add the exact public LinkedIn recommendation URL for Heyam AbuNaseer (currently links to the public profile, where the recommendation is visible)
 - [ ] Keep Dr. Ahmed D. Alharthi’s signed PDF and direct email private
-- [ ] Add three to six manually curated featured content posts
+- [ ] Add three to six manually curated featured content posts (X audience refreshed: 4.5K+ followers; LinkedIn 2K+)
+- [ ] Confirm the final AccessFinish judging release and public video before updating its status
 
 ## Production
 

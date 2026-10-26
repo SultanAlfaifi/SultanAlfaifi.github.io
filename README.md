@@ -41,6 +41,23 @@ rules are managed from one typed configuration file.
 
 ## Highlights
 
+- **Agent-runtime signature layer** (no animation libraries):
+  - Live canvas agent graph in the hero — project nodes pass message packets,
+    react to the pointer, and ripple on click.
+  - Decoding headline, proof ticker, and a live Makkah clock.
+  - `⌘K` / `Ctrl+K` / `/` command palette for sections, projects, and actions.
+  - An interactive console (`help`, `run`, `projects`, `sudo hire sultan`…)
+    that answers from `data/portfolio.ts` and refuses destructive commands.
+  - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
+    a variable-weight footer wordmark that swells near the cursor.
+  - A Konami-code easter egg, plus a Motion toggle that, like
+    `prefers-reduced-motion`, stops every effect and persists per visitor.
+- "Proof, not adjectives" section with count-up metrics, each with its source.
+- Cinematic first-visit intro (the Arabic name written stroke by stroke), aurora, cursor ring,
+  scroll-linked bilingual type band, pinned horizontal journey timeline, word-by-word headings,
+  card glare, a circular contact orb, and a six-secret exploration game with confetti.
+- **Full Arabic edition** at [`/ar/`](https://sultalfaifi.com/ar/): right-to-left layout, mirrored
+  motion and icons, translated content and interface, `hreflang` alternates, and a sitemap entry.
 - System-architecture hero connecting interfaces, backend logic, APIs, data,
   and AI agents.
 - Responsive editorial layout with independent, full-width sections.
@@ -68,8 +85,7 @@ systems:
 | Paper | `#F4F3EC` | Editorial reading surfaces |
 | Protocol blue | `#2F55B7` | Links, labels, and information signals |
 | Chartreuse | `#C8FF3D` | Active states and high-contrast accents |
-| Manrope | Display and body | Clear editorial typography |
-| IBM Plex Mono | Utility and metadata | Technical labels and system notation |
+| IBM Plex Sans Arabic | Every role, both languages | One family for display, body, labels, and the console |
 
 All approved foreground/background combinations are documented in
 [`contrast-audit.md`](./contrast-audit.md).
@@ -171,6 +187,16 @@ Every asset record can control:
   logoVariant,
   monochromeEnabled
 }
+```
+
+Arabic content lives in [`data/portfolio-ar.ts`](./data/portfolio-ar.ts) and is merged onto the
+English records by [`data/i18n.ts`](./data/i18n.ts), so URLs and assets stay single-sourced.
+Interface copy for both languages lives in [`data/ui.ts`](./data/ui.ts).
+
+To replace the portrait, save the photo as `public/assets/portrait/new-portrait.jpg` and run:
+
+```powershell
+npm run portrait
 ```
 
 Original supplied files remain unchanged outside the repository. To regenerate

@@ -1,25 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { motionBootScript } from "@/components/motion-preference";
 import { identity, seo, socialLinks } from "@/data/portfolio";
 import "./globals.css";
 import "./portfolio.css";
+import "./signature.css";
+import "./experience.css";
+import "./rtl.css";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap"
-});
-
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-mono",
-  display: "swap"
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display",
+// One family for the whole site, in both languages: IBM Plex Sans Arabic carries Arabic and Latin glyphs.
+const plexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-arabic",
   display: "swap"
 });
 
@@ -31,7 +24,8 @@ export const metadata: Metadata = {
   authors: [{ name: identity.name }],
   creator: identity.name,
   alternates: {
-    canonical: "/"
+    canonical: "/",
+    languages: { en: "/", ar: "/ar/", "x-default": "/" }
   },
   openGraph: {
     type: "website",
@@ -101,8 +95,9 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${manrope.variable} ${plexMono.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={plexArabic.variable} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
         <link
           rel="preload"
           as="image"

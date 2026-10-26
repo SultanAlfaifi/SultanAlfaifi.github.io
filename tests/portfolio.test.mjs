@@ -7,7 +7,7 @@ const dataSource = readFileSync(
   "utf8"
 );
 const pageSource = readFileSync(
-  new URL("../app/page.tsx", import.meta.url),
+  new URL("../components/home-page.tsx", import.meta.url),
   "utf8"
 );
 const cssSource = readFileSync(
@@ -82,7 +82,8 @@ test("work leads the page and the full journey remains available", () => {
   assert.ok(recommendationsIndex > communityIndex);
   assert.ok(ideasIndex > communityIndex);
   assert.ok(pageSource.indexOf("<ProjectsSection") < pageSource.indexOf("<AboutSection"));
-  assert.match(pageSource, /Beyond the projects/);
+  assert.match(pageSource, /ui\.deeper\.title/);
+  assert.match(readFileSync(new URL("../data/ui.ts", import.meta.url), "utf8"), /title: "Beyond the projects"/);
 });
 
 test("organization records encode explicit relationships and nullable logos", () => {
@@ -129,7 +130,8 @@ test("organization journey uses supplied brand palettes and interactive context"
   assert.match(organizationRailSource, /draggable=\{false\}/);
   assert.match(organizationRailSource, /onDragStart=\{\(event\) => event\.preventDefault\(\)\}/);
   assert.doesNotMatch(cssSource, /\.journey-marquee__group\[aria-hidden="true"\][\s\S]*?display: none/);
-  assert.match(organizationRailSource, /Swipe the moving logos, then tap one/);
+  assert.match(organizationRailSource, /copy\.hintTouch/);
+  assert.match(readFileSync(new URL("../data/ui.ts", import.meta.url), "utf8"), /Swipe the moving logos, then tap one/);
   assert.doesNotMatch(organizationRailSource, /organization-focus-card|organization-stage-clip/);
 });
 
@@ -160,14 +162,14 @@ test("corrected community brands and achievement mappings stay explicit", () => 
   assert.match(dataSource, /slug: "kaust-ai-projects"[\s\S]*?brandAssetId: "kaust-academy"/);
   assert.match(dataSource, /slug: "kaust-ai-projects"[\s\S]*?screenshot: "\/assets\/projects\/kaust-ai-projects\.webp"/);
   assert.match(dataSource, /title: "Amd FinTech Hackathon Finalist"[\s\S]*?assetId: "amad-hackathon"/);
-  assert.match(dataSource, /title: "Best UI Designer at UQU Computer Club"[\s\S]*?assetId: "uqu"/);
+  assert.match(dataSource, /title: "First Place, Program Interface Design Challenge"[\s\S]*?issuer: "UQU Computer Club"[\s\S]*?assetId: "uqu"/);
   assert.doesNotMatch(dataSource, /Raedat|Fazaa Volunteer/);
 });
 
 test("hero thesis remains concise and direct", () => {
   assert.match(
     dataSource,
-    /"I build AI agents and software people can use\."/
+    /"I build AI agents that check with you before they act\."/
   );
 });
 
@@ -242,4 +244,79 @@ test("responsive and reduced-motion safeguards are present", () => {
   assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(organizationRailSource, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+});
+
+const readComponent = (name) => readFileSync(new URL(`../components/${name}`, import.meta.url), "utf8");
+
+test("signature interactions stay decorative and respect motion preferences", () => {
+  const field = readComponent("agent-field.tsx");
+  const decode = readComponent("decode-text.tsx");
+  const layer = readComponent("interaction-layer.tsx");
+  const terminal = readComponent("agent-terminal.tsx");
+  const palette = readComponent("command-palette.tsx");
+  const signatureCss = readFileSync(new URL("../app/signature.css", import.meta.url), "utf8");
+
+  assert.match(field, /className="agent-field" aria-hidden="true"/);
+  assert.match(field, /IntersectionObserver/);
+  assert.match(field, /visibilitychange/);
+  assert.match(field, /motionAllowed\(\)/);
+  assert.match(decode, /className="decode__fx" aria-hidden="true"/);
+  assert.match(decode, /Background tabs pause animation frames/);
+  assert.match(layer, /\(hover: hover\) and \(pointer: fine\)/);
+  assert.match(layer, /nodeValue/);
+  assert.match(terminal, /role="log"/);
+  assert.match(terminal, /copy\.blocked/);
+  assert.match(readFileSync(new URL("../data/ui.ts", import.meta.url), "utf8"), /blocked by policy/);
+  assert.match(palette, /role="combobox"/);
+  assert.match(palette, /aria-activedescendant/);
+  assert.match(signatureCss, /html\[data-motion="off"\] \.portfolio-v3 \*/);
+  assert.match(signatureCss, /\.hero-ticker__group\[aria-hidden="true"\] \{ display: none; \}/);
+});
+
+test("profile updates from X, LinkedIn, and GitHub keep their sources", () => {
+  assert.match(dataSource, /platform: "X"[\s\S]*?audience: "4\.5K\+ followers"/);
+  assert.match(dataSource, /platform: "LinkedIn"[\s\S]*?audience: "2K\+ followers"/);
+  assert.match(dataSource, /title: "Selected for the National History Lab"[\s\S]*?date: "Feb 2025"/);
+  assert.match(dataSource, /One of 600 learners selected for the final stage/);
+  assert.match(dataSource, /slug: "accessfinish"[\s\S]*?2 of 5 passed the full procedure/);
+  assert.match(dataSource, /slug: "mawrid"[\s\S]*?every reading in the demo is simulated/);
+  assert.match(dataSource, /coursera\.org\/verify\/4NAKX19FC78R/);
+});
+
+test("the Arabic edition mirrors every record and keeps links single-sourced", async () => {
+  const { getContent } = await import("../data/i18n.ts");
+  const en = getContent("en");
+  const ar = getContent("ar");
+  const arabicText = /[؀-ۿ]/;
+
+  assert.equal(ar.dir, "rtl");
+  assert.equal(ar.projects.length, en.projects.length);
+  for (const [index, project] of ar.projects.entries()) {
+    assert.equal(project.slug, en.projects[index].slug);
+    assert.equal(project.repository, en.projects[index].repository);
+    assert.match(project.description, arabicText, `${project.slug} description is translated`);
+  }
+  for (const key of ["achievements", "programs", "organizations", "recommendations", "proofMetrics"]) {
+    assert.equal(ar[key].length, en[key].length, `${key} keeps one Arabic record per English record`);
+  }
+  assert.equal(ar.journey.length, en.journey.length);
+  assert.match(ar.identity.headline, arabicText);
+  assert.ok(ar.identity.headline.includes(ar.ui.hero.highlight), "Arabic headline contains its highlight");
+  assert.ok(en.identity.headline.includes(en.ui.hero.highlight), "English headline contains its highlight");
+
+  const arabicPage = readFileSync(new URL("../app/ar/page.tsx", import.meta.url), "utf8");
+  assert.match(arabicPage, /<HomePage locale="ar" \/>/);
+  assert.match(arabicPage, /canonical: "\/ar\/"/);
+  assert.match(readFileSync(new URL("../components/motion-preference.ts", import.meta.url), "utf8"), /d\.lang="ar";d\.dir="rtl"/);
+});
+
+test("one typeface: IBM Plex Sans Arabic carries every role in both languages", () => {
+  const rtlCss = readFileSync(new URL("../app/rtl.css", import.meta.url), "utf8");
+  assert.match(layoutSource, /IBM_Plex_Sans_Arabic/);
+  assert.doesNotMatch(layoutSource, /Manrope|Space_Grotesk|IBM_Plex_Mono/);
+  assert.match(layoutSource, /subsets: \["arabic", "latin"\]/);
+  for (const role of ["sans", "display", "mono"]) {
+    assert.ok(rtlCss.includes(`--font-${role}: var(--font-arabic)`), `--font-${role} resolves to IBM Plex Sans Arabic`);
+  }
+  assert.match(rtlCss, /letter-spacing: 0 !important/);
 });

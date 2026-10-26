@@ -13,9 +13,9 @@ import {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent
 } from "react";
+import { getContent, type Locale } from "@/data/i18n";
 import {
   getPortfolioAsset,
-  organizations,
   type Organization
 } from "@/data/portfolio";
 
@@ -92,8 +92,10 @@ function OrganizationTile({
   clone,
   onIntent,
   onCancelIntent,
-  onActivate
+  onActivate,
+  exploreLabel
 }: {
+  exploreLabel: string;
   organization: Organization;
   index: number;
   active: boolean;
@@ -132,7 +134,7 @@ function OrganizationTile({
           className="journey-tile__trigger"
           aria-controls="organization-detail-panel"
           aria-expanded={active}
-          aria-label={`Explore ${organization.name}`}
+          aria-label={exploreLabel}
           onFocus={(event) => { if (event.currentTarget.matches(":focus-visible")) onActivate(index); }}
           onClick={() => onActivate(index)}
         >
@@ -143,7 +145,9 @@ function OrganizationTile({
   );
 }
 
-export function OrganizationRail() {
+export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
+  const { organizations, ui } = getContent(locale);
+  const copy = ui.organizations;
   const visibleOrganizations = organizations.filter(
     (organization) => organization.visible
   );
@@ -465,22 +469,23 @@ export function OrganizationRail() {
       }}
     >
       <div className="page-shell organization-showcase__header">
-        <p>Experience · Education · Programs · Certifications · Community</p>
-        <h2 id="organizations-title">Organizations Along My Journey</h2>
+        <p>{copy.kicker}</p>
+        <h2 id="organizations-title">{copy.title}</h2>
         <p className="organization-showcase__intro">
-          Explore the institutions that shaped my learning, work, and community journey.
+          {copy.intro}
         </p>
         <button className="journey-motion-toggle" type="button" aria-pressed={railPaused}
           onClick={() => { railPausedRef.current = !railPaused; setRailPaused(!railPaused); }}>
           {railPaused ? <Play size={15} aria-hidden="true" /> : <Pause size={15} aria-hidden="true" />}
-          {railPaused ? "Resume logo motion" : "Pause logo motion"}
+          {railPaused ? copy.resume : copy.pause}
         </button>
       </div>
 
       <div
         className="organization-showcase__rail"
         ref={railRef}
-        aria-label="Organizations"
+        aria-label={copy.rail}
+        dir="ltr"
         onPointerDown={handleRailPointerDown}
         onPointerMove={handleRailPointerMove}
         onPointerUp={finishRailPointer}
@@ -507,6 +512,7 @@ export function OrganizationRail() {
                   onIntent={scheduleOrganization}
                   onCancelIntent={cancelIntent}
                   onActivate={activateOrganization}
+                  exploreLabel={copy.explore(organization.name)}
                 />
               ))}
             </div>
@@ -520,10 +526,10 @@ export function OrganizationRail() {
       >
         <p className={`organization-detail-stage__hint${displayedOrganization ? " is-hidden" : ""}`}>
           <span className="organization-detail-stage__hint-pointer">
-            Drag the logos, or hover one to explore the relationship.
+            {copy.hintPointer}
           </span>
           <span className="organization-detail-stage__hint-touch">
-            Swipe the moving logos, then tap one to explore the relationship.
+            {copy.hintTouch}
           </span>
         </p>
 
@@ -553,7 +559,7 @@ export function OrganizationRail() {
                   rel="noreferrer noopener"
                   tabIndex={isPanelOpen ? 0 : -1}
                 >
-                  Visit organization <ArrowUpRight aria-hidden="true" size={16} />
+                  {copy.visit} <ArrowUpRight aria-hidden="true" size={16} />
                 </a>
               ) : null}
             </div>
@@ -561,7 +567,7 @@ export function OrganizationRail() {
             <button
               type="button"
               className="organization-detail-panel__close"
-              aria-label="Close organization details"
+              aria-label={copy.close}
               tabIndex={isPanelOpen ? 0 : -1}
               onClick={closePanel}
             >

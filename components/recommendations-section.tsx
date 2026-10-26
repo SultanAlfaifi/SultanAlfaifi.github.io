@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowUpRight, Quote } from "lucide-react";
-import { getPortfolioAsset, recommendations } from "@/data/portfolio";
+import { getContent, type Locale } from "@/data/i18n";
+import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -9,19 +10,20 @@ const recommendationLogoDimensions: Record<string, { width: number; height: numb
   uqu: { width: 1189, height: 480 }
 };
 
-export function RecommendationsSection() {
+export function RecommendationsSection({ locale = "en" }: { locale?: Locale }) {
+  const { recommendations, ui } = getContent(locale);
   return (
     <section id="recommendations" className="section section--recommendations">
       <div className="page-shell">
         <SectionHeader
-          title="Recommendations"
-          description="Perspectives from educators and mentors who have seen me learn, build, and collaborate."
+          title={ui.recommendations.title}
+          description={ui.recommendations.description}
         />
 
         <div className="recommendations-grid">
           {recommendations.map((recommendation, index) => (
             <Reveal
-              key={recommendation.name}
+              key={recommendation.initials}
               className="recommendation-card"
               delay={index * 100}
             >
@@ -29,6 +31,7 @@ export function RecommendationsSection() {
               <blockquote>
                 <p>“{recommendation.quote}”</p>
               </blockquote>
+              {ui.recommendations.translated ? <p className="recommendation-card__translated">{ui.recommendations.translated}</p> : null}
               <div className="recommendation-card__person">
                 <span aria-hidden="true">{recommendation.initials}</span>
                 <div>
@@ -39,7 +42,7 @@ export function RecommendationsSection() {
                 </div>
               </div>
               {recommendation.contextAssetIds.length ? (
-                <div className="recommendation-card__context" aria-label="Recommendation context">
+                <div className="recommendation-card__context" aria-label={ui.recommendations.context}>
                   {recommendation.contextAssetIds.map((assetId) => {
                     const asset = getPortfolioAsset(assetId);
                     if (!asset) return null;
@@ -56,7 +59,7 @@ export function RecommendationsSection() {
                   })}
                 </div>
               ) : null}
-              <ul className="tag-list" aria-label="Recommendation themes">
+              <ul className="tag-list" aria-label={ui.recommendations.themes}>
                 {recommendation.tags.map((tag) => (
                   <li key={tag}>{tag}</li>
                 ))}
@@ -70,7 +73,7 @@ export function RecommendationsSection() {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  View on LinkedIn <ArrowUpRight aria-hidden="true" size={15} />
+                  {ui.recommendations.linkedin} <ArrowUpRight aria-hidden="true" size={15} />
                 </a>
               ) : null}
             </Reveal>
