@@ -6,6 +6,7 @@ import { CommandPalette } from "./command-palette";
 import { CommunitySection } from "./community-section";
 import { ContactSection } from "./contact-section";
 import { CursorRing } from "./cursor-ring";
+import { CvSection } from "./cv-section";
 import { ExperienceSection } from "./experience-section";
 import { Footer } from "./footer";
 import { HelpSection } from "./help-section";
@@ -56,6 +57,7 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
           </details>
         </div>
         <RecommendationsSection locale={locale} />
+        <CvSection locale={locale} />
         <HelpSection locale={locale} />
         <ContactSection locale={locale} />
       </main>

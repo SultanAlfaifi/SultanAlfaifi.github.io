@@ -48,6 +48,15 @@ rules are managed from one typed configuration file.
   - `⌘K` / `Ctrl+K` / `/` command palette for sections, projects, and actions.
   - An interactive console (`help`, `run`, `projects`, `sudo hire sultan`…)
     that answers from `data/portfolio.ts` and refuses destructive commands.
+  - A real AI agent inside that console (Claude Sonnet 5.5 through OpenRouter, behind a
+    Cloudflare Worker): it answers only from the site's own data in English or Arabic, cites
+    the section each fact comes from, opens projects on the page, runs an honest fit check
+    against a job description, and drafts emails that only the visitor can send. When the
+    Worker is down or out of budget, the console falls back to its scripted replies.
+    Evals, failures included, are published at `/agent-evals/`.
+- **"Want the CV?"**: a one-page, ATS-readable English CV that downloads instantly, plus a
+  tailored version built in the browser with pdfmake from an approved bullet library. The
+  AI may only pick and order library IDs; the Worker rejects anything else.
   - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
     a variable-weight footer wordmark that swells near the cursor.
   - A Konami-code easter egg, plus a Motion toggle that, like
@@ -242,6 +251,20 @@ The generated accessibility report is available in
 - Accessible organization names and hidden duplicate marquee items
 - Static wrapping organization grid for `prefers-reduced-motion`
 - Intentional portrait cropping with preserved faces and aspect ratio
+
+## AI agent and CV backend
+
+The console agent and the CV emails run on a small Cloudflare Worker in [`worker/`](./worker),
+which holds the OpenRouter and Resend keys so the static site never sees them. Setup, local
+development, costs, limits, privacy, and evals are in
+[`docs/agent-setup.md`](./docs/agent-setup.md).
+
+```powershell
+npm run knowledge      # regenerate the agent's knowledge from data/*.ts
+npm run cv             # build the general CV into public/cv/
+npm run agent:dev      # run the Worker locally (wrangler dev)
+npm run evals          # run the eval set against the local Worker
+```
 
 ## Deployment
 

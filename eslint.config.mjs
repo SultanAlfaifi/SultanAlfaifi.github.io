@@ -15,6 +15,9 @@ export default defineConfig([
     ".next-final-scenario/**",
     ".next-verify-*/**",
     "out/**",
+    ".wrangler/**",
+    "worker/.wrangler/**",
+    "worker/src/generated/**",
     "coverage/**",
     "next-env.d.ts"
   ])

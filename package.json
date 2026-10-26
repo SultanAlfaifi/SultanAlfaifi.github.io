@@ -3,42 +3,55 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "npm run cv",
     "dev": "next dev",
-    "build": "next build && node scripts/localize-export.mjs",
+    "build": "npm run knowledge && npm run cv && next build && node scripts/localize-export.mjs",
     "start": "serve out -l 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p worker",
+    "test": "npm run knowledge && node --disable-warning=ExperimentalWarning --import tsx --test tests/*.test.mjs",
+    "knowledge": "tsx scripts/build-knowledge.ts",
+    "cv": "tsx scripts/build-cv.ts",
+    "agent:dev": "wrangler dev --config worker/wrangler.jsonc --env dev --port 8787",
+    "agent:migrate:local": "wrangler d1 migrations apply sultan-agent-dev --local --env dev --config worker/wrangler.jsonc",
+    "agent:migrate": "wrangler d1 migrations apply sultan-agent --remote --config worker/wrangler.jsonc",
+    "agent:deploy": "wrangler deploy --config worker/wrangler.jsonc",
+    "evals": "tsx evals/run.ts",
     "process:assets": "tsx scripts/process-assets.ts",
     "portrait": "node scripts/update-portrait.mjs",
     "audit:contrast": "node scripts/contrast-audit.mjs",
     "audit:a11y": "node scripts/accessibility-audit.mjs http://localhost:3000",
     "audit:links": "node scripts/link-audit.mjs",
-    "check": "npm run lint && npm run typecheck && npm test && npm run audit:contrast && npm run build"
+    "check": "npm run knowledge && npm run lint && npm run typecheck && npm test && npm run audit:contrast && npm run build"
   },
   "dependencies": {
     "lucide-react": "1.27.0",
-    "next": "16.2.12",
+    "next": "16.4.1",
+    "pdfmake": "0.3.13",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "5.20261026.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "axe-core": "^4.11.0",
     "eslint": "^9.39.0",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "16.4.1",
     "jsdom": "^26.1.0",
     "serve": "14.2.6",
-    "sharp": "0.35.3",
+    "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "wrangler": "4.152.0"
   },
   "overrides": {
+    "compression": "1.8.2",
     "postcss": "8.5.25",
-    "sharp": "0.35.3"
+    "sharp": "0.35.5",
+    "undici": "7.30.1"
   }
 }

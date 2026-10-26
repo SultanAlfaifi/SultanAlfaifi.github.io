@@ -460,6 +460,7 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
 
   return (
     <section
+      id="organizations"
       className="organization-showcase"
       aria-labelledby="organizations-title"
       onPointerLeave={(event) => { if (event.pointerType === "mouse") closePanel(); }}

@@ -617,7 +617,7 @@ export const identity = {
   education: "Software Engineering, Umm Al-Qura University (graduating 2027)",
   languages: "Arabic and English",
   email: "sultalfaifi@gmail.com",
-  resumeUrl: null as Nullable<string>,
+  resumeUrl: "/cv/Sultan-Alfaifi-CV.pdf" as Nullable<string>,
   coreStack: [
     "Laravel",
     "Python",

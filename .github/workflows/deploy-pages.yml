@@ -36,6 +36,9 @@ jobs:
       - name: Validate and export
         env:
           NEXT_PUBLIC_SITE_URL: https://SultAlfaifi.com
+          # Repository variables (Settings → Secrets and variables → Actions → Variables). Both are public values.
+          NEXT_PUBLIC_AGENT_URL: ${{ vars.AGENT_URL }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.TURNSTILE_SITE_KEY }}
         run: npm run check
 
       - name: Upload static site
