@@ -233,10 +233,10 @@ export function notifyCvDownload(token: string, payload: { selection: string; co
   return request<SendResult>("/cv/notify", payload, { token });
 }
 
-export function requestCvCode(turnstile: string, email: string) {
-  return request<SendResult>("/cv/code", { email, turnstileToken: turnstile });
+export function requestCvCode(turnstile: string, email: string, locale: "en" | "ar") {
+  return request<SendResult>("/cv/code", { email, locale, turnstileToken: turnstile });
 }
 
-export function confirmCvCode(token: string, payload: { email: string; code: string; selection: string; company: string; coverMessage?: string; signature?: string }) {
+export function confirmCvCode(token: string, payload: { email: string; code: string; selection: string; company: string; locale: "en" | "ar"; coverMessage?: string; signature?: string }) {
   return request<SendResult>("/cv/confirm", payload, { token });
 }

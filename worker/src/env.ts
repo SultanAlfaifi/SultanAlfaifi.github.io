@@ -9,6 +9,8 @@ export interface Env {
   MODEL: string;
   REASONING_EFFORT: string;
   EMAIL_FROM: string;
+  EMAIL_NOTIFY_FROM?: string;
+  EMAIL_REPLY_TO?: string;
   DAILY_CHAT_CAP: string;
   DAILY_CHAT_PER_VISITOR: string;
   DAILY_EMAIL_CAP: string;

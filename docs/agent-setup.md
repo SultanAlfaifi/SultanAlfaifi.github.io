@@ -76,18 +76,35 @@ npx wrangler secret put SESSION_SECRET --config worker/wrangler.jsonc --env=""
 
 ### و. Resend للإيميل
 
+كل الرسائل تطلع من دومين الموقع نفسه، بقوالب HTML مرتبة ومعها نسخة نص عادي:
+
+| الرسالة | من | لمن | الرد يروح لـ |
+|---|---|---|---|
+| رمز التحقق، ونسخة السيرة (بلغة الزائر) | `Sultan Alfaifi <hello@sultalfaifi.com>` | الزائر | بريدك |
+| رسالة زائر لك، وإشعارات تحميل السيرة (بالعربي) | `sultalfaifi.com <notifications@sultalfaifi.com>` | `sultalfaifi@gmail.com` | الزائر نفسه |
+
+الإرسال ما يحتاج صندوق بريد حقيقي على هذي العناوين. ويمكنك في Gmail تسوي فلتر على `notifications@` يحطها تحت تصنيف.
+
 1. سجّل في [resend.com](https://resend.com). المجاني يكفي: 3000 إيميل بالشهر و100 باليوم.
-2. **Domains → Add domain → `sultalfaifi.com`**. يطلع لك سجلات DNS، أغلبها على النطاق الفرعي `send` وسجل DKIM باسم `resend._domainkey`.
-3. في Namecheap: **Domain List → Manage → Advanced DNS** وأضف السجلات كما هي.
-   - إعادة توجيه الإيميل الحالية (سجلات MX على النطاق الرئيسي) تظل زي ما هي، لأن سجلات Resend على `send`.
-   - لا تضيف سجل SPF ثاني على النطاق الرئيسي `@`. اللي يطلبه Resend يكون على `send`.
-4. بعد ما يصير **Verified**، سوّ API key بصلاحية **Sending access** ومحصورة على `sultalfaifi.com`:
+2. **Domains → Add domain → `sultalfaifi.com`**، واختر المنطقة **Ireland (eu-west-1)** لأنها الأقرب. يطلع لك ثلاث سجلات:
+   - `MX` باسم `send` (الأولوية 10)
+   - `TXT` باسم `send` (يبدأ بـ `v=spf1 include:amazonses.com`)
+   - `TXT` باسم `resend._domainkey` (مفتاح DKIM)
+3. في Namecheap: **Domain List → Manage → Advanced DNS**.
+   - السجلين `TXT` تضيفهم من **Host Records → Add New Record**. اكتب في Host الاسم بس (`send` أو `resend._domainkey`)، بدون الدومين.
+   - سجل `MX`: Namecheap ما يقبل MX إضافي وإعدادات البريد على **Email Forwarding**. غيّرها من **Mail Settings** إلى **Custom MX**، ثم أضف:
+     - سجلات التحويل الحالية كما هي، عشان ما يتوقف أي تحويل عندك: `@` → `eforward1.registrar-servers.com` (10)، و`eforward2` (10)، و`eforward3` (10)، و`eforward4` (15)، و`eforward5` (20).
+     - سجل Resend: `send` → القيمة اللي أعطاك Resend، والأولوية 10.
+   - وأضف سجل DMARC، وهو اللي يخلي Gmail يثق في بريد الدومين أكثر: **TXT** باسم `_dmarc` والقيمة `v=DMARC1; p=none; rua=mailto:sultalfaifi@gmail.com`
+   - لا تضيف سجل SPF ثاني على `@`. اللي يطلبه Resend يكون على `send`، وسجل `@` الحالي يبقى للتحويل.
+4. اضغط **Verify** في Resend. التفعيل يأخذ من دقائق إلى ساعات.
+5. بعد ما يصير **Verified**، سوّ API key بصلاحية **Sending access** ومحصورة على `sultalfaifi.com`، وأدخله بنفسك:
 
 ```bash
 npx wrangler secret put RESEND_API_KEY --config worker/wrangler.jsonc --env=""
 ```
 
-المرسل الافتراضي `agent@sultalfaifi.com` (المتغير `EMAIL_FROM` في `worker/wrangler.jsonc`)، والإيميلات توصلك على `sultalfaifi@gmail.com` من بيانات الموقع.
+العناوين في `worker/wrangler.jsonc`: `EMAIL_FROM` لرسائل الزوار و`EMAIL_NOTIFY_FROM` لإشعاراتك. والرد على رسائل الزوار يروح لبريدك في Gmail. ولو سوّيت تحويل لـ `hello@sultalfaifi.com` وجرّبته، أضف `"EMAIL_REPLY_TO": "hello@sultalfaifi.com"` لنفس الملف، فيصير الرد على عنوان الدومين بدل Gmail.
 
 ### ز. النشر
 
@@ -209,7 +226,8 @@ npx wrangler d1 execute sultan-agent --remote --config worker/wrangler.jsonc --c
 | الطرفية تقول إن المساعد متوقف | `/health` يرد `"agent": false` | تأكد من `OPENROUTER_API_KEY` و`TURNSTILE_SECRET_KEY` بأمر `npx wrangler secret list --config worker/wrangler.jsonc` |
 | «ما قدرت أوصل للمساعد» مع كل سؤال | OpenRouter يرفض الطلب (400)، مثلًا بسبب اسم النموذج أو خيار `reasoning` | شوف السجل بأمر `npx wrangler tail --config worker/wrangler.jsonc`. جرّب تخلي `REASONING_EFFORT` فاضي، أو صحّح `MODEL` |
 | «خلصت ميزانية المساعد» | وصلت سقف الرصيد في OpenRouter | زد الرصيد أو السقف. والمساعد يرجع تلقائيًا بعد 30 دقيقة |
-| الإيميلات ما توصل | الدومين مو Verified في Resend، أو `EMAIL_FROM` على دومين ثاني | راجع سجلات DNS في Namecheap وصفحة Domains في Resend |
+| الإيميلات ما توصل | الدومين مو Verified في Resend، أو `EMAIL_FROM` أو `EMAIL_NOTIFY_FROM` على دومين ثاني | راجع سجلات DNS في Namecheap وصفحة Domains في Resend، وصفحة Emails فيه تبيّن سبب أي رسالة رجعت |
+| التحويل على الدومين وقف بعد Custom MX | سجلات `eforward` ناقصة | أضف سجلات `eforward1` إلى `eforward5` على `@` كما في الخطوة و |
 | خطأ CORS في المتصفح | الرابط في `AGENT_URL` غلط، أو الدومين مو في `ALLOWED_ORIGINS` | صحّح المتغير في GitHub، أو أضف الدومين في `worker/wrangler.jsonc` ثم `npm run agent:deploy` |
 
 ## 8. معلومات تنتظر تأكيدك

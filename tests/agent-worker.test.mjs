@@ -149,6 +149,10 @@ test("email always goes to Sultan, with the visitor only as reply-to", async () 
   assert.deepEqual(email.to, ["sultalfaifi@gmail.com"]);
   assert.equal(email.reply_to, "recruiter@example.com");
   assert.doesNotMatch(email.subject, /[\r\n]/);
+  // Sent from the site's own domain, as a branded HTML email with a plain-text part.
+  assert.equal(email.from, "sultalfaifi.com <notifications@sultalfaifi.com>", "Sultan's own alerts come from notifications@");
+  assert.ok(email.html.includes("<html") && email.text.includes("Hello"));
+  assert.deepEqual(email.tags, [{ name: "category", value: "contact" }]);
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "bad", email: "a@b.co", subject: "x", message: "y" } })).status, 403);
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "ok", email: "not-an-email", subject: "x", message: "y" } })).status, 400);
 });
@@ -195,7 +199,7 @@ test("a CV copy is emailed only after the right code, and forged cover notes are
   harness.calls.resend.length = 0;
   const start = await (await harness.request(worker, "/cv/code", { body: { turnstileToken: "ok", email: "Visitor@Example.com" } })).json();
   assert.equal(start.sent, true);
-  const code = /Your code is (\d{6})/.exec(harness.calls.resend.at(-1).text)[1];
+  const code = /^(\d{6}) /.exec(harness.calls.resend.at(-1).subject)[1];
   const wrong = await harness.request(worker, "/cv/confirm", { token, body: { email: "visitor@example.com", code: code === "000000" ? "111111" : "000000", selection, company: "Salla" } });
   assert.equal((await wrong.json()).error, "bad_code");
   const right = await harness.request(worker, "/cv/confirm", { token, body: { email: "visitor@example.com", code, selection, company: "Salla <b>https://evil.example</b>", coverMessage: "Forged praise", signature: "nope" } });
@@ -203,9 +207,25 @@ test("a CV copy is emailed only after the right code, and forged cover notes are
   const [, copy, note] = harness.calls.resend;
   assert.deepEqual(copy.to, ["visitor@example.com"]);
   assert.deepEqual(note.to, ["sultalfaifi@gmail.com"]);
-  assert.match(note.text, /Company: Salla b \/b|Company: Salla b/);
-  assert.doesNotMatch(note.text, /Forged praise|evil\.example/);
-  assert.match(note.text, /Field: backend/);
+  assert.match(note.text, /الشركة: Salla b/);
+  assert.doesNotMatch(note.text + note.html, /Forged praise|evil\.example/);
+  assert.match(note.text, /المجال: Back-end/);
+  assert.equal(copy.from, "Sultan Alfaifi <hello@sultalfaifi.com>");
+  assert.equal(copy.reply_to, "sultalfaifi@gmail.com", "the visitor's reply reaches Sultan");
+  assert.match(copy.html, /\/\?cv=[^"]+#cv/, "the copy links back to the exact CV");
   const reuse = await harness.request(worker, "/cv/confirm", { token, body: { email: "visitor@example.com", code, selection } });
   assert.equal((await reuse.json()).error, "bad_code", "a code works once");
+});
+
+test("visitor emails speak the visitor's language and escape whatever the visitor typed", async () => {
+  harness.calls.resend.length = 0;
+  await harness.request(worker, "/cv/code", { body: { turnstileToken: "ok", email: "arabic@example.com", locale: "ar" } });
+  const arabic = harness.calls.resend.at(-1);
+  assert.match(arabic.subject, /^\d{6} رمزك لسيرة سلطان الفيفي$/);
+  assert.match(arabic.html, /<html lang="ar" dir="rtl">/);
+  assert.match(arabic.from, /^سلطان الفيفي </);
+  await harness.request(worker, "/email/send", { body: { turnstileToken: "ok", name: "<img src=x onerror=alert(1)>", email: "x@example.com", subject: "Hi", message: "<script>alert(1)</script>", topic: "role" } });
+  const contact = harness.calls.resend.at(-1);
+  assert.doesNotMatch(contact.html, /<script>|<img src=x/);
+  assert.match(contact.html, /&lt;script&gt;/);
 });

@@ -280,7 +280,7 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     setEmailState("sending");
     try {
       const token = await turnstileToken(slotRef.current, locale, "cv_code");
-      const result = await requestCvCode(token, email.trim());
+      const result = await requestCvCode(token, email.trim(), locale);
       setDevCode(result.devCode ?? "");
       setEmailState("sent");
     } catch (error) {
@@ -294,7 +294,7 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     setEmailState("confirming");
     try {
       const cover = pick?.cover;
-      const payload = { email: email.trim(), code: code.trim(), selection: encodeSelection(shown), company: company.trim(), ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
+      const payload = { email: email.trim(), code: code.trim(), selection: encodeSelection(shown), company: company.trim(), locale, ...(cover ? { coverMessage: cover.message, signature: cover.signature } : {}) };
       await withSession(slotRef.current, locale, (token) => confirmCvCode(token, payload));
       setEmailState("done");
       completed.current = true;
