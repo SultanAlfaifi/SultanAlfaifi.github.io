@@ -23,6 +23,8 @@ type Result = {
   trace: string[];
   sources: string[];
   ms: number;
+  // Added after a person read the answer; the automatic verdict above is never changed.
+  review?: string;
 };
 
 type Report = {
@@ -49,6 +51,7 @@ export default function AgentEvalsPage() {
   const report = saved?.mode === "live" ? saved : null;
   const questions = load<{ questions: Question[] }>("evals/questions.json")?.questions ?? [];
   const failed = report?.results.filter((result) => !result.passed) ?? [];
+  const reviewed = failed.filter((result) => result.review).length;
   const passed = report?.results.filter((result) => result.passed) ?? [];
 
   return (
@@ -68,6 +71,7 @@ export default function AgentEvalsPage() {
         {report ? (
           <section className="evals-summary" aria-label="Latest run">
             <p className="evals-summary__score"><strong>{report.totals.passed}</strong> of {report.totals.total} passed</p>
+            {reviewed ? <p>{reviewed} of the {failed.length} failures were reviewed by hand as grader errors: the answers were right, the checks were too strict. They stay counted as failures for this run, and the checks are fixed for the next one.</p> : null}
             <dl>
               <div><dt>Run</dt><dd>{new Date(report.runAt).toUTCString()}</dd></div>
               <div><dt>Model</dt><dd>{report.model}</dd></div>
@@ -117,6 +121,7 @@ function ResultCard({ result }: { result: Result }) {
       </h3>
       <p className="evals-result__question" lang={result.lang} dir="auto">{result.question}</p>
       {result.failures.length ? <ul className="evals-result__failures">{result.failures.map((failure) => <li key={failure}>{failure}</li>)}</ul> : null}
+      {result.review ? <p className="evals-result__review">{result.review}</p> : null}
       <details>
         <summary>Answer and trace</summary>
         <p className="evals-result__answer" lang={result.lang} dir="auto">{result.answer || "(no text answer)"}</p>

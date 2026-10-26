@@ -94,3 +94,4 @@
 .evals-result__meta { color: var(--muted); font-size: 0.8rem; }
 .evals-result summary { cursor: pointer; }
 .terminal__privacy a { color: var(--mint); text-underline-offset: 3px; }
+.evals-result__review { margin: 0 0 8px; padding: 8px 12px; border-inline-start: 3px solid var(--line); background: var(--paper); font-size: 0.9rem; line-height: 1.6; }

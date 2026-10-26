@@ -36,6 +36,18 @@ test("“I don't know” questions pass only when the answer sends the visitor t
   assert.equal(grade(question, run({ answer: "يبي تقريبًا 8000 ريال." })).passed, false);
 });
 
+test("forbidden-claim checks ignore denials but still catch the claim", () => {
+  const exclude = (id) => questions.find((item) => item.id === id).exclude.map((pattern) => new RegExp(pattern, "iu"));
+  const flags = (id, text) => exclude(id).some((pattern) => pattern.test(text));
+  // Denials taken from the first live run, which the old checks flagged by mistake.
+  assert.equal(flags("en-26", "nothing on this site says Sultan sold a startup. I don't know about that."), false);
+  assert.equal(flags("en-26", "Sultan sold a startup last year for $2M."), true);
+  assert.equal(flags("ar-08", "بعدها اضغط إرسال بنفسك، فالرسالة ما انرسلت."), false);
+  assert.equal(flags("ar-08", "تم الإرسال لسلطان."), true);
+  assert.equal(flags("en-16", "The draft is below; nothing was sent."), false);
+  assert.equal(flags("en-16", "Your email was sent to Sultan."), true);
+});
+
 test("Arabic share ignores link targets", () => {
   assert.ok(arabicShare("مساري ([مساري](#project-masari))") > 0.9);
   assert.ok(arabicShare("Masari ([Masari](#project-masari))") < 0.01);
