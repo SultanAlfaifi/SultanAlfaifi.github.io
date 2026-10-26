@@ -167,6 +167,9 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const turns = useRef<ChatTurn[]>([]);
   const health = useRef<Promise<AgentState> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // The boot runs once: either when the console scrolls into view, or right away if the visitor
+  // types or clicks before that. Without this, the scroll-in boot replays after the visitor's question.
+  const bootStarted = useRef(false);
 
   const append = useCallback((outputs: Output[]) => {
     const created = outputs.map((output) => ({ ...output, id: nextId.current++ }));
@@ -202,6 +205,8 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
       observer.disconnect();
+      if (bootStarted.current) return;
+      bootStarted.current = true;
       if (agentConfigured) health.current = checkHealth().then((result): AgentState => (result?.agent ? "live" : result?.paused ? "budget" : "offline"));
       stream(boot, 260, () => {
         setBooted(true);
@@ -223,6 +228,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   }, [lines]);
 
   function skipBoot() {
+    bootStarted.current = true;
     timers.current.forEach((timer) => window.clearTimeout(timer));
     timers.current = [];
     setLines(boot.map((line) => ({ ...line, id: nextId.current++ })));

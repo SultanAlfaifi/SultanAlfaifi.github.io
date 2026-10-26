@@ -17,6 +17,11 @@ test("the console keeps its scripted replies whenever the agent can't answer", (
   assert.match(terminal, /else scripted\(scriptedIntent\(trimmed\)\)/, "offline free-form questions get scripted replies");
 });
 
+test("the boot plays once, even if the visitor types before the console scrolls into view", () => {
+  assert.match(terminal, /if \(bootStarted\.current\) return;\s*bootStarted\.current = true;/);
+  assert.match(terminal, /function skipBoot\(\) \{\s*bootStarted\.current = true;/);
+});
+
 test("answers are announced once, complete, not word by word", () => {
   assert.match(terminal, /aria-hidden=\{line\.streaming \|\| undefined\}/);
   assert.match(terminal, /Re-key finished answers/);
