@@ -373,6 +373,24 @@ const en = {
       },
       project: { see: "See it on the page", demo: "Try it", code: "Code" },
       tour: { title: (count: number) => `Tour · ${count} stops`, aria: "Tour stops" },
+      // The open panel greets the visitor with the things the agent does best, as one-click starts.
+      // `fill` puts the prompt in the input for the visitor to finish instead of sending it.
+      welcome: { title: "Hi, I'm Sultan's assistant", body: "I know every project and number on this site, and I can show them to you on the page myself.", aria: "Ways to start" },
+      starters: [
+        { icon: "tour", title: "A one-minute tour", hint: "I walk you through his strongest work", prompt: "Give me a quick tour of Sultan's best work", fill: false },
+        { icon: "project", title: "Which project first?", hint: "The one most worth your time", prompt: "Which project should I try first?", fill: false },
+        { icon: "fit", title: "Check him against a role", hint: "Paste the job description", prompt: "fit ", fill: true },
+        { icon: "cv", title: "A CV for your role", hint: "One page, built from this site", prompt: "Tailor his CV for this role: ", fill: true }
+      ],
+      startersFor: {
+        collaborate: [
+          { icon: "tour", title: "A one-minute tour", hint: "I walk you through his strongest work", prompt: "Give me a quick tour of Sultan's best work", fill: false },
+          { icon: "agent", title: "An agent for my product?", hint: "What he's built that's closest", prompt: "Can Sultan build an AI agent for my product?", fill: false },
+          { icon: "project", title: "Which project first?", hint: "The one most worth your time", prompt: "Which project should I try first?", fill: false },
+          { icon: "mail", title: "Email Sultan an idea", hint: "I draft it, you send it", prompt: "I want to email Sultan about an idea", fill: false }
+        ]
+      } as Record<string, { icon: string; title: string; hint: string; prompt: string; fill: boolean }[]>,
+      panelPlaceholder: "Ask anything about Sultan…",
       openDemo: (title: string) => `Open ${title} ↗`,
       chips: ["Which project should I try first?", "fit AI engineer intern", "I want to email Sultan about a role"],
       // Suggested questions for visitors who said why they came.
@@ -839,6 +857,22 @@ const ar: UiStrings = {
       },
       project: { see: "شوفه في الصفحة", demo: "جرّبه", code: "الكود" },
       tour: { title: (count: number) => (count === 2 ? "جولة · محطتين" : `جولة · ${count} محطات`), aria: "محطات الجولة" },
+      welcome: { title: "هلا، أنا مساعد سلطان", body: "أعرف كل مشروع ورقم في هذا الموقع، وأقدر أوريك إياها في الصفحة بنفسي.", aria: "طرق البداية" },
+      starters: [
+        { icon: "tour", title: "جولة في دقيقة", hint: "أمشي معك على أقوى شغله", prompt: "عطني جولة سريعة على أهم شغل سلطان", fill: false },
+        { icon: "project", title: "أي مشروع أجرّب أول؟", hint: "اللي يستاهل وقتك أكثر", prompt: "أي مشروع أجرّب أول؟", fill: false },
+        { icon: "fit", title: "طابقه مع وظيفة", hint: "الصق وصف الوظيفة", prompt: "fit ", fill: true },
+        { icon: "cv", title: "سيرة لوظيفتك", hint: "صفحة وحدة من بيانات الموقع", prompt: "أبي سيرته لوظيفة: ", fill: true }
+      ],
+      startersFor: {
+        collaborate: [
+          { icon: "tour", title: "جولة في دقيقة", hint: "أمشي معك على أقوى شغله", prompt: "عطني جولة سريعة على أهم شغل سلطان", fill: false },
+          { icon: "agent", title: "وكيل ذكي لمنتجي؟", hint: "وش بنى قريب من فكرتك", prompt: "يقدر سلطان يبني وكيل ذكاء اصطناعي لمنتجي؟", fill: false },
+          { icon: "project", title: "أي مشروع أجرّب أول؟", hint: "اللي يستاهل وقتك أكثر", prompt: "أي مشروع أجرّب أول؟", fill: false },
+          { icon: "mail", title: "راسل سلطان بفكرة", hint: "أكتب المسودة وأنت ترسلها", prompt: "أبغى أراسل سلطان عن فكرة", fill: false }
+        ]
+      },
+      panelPlaceholder: "اسأل أي شيء عن سلطان…",
       openDemo: (title: string) => `افتح ${title} ↗`,
       chips: ["أي مشروع أجرّب أول؟", "fit متدرّب هندسة ذكاء اصطناعي", "أبغى أراسل سلطان عن وظيفة"],
       chipsFor: {

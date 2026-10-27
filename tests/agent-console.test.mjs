@@ -54,6 +54,15 @@ test("moving the page hands the chat to a companion that stays with the visitor 
   assert.ok(styles.includes('html[data-companion="on"] .assistant-launcher'), "the floating launcher steps aside for the companion");
 });
 
+test("the open panel greets with one-click starts instead of the boot log", () => {
+  assert.ok(terminal.includes("docked && live && !started"), "the welcome shows only until the first question");
+  assert.ok(styles.includes(".terminal-shell--docked.terminal-shell--live .terminal__line--boot { display: none; }"));
+  assert.ok(styles.includes(".terminal-shell--docked .terminal__chips:not(.terminal__chips--agent) { display: none; }"), "console commands stay in the inline console");
+  assert.ok(terminal.includes("if (!starter.fill)"), "a starter either asks or fills the input for the visitor to finish");
+  assert.ok(terminal.includes('<span className="agent-caret" aria-hidden="true" />'), "a cursor writes the streaming answer");
+  assert.ok(styles.includes('html:not([data-motion="off"]) .agent-orb::before'), "the orb moves only while motion is on");
+});
+
 test("the human check and the session start before the first question, not after it", () => {
   assert.match(terminal, /onFocus=\{warmUp\}/);
   assert.match(terminal, /function openPanel\(\) \{[\s\S]*?warmUp\(\);\s*\}/);

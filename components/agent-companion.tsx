@@ -9,7 +9,10 @@ import { AgentText } from "./agent-cards";
 import { motionAllowed } from "./motion-preference";
 
 // `card` is a report or a draft that arrived while the visitor was out on the page; it lives in the chat.
-export type CompanionView = { kind: "answer"; card?: "fit" | "draft" } | { kind: "tour"; stops: TourStop[]; index: number };
+// `link` is a demo the agent opened the page to, so the button it mentions is right there.
+export type CompanionView =
+  | { kind: "answer"; card?: "fit" | "draft"; link?: { href: string; label: string } }
+  | { kind: "tour"; stops: TourStop[]; index: number };
 
 type CompanionProps = {
   view: CompanionView;
@@ -81,7 +84,7 @@ export function Companion({ view, locale, answer, status, busy, anchors, urls, e
       }}
     >
       <div className="companion__bar">
-        <span className="companion__pulse" data-busy={busy || undefined} aria-hidden="true" />
+        <span className="agent-orb" data-busy={busy || undefined} aria-hidden="true" />
         <p className="companion__name">{copy.name}</p>
         {tour ? <p className="companion__step" dir="auto">{copy.step(tour.index + 1, tour.stops.length)}</p> : null}
         <button type="button" className="companion__icon" onClick={onClose} aria-label={copy.close} title={copy.close}>
@@ -110,6 +113,9 @@ export function Companion({ view, locale, answer, status, busy, anchors, urls, e
         )}
       </div>
 
+      {view.kind === "answer" && view.link && !view.card ? (
+        <a className="companion__primary companion__open" href={view.link.href} target="_blank" rel="noreferrer noopener">{view.link.label}</a>
+      ) : null}
       {view.kind === "answer" && view.card ? (
         <button type="button" className="companion__primary companion__open" onClick={onBack}>
           {view.card === "fit" ? copy.openFit : copy.openDraft}

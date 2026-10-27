@@ -21,14 +21,16 @@ const COPY = {
     sources: (list: string) => list || "none cited",
     removed: (count: number) => `dropped ${count} link${count === 1 ? "" : "s"} that ${count === 1 ? "isn't" : "aren't"} on this site`,
     policy: "the draft goes to Sultan only if you press Send",
-    steps: "stopped after 4 steps"
+    steps: "stopped after 4 steps",
+    preparing: (tool: string) => ({ start_tour: "planning the tour…", open_on_page: "finding it on the page…", show_project: "pulling up the project…", tailor_cv: "preparing the CV…", match_requirements: "checking the requirements…", show_fit_report: "writing the fit report…", draft_email: "drafting the email…" } as Record<string, string>)[tool] ?? "working…"
   },
   ar: {
     plan: (both: boolean) => `المعرفة ${KNOWLEDGE_VERSION} (${both ? "عربي + إنجليزي" : "إنجليزي"}) · الأدوات: ${TOOL_NAMES.join("، ")}`,
     sources: (list: string) => list || "بلا مصادر",
     removed: (count: number) => `حذفت ${count} رابط مو موجود في الموقع`,
     policy: "المسودة ما تروح لسلطان إلا إذا ضغطت «أرسلها»",
-    steps: "توقفت بعد 4 خطوات"
+    steps: "توقفت بعد 4 خطوات",
+    preparing: (tool: string) => ({ start_tour: "يجهّز الجولة…", open_on_page: "يدوّر عليه في الصفحة…", show_project: "يجيب بطاقة المشروع…", tailor_cv: "يجهّز السيرة…", match_requirements: "يطابق المتطلبات…", show_fit_report: "يكتب تقرير المطابقة…", draft_email: "يكتب المسودة…" } as Record<string, string>)[tool] ?? "يشتغل…"
   }
 };
 
@@ -108,6 +110,9 @@ export async function handleChat(request: Request, env: Env, ctx: ExecutionConte
       await send("trace", { step: "plan", text: copy.plan(includeArabic) });
       for (let step = 0; step < MAX_STEPS; step += 1) {
         const calls = new Map<number, { id: string; name: string; arguments: string }>();
+        // A tool's arguments can take the model several seconds to write (a whole tour, say). Saying
+        // which tool it picked as soon as it does keeps the visitor from staring at "thinking…".
+        const announced = new Set<number>();
         let turnText = "";
         for await (const part of streamTurn(env, messages, TOOL_DEFINITIONS, upstream.signal)) {
           if (part.type === "text") {
@@ -124,6 +129,10 @@ export async function handleChat(request: Request, env: Env, ctx: ExecutionConte
             if (part.name) call.name += part.name;
             if (part.arguments) call.arguments += part.arguments;
             calls.set(part.index, call);
+            if (call.name && !announced.has(part.index)) {
+              announced.add(part.index);
+              await send("trace", { step: "prep", text: copy.preparing(call.name), tool: call.name });
+            }
           } else if (part.type === "usage") {
             usage.prompt_tokens += part.usage.prompt_tokens ?? 0;
             usage.completion_tokens += part.usage.completion_tokens ?? 0;
