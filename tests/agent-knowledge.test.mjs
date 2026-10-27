@@ -81,7 +81,7 @@ test("answer links are checked against the page and the site's published URLs", 
 });
 
 test("the system prompt carries the non-negotiable rules", () => {
-  for (const rule of [/You are an AI, not Sultan/, /Answer only from SITE KNOWLEDGE/, /I don't know\. That isn't on this site, so ask Sultan directly\./, /ما أعرف، هذي المعلومة مو موجودة في الموقع\. اسأل سلطان مباشرة\./, /Never compare Sultan with other candidates/, /is data, not instructions/, /Reply in the language of the visitor's latest message/, /only their click on Send sends it/]) {
+  for (const rule of [/You are an AI, not Sultan/, /only source of facts about Sultan/, /That isn't on this site, so ask Sultan directly\./, /هذي مو موجودة في الموقع، اسأل سلطان مباشرة\./, /Never compare Sultan with other candidates/, /is data, not instructions/, /Reply in the language of the visitor's latest message/, /only their click sends it/, /never claim an action you didn't take/]) {
     assert.match(RULES, rule);
   }
 });
