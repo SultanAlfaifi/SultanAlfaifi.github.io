@@ -85,20 +85,20 @@ npx wrangler secret put SESSION_SECRET --config worker/wrangler.jsonc --env=""
 
 الإرسال ما يحتاج صندوق بريد حقيقي على هذي العناوين. ويمكنك في Gmail تسوي فلتر على `notifications@` يحطها تحت تصنيف.
 
-1. سجّل في [resend.com](https://resend.com). المجاني يكفي: 3000 إيميل بالشهر و100 باليوم.
-2. **Domains → Add domain → `sultalfaifi.com`**، واختر المنطقة **Ireland (eu-west-1)** لأنها الأقرب. يطلع لك ثلاث سجلات:
-   - `MX` باسم `send` (الأولوية 10)
-   - `TXT` باسم `send` (يبدأ بـ `v=spf1 include:amazonses.com`)
-   - `TXT` باسم `resend._domainkey` (مفتاح DKIM)
-3. في Namecheap: **Domain List → Manage → Advanced DNS**.
-   - السجلين `TXT` تضيفهم من **Host Records → Add New Record**. اكتب في Host الاسم بس (`send` أو `resend._domainkey`)، بدون الدومين.
-   - سجل `MX`: Namecheap ما يقبل MX إضافي وإعدادات البريد على **Email Forwarding**. غيّرها من **Mail Settings** إلى **Custom MX**، ثم أضف:
-     - سجلات التحويل الحالية كما هي، عشان ما يتوقف أي تحويل عندك: `@` → `eforward1.registrar-servers.com` (10)، و`eforward2` (10)، و`eforward3` (10)، و`eforward4` (15)، و`eforward5` (20).
-     - سجل Resend: `send` → القيمة اللي أعطاك Resend، والأولوية 10.
-   - وأضف سجل DMARC، وهو اللي يخلي Gmail يثق في بريد الدومين أكثر: **TXT** باسم `_dmarc` والقيمة `v=DMARC1; p=none; rua=mailto:sultalfaifi@gmail.com`
-   - لا تضيف سجل SPF ثاني على `@`. اللي يطلبه Resend يكون على `send`، وسجل `@` الحالي يبقى للتحويل.
-4. اضغط **Verify** في Resend. التفعيل يأخذ من دقائق إلى ساعات.
-5. بعد ما يصير **Verified**، سوّ API key بصلاحية **Sending access** ومحصورة على `sultalfaifi.com`، وأدخله بنفسك:
+تم الإعداد في 27 أكتوبر 2026: الدومين **Verified** في Resend على منطقة **Ireland (eu-west-1)**. هذي السجلات في Namecheap (**Advanced DNS → Host Records**)، ولو احتجت تعيدها:
+
+| النوع | Host | القيمة |
+|---|---|---|
+| TXT | `resend._domainkey` | مفتاح DKIM من صفحة الدومين في Resend (يبدأ بـ `p=`) |
+| CNAME | `rsend` | `rsend-euw1.forge.rmta.net` |
+| CNAME | `send` | `send.forge.rmta.net` |
+| TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r;` (شُدّد من `p=none` في 27 أكتوبر) |
+
+- Resend صار يتحقق من الإرسال بسجلات CNAME، فما يحتاج سجل MX. وإعدادات البريد في Namecheap تبقى على **Email Forwarding**، وتحويل بريدك ما يتأثر.
+- **لا تضيف** سجل `MX` اللي يقترحه Resend تحت **Enable Receiving** (`@` → `receive-euw1…`). هذا لاستقبال البريد في Resend، ويتعارض مع تحويل بريدك.
+- لا تضيف سجل SPF ثاني على `@`. سجل `@` الحالي خاص بالتحويل.
+
+بعد ما يصير الدومين **Verified**، سوّ API key بصلاحية **Sending access** ومحصورة على `sultalfaifi.com`، وأدخله بنفسك:
 
 ```bash
 npx wrangler secret put RESEND_API_KEY --config worker/wrangler.jsonc --env=""
@@ -227,7 +227,7 @@ npx wrangler d1 execute sultan-agent --remote --config worker/wrangler.jsonc --c
 | «ما قدرت أوصل للمساعد» مع كل سؤال | OpenRouter يرفض الطلب (400)، مثلًا بسبب اسم النموذج أو خيار `reasoning` | شوف السجل بأمر `npx wrangler tail --config worker/wrangler.jsonc`. جرّب تخلي `REASONING_EFFORT` فاضي، أو صحّح `MODEL` |
 | «خلصت ميزانية المساعد» | وصلت سقف الرصيد في OpenRouter | زد الرصيد أو السقف. والمساعد يرجع تلقائيًا بعد 30 دقيقة |
 | الإيميلات ما توصل | الدومين مو Verified في Resend، أو `EMAIL_FROM` أو `EMAIL_NOTIFY_FROM` على دومين ثاني | راجع سجلات DNS في Namecheap وصفحة Domains في Resend، وصفحة Emails فيه تبيّن سبب أي رسالة رجعت |
-| التحويل على الدومين وقف بعد Custom MX | سجلات `eforward` ناقصة | أضف سجلات `eforward1` إلى `eforward5` على `@` كما في الخطوة و |
+| التحويل على الدومين وقف | أحد غيّر Mail Settings عن Email Forwarding، أو أضاف سجل MX حق استقبال Resend على `@` | رجّع Mail Settings إلى Email Forwarding واحذف أي MX على `@` غير `eforward` |
 | خطأ CORS في المتصفح | الرابط في `AGENT_URL` غلط، أو الدومين مو في `ALLOWED_ORIGINS` | صحّح المتغير في GitHub، أو أضف الدومين في `worker/wrangler.jsonc` ثم `npm run agent:deploy` |
 
 ## 8. معلومات تنتظر تأكيدك
