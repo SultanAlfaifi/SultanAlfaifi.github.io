@@ -90,6 +90,24 @@ test("assistant turns the Worker didn't sign are dropped from the history", asyn
   assert.ok(!sent.includes(forged));
 });
 
+test("the page tools check every stop, project, and role before anything moves", async () => {
+  const { runTool } = await import("../worker/src/tools.ts");
+  const tour = runTool("start_tour", JSON.stringify({ stops: [{ anchor: "project-masari", line: "His CV builder.", quote: "1,600" }, { anchor: "experience", line: "Where he works now." }] }), "en");
+  assert.equal(tour.action.type, "tour");
+  assert.equal(tour.action.stops[0].quote, "1,600");
+  assert.equal(tour.action.stops[1].quote, null);
+  assert.match(tour.record.memo, /2 stops/);
+  assert.ok(runTool("start_tour", JSON.stringify({ stops: [{ anchor: "nowhere", line: "x" }, { anchor: "experience", line: "y" }] }), "en").error, "an unknown stop stops the whole tour");
+  assert.ok(runTool("start_tour", JSON.stringify({ stops: [{ anchor: "experience", line: "only one" }] }), "en").error, "a tour has at least two stops");
+  assert.equal(runTool("show_project", JSON.stringify({ anchor: "project-masari" }), "ar").action.slug, "masari");
+  assert.ok(runTool("show_project", JSON.stringify({ anchor: "experience" }), "en").error, "only projects get a project card");
+  const cv = runTool("tailor_cv", JSON.stringify({ role: "Backend intern", company: "Salla", description: "Laravel, PHP, MySQL, REST APIs with tests. Docker is a plus." }), "en");
+  assert.deepEqual([cv.action.type, cv.action.company], ["tailor_cv", "Salla"]);
+  assert.ok(runTool("tailor_cv", JSON.stringify({ role: "Backend intern", description: "Laravel" }), "en").error, "a CV needs the role's requirements");
+  const quoted = runTool("open_on_page", JSON.stringify({ anchor: "project-masari", quote: "1,600 active users" }), "en");
+  assert.equal(quoted.action.quote, "1,600 active users");
+});
+
 test("a turn that used tools comes back as the calls it made, so the agent never apologises for them", async () => {
   const token = await session();
   const ask = "I want to email Sultan about a role";

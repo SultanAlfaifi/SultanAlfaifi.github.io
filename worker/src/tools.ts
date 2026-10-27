@@ -8,8 +8,13 @@ export type FitItem = { point: string; evidence: string[] };
 export type FitGap = { point: string; plan: string };
 export type FitReport = { role: string; strong: FitItem[]; partial: FitItem[]; gaps: FitGap[]; summary: string };
 
+export type TourStop = { anchor: string; label: Bilingual; line: string; quote: string | null };
+
 export type ClientAction =
-  | { type: "open"; anchor: string; kind: "section" | "project"; label: Bilingual; collapsed: boolean; external: { href: string; label: Bilingual } | null }
+  | { type: "open"; anchor: string; kind: "section" | "project"; label: Bilingual; collapsed: boolean; external: { href: string; label: Bilingual } | null; quote: string | null }
+  | { type: "tour"; stops: TourStop[] }
+  | { type: "project"; anchor: string; slug: string }
+  | { type: "tailor_cv"; role: string; company: string; description: string }
   | { type: "fit_report"; report: FitReport }
   | { type: "draft_email"; draft: { subject: string; body: string; topic: string } };
 
@@ -27,6 +32,8 @@ export type ToolOutcome = {
 
 const ANCHOR_IDS = KNOWLEDGE.anchors.map((anchor) => anchor.id);
 const anchorSchema = { type: "string", enum: ANCHOR_IDS, description: "A page anchor from the knowledge, without the leading #." };
+const PROJECT_ANCHORS = KNOWLEDGE.projects.map((project) => project.anchor);
+const quoteSchema = { type: "string", description: "Optional: 2 to 8 words copied exactly from that block as the visitor's page shows it, in their language, to light up on the page." };
 const itemSchema = {
   type: "object",
   properties: {
@@ -42,8 +49,62 @@ export const TOOL_DEFINITIONS = [
     type: "function",
     function: {
       name: "open_on_page",
-      description: "Scroll the visitor's page to a project or section and highlight it. For projects with an external demo, the console also shows a button the visitor can click.",
-      parameters: { type: "object", properties: { anchor: anchorSchema }, required: ["anchor"], additionalProperties: false }
+      description: "Take the visitor to a project or section: their page scrolls there and highlights it (or the exact words in quote), and a small companion window stays with them. For projects with an external demo, a button to open it appears too.",
+      parameters: { type: "object", properties: { anchor: anchorSchema, quote: quoteSchema }, required: ["anchor"], additionalProperties: false }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "start_tour",
+      description: "Walk the visitor through the page: their screen moves from stop to stop while a small companion window narrates each one, and they step through with Next and Back.",
+      parameters: {
+        type: "object",
+        properties: {
+          stops: {
+            type: "array",
+            minItems: 2,
+            maxItems: 6,
+            items: {
+              type: "object",
+              properties: {
+                anchor: anchorSchema,
+                line: { type: "string", description: "One or two short sentences in the visitor's language: what this is and why it matters. Plain text, no links." },
+                quote: quoteSchema
+              },
+              required: ["anchor", "line"],
+              additionalProperties: false
+            }
+          }
+        },
+        required: ["stops"],
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "show_project",
+      description: "Put a project's card in the console: its image, headline numbers, and buttons to see it on the page, try it, or read the code.",
+      parameters: { type: "object", properties: { anchor: { type: "string", enum: PROJECT_ANCHORS, description: "The project's anchor, without the leading #." } }, required: ["anchor"], additionalProperties: false }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "tailor_cv",
+      description: "Build Sultan's one-page CV for a role, live in the CV section of the visitor's page, ready for them to download. It chooses only from his verified CV lines.",
+      parameters: {
+        type: "object",
+        properties: {
+          role: { type: "string", description: "The role, as the visitor named it." },
+          company: { type: "string", description: "The company, only if the visitor named it." },
+          description: { type: "string", description: "The job description or the role's requirements, condensed to 40 to 800 characters." }
+        },
+        required: ["role", "description"],
+        additionalProperties: false
+      }
     }
   },
   {
@@ -115,6 +176,9 @@ export const TOOL_DEFINITIONS = [
 const T = {
   en: {
     opened: (label: string, demo: boolean) => `highlighted ${label}${demo ? " · demo button shown" : ""}`,
+    toured: (count: number) => `tour of ${count} stops started`,
+    carded: (title: string) => `${title} card shown`,
+    tailoring: "building the CV in the CV section",
     matched: (strong: number, partial: number, gaps: number) => `${strong} strong · ${partial} partial · ${gaps} not on the site`,
     report: "fit report shown",
     drafted: "draft shown, waiting for your click",
@@ -122,6 +186,9 @@ const T = {
   },
   ar: {
     opened: (label: string, demo: boolean) => `ميّزت ${label}${demo ? " · وظهر زر العرض" : ""}`,
+    toured: (count: number) => `بدأت جولة من ${count} محطات`,
+    carded: (title: string) => `ظهرت بطاقة ${title}`,
+    tailoring: "تُبنى السيرة في قسم السيرة",
     matched: (strong: number, partial: number, gaps: number) => `${strong} قوي · ${partial} جزئي · ${gaps} غير موجود في الموقع`,
     report: "ظهر تقرير المطابقة",
     drafted: "ظهرت المسودة، وتنتظر ضغطتك",
@@ -190,11 +257,56 @@ export function runTool(name: string, rawArguments: string, locale: Locale): Too
       : project?.primaryAction
         ? { href: project.primaryAction.href, label: project.primaryAction.label }
         : null;
+    const quote = text(args.quote, 120) || null;
     return {
       content: JSON.stringify({ ok: true, highlighted: anchor.label.en, external_button_shown: Boolean(external), note: "The visitor's page scrolled there. External links open only if the visitor clicks the button." }),
-      trace: { call: `open_on_page(#${id})`, result: t.opened(anchor.label[locale], Boolean(external)) },
-      action: { type: "open", anchor: id, kind: anchor.kind, label: anchor.label, collapsed: Boolean(anchor.collapsed), external },
+      trace: { call: `open_on_page(#${id}${quote ? ` · "${quote}"` : ""})`, result: t.opened(anchor.label[locale], Boolean(external)) },
+      action: { type: "open", anchor: id, kind: anchor.kind, label: anchor.label, collapsed: Boolean(anchor.collapsed), external, quote },
       record: { args: { anchor: id }, memo: `The visitor's page scrolled to ${anchor.label.en} and highlighted it${external ? ", with a button to open it" : ""}.` }
+    };
+  }
+
+  if (name === "start_tour") {
+    const stops = (Array.isArray(args.stops) ? args.stops.slice(0, 6) : []).map((stop: { anchor?: unknown; line?: unknown; quote?: unknown }): TourStop | null => {
+      const id = String(stop?.anchor ?? "").replace(/^#/, "");
+      const anchor = KNOWLEDGE.anchors.find((item) => item.id === id);
+      const line = text(stop?.line, 320);
+      return anchor && line ? { anchor: id, label: anchor.label, line, quote: text(stop?.quote, 120) || null } : null;
+    });
+    if (stops.length < 2 || stops.some((stop) => !stop)) {
+      return { content: JSON.stringify({ error: "A tour needs 2 to 6 stops, each with an anchor from the knowledge and a line." }), trace: { call: "start_tour(…)", result: t.rejected("bad stops") }, error: true };
+    }
+    const ready = stops as TourStop[];
+    return {
+      content: JSON.stringify({ ok: true, playing: true, stops: ready.length, note: "The tour is playing in the companion window and the visitor steps through it. Reply with one short line; don't repeat the stops." }),
+      trace: { call: `start_tour(${ready.map((stop) => `#${stop.anchor}`).join(" → ")})`, result: t.toured(ready.length) },
+      action: { type: "tour", stops: ready },
+      record: { args: { stops: ready.map((stop) => stop.anchor) }, memo: `A guided tour of ${ready.length} stops is playing on the visitor's page: ${ready.map((stop) => stop.label.en).join(" → ")}.` }
+    };
+  }
+
+  if (name === "show_project") {
+    const id = String(args.anchor ?? "").replace(/^#/, "");
+    const project = KNOWLEDGE.projects.find((item) => item.anchor === id);
+    if (!project) return { content: JSON.stringify({ error: `Unknown project #${id}. Use a project anchor from the knowledge.` }), trace: { call: `show_project(#${id})`, result: t.rejected("unknown project") }, error: true };
+    return {
+      content: JSON.stringify({ ok: true, shown: project.title.en, note: "The card with its image, numbers, and links is in the console. Don't list its numbers again." }),
+      trace: { call: `show_project(#${id})`, result: t.carded(project.title[locale]) },
+      action: { type: "project", anchor: id, slug: project.slug },
+      record: { args: { anchor: id }, memo: `${project.title.en}'s card is in the console.` }
+    };
+  }
+
+  if (name === "tailor_cv") {
+    const role = text(args.role, 80);
+    const company = text(args.company, 60);
+    const description = typeof args.description === "string" ? args.description.trim().slice(0, 1500) : "";
+    if (!role || description.length < 40) return { content: JSON.stringify({ error: "Give the role and its requirements." }), trace: { call: "tailor_cv(…)", result: t.rejected("no role or requirements") }, error: true };
+    return {
+      content: JSON.stringify({ ok: true, building: true, note: "The CV section on the visitor's page is building the tailored one-page CV now, and they download it there. Don't describe what's in it." }),
+      trace: { call: `tailor_cv(${role}${company ? ` · ${company}` : ""})`, result: t.tailoring },
+      action: { type: "tailor_cv", role, company, description },
+      record: { args: { role, company }, memo: `The CV section is building a one-page CV for ${role} on the visitor's page, ready to download there.` }
     };
   }
 

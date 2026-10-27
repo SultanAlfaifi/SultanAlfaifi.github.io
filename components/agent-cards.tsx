@@ -1,17 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import { Fragment, useId, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from "react";
 import type { Locale } from "@/data/i18n";
 import { getContent } from "@/data/i18n";
-import { AgentError, sendEmailToSultan, turnstileToken, type FitReport } from "@/lib/agent/client";
+import { AgentError, sendEmailToSultan, turnstileToken, type FitReport, type TourStop } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
 import type { AnchorInfo } from "@/lib/agent/types";
 
 const LINK = /\[([^\]\n]{1,120})\]\(([^)\s]{1,400})\)/g;
 
 // Renders an answer's markdown links. Only anchors on this page and URLs published on the site become
-// links; anything else the model wrote stays as plain text, and stray bold markers are dropped.
-export function AgentText({ text: raw, anchors, urls, email }: { text: string; anchors: AnchorInfo[]; urls: Set<string>; email: string }) {
+// links; anything else the model wrote stays as plain text, and stray bold markers are dropped. A page
+// link goes through `onAnchor` when the console wants to follow the visitor there.
+export function AgentText({ text: raw, anchors, urls, email, onAnchor = revealAnchor }: { text: string; anchors: AnchorInfo[]; urls: Set<string>; email: string; onAnchor?: (id: string) => void }) {
   const text = raw.split("**").join("");
   const known = new Set(anchors.map((anchor) => anchor.id));
   const parts: ReactNode[] = [];
@@ -21,7 +23,7 @@ export function AgentText({ text: raw, anchors, urls, email }: { text: string; a
     const start = match.index ?? 0;
     parts.push(text.slice(last, start));
     if (href.startsWith("#") && known.has(href.slice(1))) {
-      parts.push(<a key={start} href={href} onClick={(event: MouseEvent) => { event.preventDefault(); revealAnchor(href.slice(1)); }}>{label}</a>);
+      parts.push(<a key={start} href={href} onClick={(event: MouseEvent) => { event.preventDefault(); onAnchor(href.slice(1)); }}>{label}</a>);
     } else if (urls.has(href.replace(/\/$/, "")) || href === `mailto:${email}`) {
       parts.push(<a key={start} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer noopener">{label}</a>);
     } else {
@@ -59,6 +61,59 @@ export function ActivityLine({ steps, state, locale }: { steps: AgentStep[]; sta
         ))}
       </ol>
     </details>
+  );
+}
+
+// A project the agent is talking about, as the page shows it: picture, headline numbers, and the way
+// to see it on the page, try it, or read its code.
+export function ProjectCard({ slug, locale, onShow }: { slug: string; locale: Locale; onShow: (anchor: string) => void }) {
+  const { projects, ui } = getContent(locale);
+  const copy = ui.terminal.agent.project;
+  const project = projects.find((item) => item.slug === slug && item.enabled);
+  if (!project) return null;
+  const tryIt = project.liveDemo ?? project.primaryAction?.href ?? null;
+  return (
+    <article className="agent-card agent-project">
+      {project.screenshot ? (
+        <div className={`agent-project__media${project.imagePresentation === "icon" ? " agent-project__media--icon" : ""}`}>
+          <Image src={project.screenshot} alt="" fill sizes="(max-width: 760px) 90vw, 420px" />
+        </div>
+      ) : null}
+      <div className="agent-project__body">
+        <p className="agent-project__category">{project.category}</p>
+        <p className="agent-card__title">{project.title}</p>
+        <p className="agent-project__description">{project.description}</p>
+        {project.metrics?.length ? (
+          <dl className="agent-project__metrics">
+            {project.metrics.slice(0, 3).map((metric) => (
+              <div key={metric.label}><dt>{metric.label}</dt><dd>{metric.value}</dd></div>
+            ))}
+          </dl>
+        ) : null}
+        <div className="agent-card__actions">
+          <button type="button" onClick={() => onShow(`project-${project.slug}`)}>{copy.see}</button>
+          {tryIt ? <a className="agent-card__ghost" href={tryIt} target="_blank" rel="noreferrer noopener">{copy.demo} ↗</a> : null}
+          {project.repository ? <a className="agent-card__ghost" href={project.repository} target="_blank" rel="noreferrer noopener">{copy.code} ↗</a> : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// What a tour covered, kept in the chat so the visitor can jump back to any stop.
+export function TourCard({ stops, locale, onOpen }: { stops: TourStop[]; locale: Locale; onOpen: (index: number) => void }) {
+  const copy = getContent(locale).ui.terminal.agent.tour;
+  return (
+    <div className="agent-card agent-tour">
+      <p className="agent-card__title">{copy.title(stops.length)}</p>
+      <ol aria-label={copy.aria}>
+        {stops.map((stop, index) => (
+          <li key={`${stop.anchor}-${index}`}>
+            <button type="button" onClick={() => onOpen(index)}>{stop.label[locale]}</button>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 

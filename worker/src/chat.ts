@@ -13,17 +13,18 @@ type Incoming = { role?: unknown; content?: unknown; sig?: unknown; tools?: unkn
 
 const ARABIC = /[\u0600-\u06ff]/;
 const MAX_STEPS = 4;
+const TOOL_NAMES = TOOL_DEFINITIONS.map((tool) => tool.function.name);
 
 const COPY = {
   en: {
-    plan: (both: boolean) => `knowledge ${KNOWLEDGE_VERSION} (${both ? "EN + AR" : "EN"}) · tools: open_on_page, match_requirements, show_fit_report, draft_email`,
+    plan: (both: boolean) => `knowledge ${KNOWLEDGE_VERSION} (${both ? "EN + AR" : "EN"}) · tools: ${TOOL_NAMES.join(", ")}`,
     sources: (list: string) => list || "none cited",
     removed: (count: number) => `dropped ${count} link${count === 1 ? "" : "s"} that ${count === 1 ? "isn't" : "aren't"} on this site`,
     policy: "the draft goes to Sultan only if you press Send",
     steps: "stopped after 4 steps"
   },
   ar: {
-    plan: (both: boolean) => `المعرفة ${KNOWLEDGE_VERSION} (${both ? "عربي + إنجليزي" : "إنجليزي"}) · الأدوات: open_on_page، match_requirements، show_fit_report، draft_email`,
+    plan: (both: boolean) => `المعرفة ${KNOWLEDGE_VERSION} (${both ? "عربي + إنجليزي" : "إنجليزي"}) · الأدوات: ${TOOL_NAMES.join("، ")}`,
     sources: (list: string) => list || "بلا مصادر",
     removed: (count: number) => `حذفت ${count} رابط مو موجود في الموقع`,
     policy: "المسودة ما تروح لسلطان إلا إذا ضغطت «أرسلها»",
