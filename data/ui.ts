@@ -356,6 +356,23 @@ const en = {
       // The one line that stands for everything the agent did on a turn; it opens to show the steps.
       activity: (count: number) => `Ran ${count} step${count === 1 ? "" : "s"}`,
       sources: "Sources",
+      // The small window that follows the visitor while the agent shows them around the page.
+      companion: {
+        name: "Sultan's AI assistant",
+        region: "AI assistant, following you on the page",
+        back: "Back to the chat",
+        next: "Next",
+        prev: "Back",
+        done: "Done",
+        close: "Close",
+        step: (index: number, total: number) => `${index} / ${total}`,
+        ask: "Ask about this…",
+        send: "Ask",
+        openFit: "Open the fit report",
+        openDraft: "Open the email draft"
+      },
+      project: { see: "See it on the page", demo: "Try it", code: "Code" },
+      tour: { title: (count: number) => `Tour · ${count} stops`, aria: "Tour stops" },
       openDemo: (title: string) => `Open ${title} ↗`,
       chips: ["Which project should I try first?", "fit AI engineer intern", "I want to email Sultan about a role"],
       // Suggested questions for visitors who said why they came.
@@ -806,6 +823,22 @@ const ar: UiStrings = {
       steps: { plan: "المخطِّط", tool: "أداة", result: "النتيجة", policy: "السياسة", sources: "المصادر", guard: "حماية" },
       activity: (count: number) => (count === 1 ? "نفّذ خطوة وحدة" : count === 2 ? "نفّذ خطوتين" : `نفّذ ${count} خطوات`),
       sources: "المصادر",
+      companion: {
+        name: "مساعد سلطان الذكي",
+        region: "المساعد الذكي، يرافقك في الصفحة",
+        back: "ارجع للمحادثة",
+        next: "التالي",
+        prev: "السابق",
+        done: "تم",
+        close: "إغلاق",
+        step: (index: number, total: number) => `${index} من ${total}`,
+        ask: "اسأل عن هذا…",
+        send: "اسأل",
+        openFit: "افتح تقرير المطابقة",
+        openDraft: "افتح مسودة الإيميل"
+      },
+      project: { see: "شوفه في الصفحة", demo: "جرّبه", code: "الكود" },
+      tour: { title: (count: number) => (count === 2 ? "جولة · محطتين" : `جولة · ${count} محطات`), aria: "محطات الجولة" },
       openDemo: (title: string) => `افتح ${title} ↗`,
       chips: ["أي مشروع أجرّب أول؟", "fit متدرّب هندسة ذكاء اصطناعي", "أبغى أراسل سلطان عن وظيفة"],
       chipsFor: {
