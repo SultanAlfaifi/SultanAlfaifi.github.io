@@ -156,6 +156,7 @@ test("email always goes to Sultan, with the visitor only as reply-to", async () 
   assert.deepEqual(email.tags, [{ name: "category", value: "contact" }]);
   // A plain note, not a newsletter: no images or tinted page, and the visitor's English reads left to right.
   assert.ok(!email.html.includes("<img"));
+  assert.ok(email.html.includes("<!--[if !mso]><!--><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic"), "the site font loads where mail apps allow it, hidden from Outlook on Windows");
   assert.deepEqual([...new Set([...email.html.matchAll(/background:(#[0-9a-f]{6})/g)].map((match) => match[1]))], ["#ffffff"]);
   assert.ok(email.html.includes('<div dir="ltr"') && email.html.includes(">Hello</div>"));
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "bad", email: "a@b.co", subject: "x", message: "y" } })).status, 403);
