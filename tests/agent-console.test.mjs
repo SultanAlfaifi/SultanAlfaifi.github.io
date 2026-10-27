@@ -12,6 +12,7 @@ const hero = read("../components/hero.tsx");
 const home = read("../components/home-page.tsx");
 const palette = read("../components/command-palette.tsx");
 const launcher = read("../components/assistant-launcher.tsx");
+const companion = read("../components/agent-companion.tsx");
 const styles = read("../app/signature.css") + read("../app/agent.css");
 const { LEADING_TAG, textDir } = await import("../lib/agent/direction.ts");
 
@@ -36,10 +37,21 @@ test("visitors reach the AI assistant from the hero, a floating button, and the 
   assert.match(terminal, /window\.addEventListener\(OPEN_ASSISTANT, listener\)/);
 });
 
-test("the panel closes with Escape, hands focus back, and steps aside on phones to show what it highlighted", () => {
+test("the panel closes with Escape, hands focus back, and steps aside to show what it highlighted", () => {
   assert.match(terminal, /event\.key === "Escape" && docked/);
   assert.match(terminal, /opener\?\.isConnected/);
-  assert.match(terminal, /if \(docked && window\.matchMedia\(PHONE_PANEL\)\.matches\) closePanel\("none"\)/);
+  assert.ok(terminal.includes('if (dockedNow.current) closePanel("none")'), "the panel steps aside whenever the agent moves the page");
+});
+
+test("moving the page hands the chat to a companion that stays with the visitor and brings them back", () => {
+  assert.ok(terminal.includes("createPortal("), "the companion floats over the page, outside any animated section");
+  assert.ok(terminal.includes("function backToChat()"));
+  assert.ok(terminal.includes('if (from === "docked")'), "back to the chat reopens the panel the visitor came from");
+  assert.ok(terminal.includes('if (companionRef.current) setCompanion({ kind: "answer", card:'), "a report or a draft is offered from the companion, not forced on the visitor");
+  assert.ok(terminal.includes("dockedNow.current"), "actions from the stream see whether the panel is open now, not when the question was asked");
+  assert.ok(companion.includes('event.key === "Escape"'));
+  assert.ok(companion.includes("motionAllowed()"), "tour lines type out only while motion is on");
+  assert.ok(styles.includes('html[data-companion="on"] .assistant-launcher'), "the floating launcher steps aside for the companion");
 });
 
 test("the human check and the session start before the first question, not after it", () => {

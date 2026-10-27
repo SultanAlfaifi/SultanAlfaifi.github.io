@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useEffectEvent, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { ArrowDownToLine, X } from "lucide-react";
 import { CV_FIELDS, type CvTarget } from "@/data/cv";
 import { getContent, type Locale } from "@/data/i18n";
+import { TAILOR_CV, type TailorRequest } from "@/lib/agent/assistant";
 import { AgentError, agentConfigured, checkHealth, confirmCvCode, notifyCvDownload, requestCvCode, tailorCv, turnstileToken, withSession } from "@/lib/agent/client";
 import { renderCvPdf, saveBlob } from "@/lib/cv/browser-render";
 import { cvFileName } from "@/lib/cv/document";
@@ -168,6 +169,23 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     return () => window.removeEventListener(VISITOR_EVENT, prefill);
   }, []);
 
+  // The assistant can ask for a CV from the chat: the form fills in with the role and the posting, and
+  // the same AI match the visitor could run by hand runs here, so they watch the paper change.
+  const onTailor = useEffectEvent((request: TailorRequest) => {
+    started.current = true;
+    setCompany(request.company.slice(0, 60));
+    setRole(request.role.slice(0, 80));
+    setPosting(request.description);
+    setPostingOpen(true);
+    setDownload("idle");
+    void matchWithAi(request.description, request.company);
+  });
+  useEffect(() => {
+    const listener = (event: Event) => onTailor((event as CustomEvent<TailorRequest>).detail);
+    window.addEventListener(TAILOR_CV, listener);
+    return () => window.removeEventListener(TAILOR_CV, listener);
+  }, []);
+
   // Prepares the visitor's PDF while they look at the preview; the preview then shows exactly the lines
   // that fit on the page.
   useEffect(() => {
@@ -232,12 +250,12 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
     writeDraft({ company: "", role: "", posting: "" });
   }
 
-  async function matchWithAi() {
+  async function matchWithAi(text = posting, name = company) {
     touch();
-    if (!hasPosting || !slotRef.current) return;
+    if (text.trim().length < POSTING_MIN || !slotRef.current) return;
     setJdState("working");
     try {
-      const result = await withSession(slotRef.current, locale, (token) => tailorCv(token, posting.trim(), company.trim(), locale));
+      const result = await withSession(slotRef.current, locale, (token) => tailorCv(token, text.trim(), name.trim(), locale));
       const picked = decodeSelection(result.encoded);
       if (!picked) throw new AgentError("selection_rejected");
       setPick({ selection: picked, cover: result.coverMessage ? { message: result.coverMessage, signature: result.signature } : null, from: "ai" });
@@ -364,7 +382,7 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
                 <label htmlFor={`${id}-posting`} className="sr-only">{copy.postingLabel}</label>
                 <textarea id={`${id}-posting`} value={posting} onChange={(event) => changeWhatFor(() => setPosting(event.target.value))} placeholder={copy.postingPlaceholder} rows={5} maxLength={8000} dir="auto" />
                 {aiLive ? (
-                  <button type="button" className="button cv-button--secondary" onClick={matchWithAi} disabled={!hasPosting || jdState === "working"}>
+                  <button type="button" className="button cv-button--secondary" onClick={() => void matchWithAi()} disabled={!hasPosting || jdState === "working"}>
                     {jdState === "working" ? copy.jdWorking : copy.postingAi}
                   </button>
                 ) : null}
