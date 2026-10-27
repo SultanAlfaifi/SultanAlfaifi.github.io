@@ -11,6 +11,9 @@ import { renderMail, type Mail, type MailLocale } from "./templates";
 export type Outgoing = { to: string; subject: string; mail: Mail; channel: "visitor" | "owner"; sender: string; tag: string; replyTo?: string };
 export type SendResult = { sent: boolean; dryRun?: boolean };
 
+// A person-like name for Sultan's own alerts; a bare domain as the sender name reads like spoofing.
+export const OWNER_SENDER = "موقع سلطان الفيفي";
+
 export const mailLocale = (value: unknown): MailLocale => (value === "ar" ? "ar" : "en");
 
 const TOPICS: Record<string, string> = { role: "وظيفة", project: "مشروع", workshop: "ورشة", question: "سؤال", fit: "مطابقة وظيفة", other: "أخرى" };
@@ -71,13 +74,12 @@ export async function handleEmailSend(request: Request, env: Env) {
     to: KNOWLEDGE.owner.email,
     channel: "owner",
     replyTo: email,
-    sender: "sultalfaifi.com",
+    sender: OWNER_SENDER,
     tag: "contact",
     subject: `رسالة من الموقع · ${subject}`,
     mail: {
       locale: "ar",
       siteUrl: env.SITE_URL,
-      preheader: `${name || email}: ${message.slice(0, 90)}`,
       heading: "رسالة جديدة من زائر",
       blocks: [
         { kind: "facts", rows: [["من", name || "زائر"], ["البريد", email], ["الموضوع", subject], ["النوع", TOPICS[topic] ?? TOPICS.other]] },
