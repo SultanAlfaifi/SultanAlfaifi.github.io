@@ -54,7 +54,7 @@ export function createHarness(overrides = {}) {
     ENVIRONMENT: "development",
     ALLOWED_ORIGINS: "http://localhost:3000",
     SITE_URL: "http://localhost:3000",
-    MODEL: "anthropic/claude-sonnet-5.5",
+    MODEL: "deepseek/deepseek-v4.1-flash",
     REASONING_EFFORT: "low",
     EMAIL_FROM: "Sultan Alfaifi <hello@sultalfaifi.com>",
     EMAIL_NOTIFY_FROM: "notifications@sultalfaifi.com",

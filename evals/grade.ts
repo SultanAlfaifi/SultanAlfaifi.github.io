@@ -25,7 +25,8 @@ export type EvalRun = {
   error: string | null;
 };
 
-const IDK = /ask sultan|اسأل سلطان|ما أعرف|i don't know|not on (this|the) site|مو موجود/i;
+// The answer points the visitor to Sultan, or says the site doesn't cover it, in the wording the models actually use.
+const IDK = /ask (sultan|him)|i don't know|(isn't|is not|aren't|are not|not) on (this|the|his) site|(doesn't|does not) (mention|say|cover)|اسأل سلطان|تسأل سلطان|اسأله|ما أعرف|مو موجود|مو مذكور|غير مذكور/i;
 
 export function arabicShare(text: string) {
   const letters = text.replace(/\[[^\]]*\]\([^)]*\)/g, " ").match(/\p{L}/gu) ?? [];

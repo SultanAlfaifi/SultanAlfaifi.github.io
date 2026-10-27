@@ -78,6 +78,10 @@ test("answer links are checked against the page and the site's published URLs", 
   const { sources, removed } = checkLinks("See [Masari](#project-masari), [repo](https://github.com/SultanAlfaifi/Masari), [bad](#nope), and [phish](https://evil.example/).");
   assert.deepEqual(sources, ["project-masari"]);
   assert.deepEqual(removed, ["#nope", "https://evil.example/"]);
+  // A full address on this site counts as the anchor; other sites with the same anchor don't.
+  const own = checkLinks("He's at [Salla](sultalfaifi.com/#experience), see [skills](https://www.sultalfaifi.com/ar/#skills) and [fake](https://evil.example/#skills).");
+  assert.deepEqual(own.sources, ["experience", "skills"]);
+  assert.deepEqual(own.removed, ["https://evil.example/#skills"]);
 });
 
 test("the system prompt carries the non-negotiable rules", () => {

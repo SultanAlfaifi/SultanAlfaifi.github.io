@@ -5,7 +5,7 @@
 ## كيف يشتغل باختصار
 
 ```
-الموقع (GitHub Pages, ثابت)  ──►  Cloudflare Worker (sultan-agent)  ──►  OpenRouter (Claude Sonnet 5.5)
+الموقع (GitHub Pages, ثابت)  ──►  Cloudflare Worker (sultan-agent)  ──►  OpenRouter (DeepSeek V4.1 Flash على DeepInfra)
          │                              │  ├─ D1: الأسئلة (30 يوم، بدون IP) + الحدود اليومية + رموز التحقق
          │                              │  └─ Resend: الإيميلات
          └── لو الـ Worker طاح أو خلص الرصيد: الطرفية ترجع لردودها المكتوبة، والـ CV العام ينزل عادي
@@ -43,14 +43,16 @@ npm run agent:migrate
 
 1. في [openrouter.ai](https://openrouter.ai) اشحن رصيد صغير (مثلًا 10$).
 2. من **Settings → Keys** سوّ مفتاح جديد وحط له **Credit limit** (مثلًا 10$). هذا الحد هو صمام الأمان الأخير.
-3. تأكد إن النموذج `anthropic/claude-sonnet-5.5` موجود في [openrouter.ai/models](https://openrouter.ai/models). لو الاسم مختلف، عدّل `MODEL` في `worker/wrangler.jsonc`.
+3. تأكد إن النموذج `deepseek/deepseek-v4.1-flash` موجود في [openrouter.ai/models](https://openrouter.ai/models). لو الاسم مختلف، عدّل `MODEL` في `worker/wrangler.jsonc`.
+   - الطلبات مثبّتة على مزوّد واحد: DeepInfra بدقة fp8، وبدون احتفاظ بالبيانات (Zero Data Retention). الإعدادات في `PROVIDER_ONLY` و`PROVIDER_QUANTIZATIONS` و`PROVIDER_ZDR`. ولو صار المزوّد غير متاح، ترجع الطرفية لردودها المكتوبة بدل ما تنتقل لمزوّد ثاني.
+   - المزوّدين اللي يدرّبون على الطلبات مستبعدين دائمًا، حتى لو فضّيت هالإعدادات.
 4. خزّن المفتاح في Cloudflare (يطلب منك تلصقه، وما يظهر في أي ملف):
 
 ```bash
 npx wrangler secret put OPENROUTER_API_KEY --config worker/wrangler.jsonc --env=""
 ```
 
-**التكلفة التقريبية** مع Sonnet 5.5: بين 0.01 و0.045$ للسؤال، حسب طول المحادثة وإذا انقرأت المعرفة من الكاش. رصيد 10$ يكفي تقريبًا من 220 إلى 1000 سؤال. ولو خلص الرصيد، يتوقف المساعد 30 دقيقة وترجع الطرفية لردودها المكتوبة.
+**التكلفة التقريبية** مع DeepSeek V4.1 Flash: بين 0.0003 و0.003$ للسؤال، حسب طول المحادثة وإذا انقرأت المعرفة من الكاش. رصيد 10$ يكفي تقريبًا من 3 آلاف إلى 30 ألف سؤال. (للمقارنة: Sonnet 5.5 يكلف بين 0.01 و0.045$ للسؤال، وقارنّا النموذجين على نفس الـ44 سؤال في أكتوبر 2026.) ولو خلص الرصيد، يتوقف المساعد 30 دقيقة وترجع الطرفية لردودها المكتوبة.
 
 ### د. Turnstile
 

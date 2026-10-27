@@ -48,7 +48,8 @@ rules are managed from one typed configuration file.
   - `⌘K` / `Ctrl+K` / `/` command palette for sections, projects, and actions.
   - An interactive console (`help`, `run`, `projects`, `sudo hire sultan`…)
     that answers from `data/portfolio.ts` and refuses destructive commands.
-  - A real AI agent inside that console (Claude Sonnet 5.5 through OpenRouter, behind a
+  - A real AI agent inside that console (DeepSeek V4.1 Flash through OpenRouter, pinned to a
+    Zero Data Retention provider, behind a
     Cloudflare Worker): it answers only from the site's own data in English or Arabic, cites
     the section each fact comes from, opens projects on the page, runs an honest fit check
     against a job description, and drafts emails that only the visitor can send. When the

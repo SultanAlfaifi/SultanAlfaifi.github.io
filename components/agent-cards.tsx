@@ -5,6 +5,7 @@ import { Fragment, useId, useRef, useState, type FormEvent, type MouseEvent, typ
 import type { Locale } from "@/data/i18n";
 import { getContent } from "@/data/i18n";
 import { AgentError, sendEmailToSultan, turnstileToken, type FitReport, type TourStop } from "@/lib/agent/client";
+import { pageAnchor } from "@/lib/agent/links";
 import { revealAnchor } from "@/lib/agent/reveal";
 import type { AnchorInfo } from "@/lib/agent/types";
 import { markApproved } from "./assistant-presence";
@@ -20,7 +21,8 @@ export function AgentText({ text: raw, anchors, urls, email, onAnchor = revealAn
   const parts: ReactNode[] = [];
   let last = 0;
   for (const match of text.matchAll(LINK)) {
-    const [whole, label, href] = match;
+    const [whole, label, rawHref] = match;
+    const href = pageAnchor(rawHref);
     const start = match.index ?? 0;
     parts.push(text.slice(last, start));
     if (href.startsWith("#") && known.has(href.slice(1))) {
