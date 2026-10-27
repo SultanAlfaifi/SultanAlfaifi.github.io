@@ -1,5 +1,5 @@
 import { CV_FIELDS } from "../../data/cv";
-import { cvAsText, decodeSelection, encodeSelection, isCvTarget, resolveSelection, validateSelection, type CvSelection } from "../../lib/cv/select";
+import { decodeSelection, encodeSelection, isCvTarget, validateSelection, type CvSelection } from "../../lib/cv/select";
 import { OWNER_SENDER, mailLocale, replyAddress, sendEmail } from "./email";
 import type { Env } from "./env";
 import { CV_CATALOG, KNOWLEDGE } from "./generated/knowledge";
@@ -140,16 +140,13 @@ const fieldName = (selection: CvSelection) => (isCvTarget(selection.target) ? se
 const FIELD_LABELS: Record<string, string> = { general: "عامة", backend: "Back-end", "ai-agents": "وكلاء الذكاء الاصطناعي", "full-stack": "Full-stack", ml: "تعلّم الآلة", teaching: "التدريب والمجتمع" };
 const fieldLabel = (selection: CvSelection) => FIELD_LABELS[fieldName(selection)] ?? fieldName(selection);
 
-// Sultan's note, in Arabic: who, for which company and field, the cover note, and the exact PDF.
+// Sultan's note, in Arabic: which company and field, the cover note, and a link to the exact PDF.
 function ownerMail(env: Env, cv: Awaited<ReturnType<typeof readCv>>, heading: string, visitorEmail?: string): Mail {
   const blocks: Block[] = [
-    { kind: "facts", rows: [["الشركة", cv.company || "لم تُذكر"], ["المجال", fieldLabel(cv.selection)], ["بريد الزائر", visitorEmail ? `${visitorEmail} (تحقّق بالرمز)` : "لم يُذكر"]] }
+    { kind: "facts", rows: [["الشركة", cv.company || "لم تُذكر"], ["المجال", fieldLabel(cv.selection)], visitorEmail ? ["بريد الزائر (مؤكَّد بالرمز)", visitorEmail] : ["بريد الزائر", "لم يُذكر"]] }
   ];
   if (cv.cover) blocks.push({ kind: "small", text: "كلمة كتبها المساعد الذكي:" }, { kind: "quote", text: cv.cover });
-  blocks.push(
-    { kind: "button", label: "افتح نفس ملف PDF", href: cvLink(env, cv.encoded, cv.company, "ar") },
-    { kind: "pre", title: "السيرة كما وصلته", text: cvAsText(resolveSelection(cv.selection)) }
-  );
+  blocks.push({ kind: "button", label: "افتح نفس ملف PDF", href: cvLink(env, cv.encoded, cv.company, "ar") });
   return { locale: "ar", siteUrl: env.SITE_URL, heading, blocks, footer: "إشعار تلقائي من موقعك." };
 }
 
