@@ -80,7 +80,7 @@ npx wrangler secret put SESSION_SECRET --config worker/wrangler.jsonc --env=""
 
 | الرسالة | من | لمن | الرد يروح لـ |
 |---|---|---|---|
-| رمز التحقق، ونسخة السيرة (بلغة الزائر) | `Sultan Alfaifi <hello@sultalfaifi.com>` | الزائر | بريدك |
+| رمز التحقق، ونسخة السيرة (بلغة الزائر) | `Sultan Alfaifi <hello@sultalfaifi.com>` | الزائر | `hello@sultalfaifi.com`، ويتحوّل لبريدك |
 | رسالة زائر لك، وإشعارات تحميل السيرة (بالعربي) | `sultalfaifi.com <notifications@sultalfaifi.com>` | `sultalfaifi@gmail.com` | الزائر نفسه |
 
 الإرسال ما يحتاج صندوق بريد حقيقي على هذي العناوين. ويمكنك في Gmail تسوي فلتر على `notifications@` يحطها تحت تصنيف.
@@ -104,7 +104,7 @@ npx wrangler secret put SESSION_SECRET --config worker/wrangler.jsonc --env=""
 npx wrangler secret put RESEND_API_KEY --config worker/wrangler.jsonc --env=""
 ```
 
-العناوين في `worker/wrangler.jsonc`: `EMAIL_FROM` لرسائل الزوار و`EMAIL_NOTIFY_FROM` لإشعاراتك. والرد على رسائل الزوار يروح لبريدك في Gmail. ولو سوّيت تحويل لـ `hello@sultalfaifi.com` وجرّبته، أضف `"EMAIL_REPLY_TO": "hello@sultalfaifi.com"` لنفس الملف، فيصير الرد على عنوان الدومين بدل Gmail.
+العناوين في `worker/wrangler.jsonc`: `EMAIL_FROM` لرسائل الزوار و`EMAIL_NOTIFY_FROM` لإشعاراتك. والرد على رسائل الزوار يروح لـ `hello@sultalfaifi.com` (المتغير `EMAIL_REPLY_TO`)، وNamecheap يحوّله لبريدك في Gmail من **Domain → Redirect Email**. لو حذفت هذا التحويل، احذف المتغير معه، وإلا ترجع ردود الزوار بالخطأ.
 
 ### ز. النشر
 

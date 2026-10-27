@@ -18,6 +18,7 @@
     // A domain you verified in Resend. The recipient is never configurable: it's Sultan's address from the site data.
     "EMAIL_FROM": "Sultan Alfaifi <hello@sultalfaifi.com>",
     "EMAIL_NOTIFY_FROM": "notifications@sultalfaifi.com",
+    "EMAIL_REPLY_TO": "hello@sultalfaifi.com",
     "DAILY_CHAT_CAP": "400",
     "DAILY_CHAT_PER_VISITOR": "40",
     "DAILY_EMAIL_CAP": "25",
@@ -51,6 +52,7 @@
         "REASONING_EFFORT": "low",
         "EMAIL_FROM": "Sultan Alfaifi <hello@sultalfaifi.com>",
         "EMAIL_NOTIFY_FROM": "notifications@sultalfaifi.com",
+        "EMAIL_REPLY_TO": "hello@sultalfaifi.com",
         "DAILY_CHAT_CAP": "400",
         "DAILY_CHAT_PER_VISITOR": "200",
         "DAILY_EMAIL_CAP": "25",
