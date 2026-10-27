@@ -264,15 +264,3 @@ export function decodeSelection(value: string): CvSelection | null {
   const result = validateSelection({ target: parts[0], summaryId: parts[1], skillIds: list(parts[2]), experience: groups(parts[3]), projects: groups(parts[4]), recognitionIds: list(parts[5]), trainingIds: list(parts[6]), teachingIds: list(parts[7]) });
   return result.ok ? result.selection : null;
 }
-
-// Plain-text CV for emails: the same approved lines as the PDF, in the same order.
-export function cvAsText(cv: ResolvedCv) {
-  const lines: string[] = [cv.header.name, cv.header.headline, [cv.header.location, cv.header.email, ...cv.header.links.map((link) => link.label)].join(" | "), "", "SUMMARY", cv.summary.text, "", "SKILLS", ...cv.skills.map((skill) => skill.text), "", "EXPERIENCE"];
-  for (const { entry, bullets } of cv.experience) lines.push([`${entry.title}, ${entry.meta}`, entry.dates, entry.location].filter(Boolean).join(" | "), ...bullets.map((bullet) => `- ${bullet.text}`));
-  lines.push("", "PROJECTS");
-  for (const { entry, bullets } of cv.projects) lines.push([`${entry.title}, ${entry.meta}`, entry.dates].filter(Boolean).join(" | "), ...bullets.map((bullet) => `- ${bullet.text}`), ...entry.links.map((link) => `  ${link.label}: ${link.href}`));
-  if (cv.teaching.length) lines.push("", "TEACHING AND COMMUNITY", ...cv.teaching.map((line) => `- ${line.text}`));
-  lines.push("", "RECOGNITION", ...cv.recognition.map((line) => `- ${line.text}`), "", "EDUCATION", cv.education.text);
-  if (cv.training.length) lines.push("", "TRAINING", ...cv.training.map((line) => `- ${line.text}`));
-  return lines.join("\n");
-}

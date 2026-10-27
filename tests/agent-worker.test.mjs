@@ -154,6 +154,10 @@ test("email always goes to Sultan, with the visitor only as reply-to", async () 
   assert.doesNotMatch(email.html, /display:\s*none/, "no hidden text for spam filters to weigh");
   assert.ok(email.html.includes("<html") && email.text.includes("Hello"));
   assert.deepEqual(email.tags, [{ name: "category", value: "contact" }]);
+  // A plain note, not a newsletter: no images or tinted page, and the visitor's English reads left to right.
+  assert.ok(!email.html.includes("<img"));
+  assert.deepEqual([...new Set([...email.html.matchAll(/background:(#[0-9a-f]{6})/g)].map((match) => match[1]))], ["#ffffff"]);
+  assert.ok(email.html.includes('<div dir="ltr"') && email.html.includes(">Hello</div>"));
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "bad", email: "a@b.co", subject: "x", message: "y" } })).status, 403);
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "ok", email: "not-an-email", subject: "x", message: "y" } })).status, 400);
 });
@@ -211,6 +215,7 @@ test("a CV copy is emailed only after the right code, and forged cover notes are
   assert.match(note.text, /الشركة: Salla b/);
   assert.doesNotMatch(note.text + note.html, /Forged praise|evil\.example/);
   assert.match(note.text, /المجال: Back-end/);
+  assert.ok(note.html.includes("?cv=") && !note.text.includes("EXPERIENCE"), "Sultan gets a link to the exact PDF, not a pasted copy");
   assert.equal(copy.from, "Sultan Alfaifi <hello@sultalfaifi.com>");
   assert.equal(copy.reply_to, "sultalfaifi@gmail.com", "the visitor's reply reaches Sultan");
   assert.match(copy.html, /\/\?cv=[^"]+#cv/, "the copy links back to the exact CV");
