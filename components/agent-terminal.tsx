@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Maximize2, Sparkles, X } from "lucide-react";
+import { ArrowUp, Bot, FileUser, Mail, Maximize2, Rocket, Route, ScanSearch, Sparkles, X, type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
@@ -24,7 +24,8 @@ type Card =
   | { type: "sources"; anchors: string[] }
   | { type: "project"; slug: string }
   | { type: "tour"; stops: TourStop[] };
-type Line = { id: number; kind: LineKind; text: string; href?: string; streaming?: boolean; card?: Card };
+// `boot` marks the console's start-up lines, which the open panel replaces with its welcome.
+type Line = { id: number; kind: LineKind; text: string; href?: string; streaming?: boolean; boot?: boolean; card?: Card };
 type Output = Omit<Line, "id">;
 type AgentState = "off" | "checking" | "live" | "offline" | "budget";
 
@@ -37,8 +38,10 @@ const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "war
 
 function bootLines({ projects, achievements, ui }: PortfolioContent): Output[] {
   const count = projects.filter((project) => project.enabled).length;
-  return ui.terminal.boot(count, achievements.length).map((text, index) => ({ kind: BOOT_KINDS[index], text }));
+  return ui.terminal.boot(count, achievements.length).map((text, index) => ({ kind: BOOT_KINDS[index], text, boot: true }));
 }
+
+const STARTER_ICONS: Record<string, LucideIcon> = { tour: Route, project: Rocket, fit: ScanSearch, cv: FileUser, agent: Bot, mail: Mail };
 
 function isCommand(input: string) {
   const lower = input.toLowerCase();
@@ -163,6 +166,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const panelCopy = content.ui.assistant;
   const visitor = useVisitor();
   const agentChips = (visitor && agentCopy.chipsFor[visitor]) || agentCopy.chips;
+  const starters = (visitor && agentCopy.startersFor[visitor]) || agentCopy.starters;
   const boot = useMemo(() => bootLines(getContent(locale)), [locale]);
   const respond = useMemo(() => createResponder(getContent(locale)), [locale]);
   const anchors = useMemo(() => buildAnchors(getContent("en"), getContent("ar")), []);
@@ -226,9 +230,9 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     const state = await health.current;
     const status = getContent(locale).ui.terminal.agent;
     setAgent(state);
-    if (state === "live") append([{ kind: "accent", text: status.liveLine }]);
-    else if (state === "budget") append([{ kind: "warn", text: status.budgetLine }]);
-    else append([{ kind: "muted", text: status.offlineLine }]);
+    if (state === "live") append([{ kind: "accent", text: status.liveLine, boot: true }]);
+    else if (state === "budget") append([{ kind: "warn", text: status.budgetLine, boot: true }]);
+    else append([{ kind: "muted", text: status.offlineLine, boot: true }]);
   }, [locale, append]);
 
   useEffect(() => {
@@ -393,10 +397,12 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
 
   function handleAction(action: AgentAction) {
     if (action.type === "open") {
-      // The activity line already says what was highlighted; only a demo button needs a line of its own.
-      follow({ kind: "answer" });
+      // The activity line already says what was highlighted; only a demo button needs a line of its own,
+      // in the chat and in the companion that's showing the project.
+      const link = action.external ? { href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } : undefined;
+      follow({ kind: "answer", link });
       showOnPage(action.anchor, action.quote);
-      if (action.external) append([{ kind: "out", text: "", card: { type: "link", href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } }]);
+      if (link) append([{ kind: "out", text: "", card: { type: "link", ...link } }]);
     } else if (action.type === "tour") {
       append([{ kind: "out", text: "", card: { type: "tour", stops: action.stops } }]);
       goToStop(action.stops, 0);
@@ -467,7 +473,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
         if (event.event === "trace") {
           steps.push(event.data);
           showSteps("running");
-          if (event.data.step === "result") setLiveStatus(event.data.text);
+          if (event.data.step === "result" || event.data.step === "prep") setLiveStatus(event.data.text);
         } else if (event.event === "action") {
           handleAction(event.data);
         } else if (event.event === "done") {
@@ -552,6 +558,20 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     }
   }
 
+  // A starter either asks right away or puts its prompt in the input for the visitor to finish.
+  function start(starter: { prompt: string; fill: boolean }) {
+    if (!starter.fill) {
+      submit(starter.prompt);
+      return;
+    }
+    setValue(starter.prompt);
+    window.requestAnimationFrame(() => {
+      const input = inputRef.current;
+      input?.focus({ preventScroll: true });
+      input?.setSelectionRange(starter.prompt.length, starter.prompt.length);
+    });
+  }
+
   function renderLine(line: Line) {
     if (line.card?.type === "activity") return <ActivityLine steps={line.card.steps} state={line.card.state} locale={locale} />;
     if (line.card?.type === "project") return <ProjectCard slug={line.card.slug} locale={locale} onShow={showAnchor} />;
@@ -580,7 +600,12 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       return <DraftCard draft={line.card.draft} locale={locale} onClose={() => undefined} />;
     }
     if (line.kind === "answer") {
-      return <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} onAnchor={showAnchor} />;
+      return (
+        <>
+          <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} onAnchor={showAnchor} />
+          {line.streaming ? <span className="agent-caret" aria-hidden="true" /> : null}
+        </>
+      );
     }
     const tag = LEADING_TAG.exec(line.text)?.[0];
     const text = tag ? line.text.slice(tag.length) : line.text;
@@ -594,6 +619,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   }
 
   const live = agent === "live";
+  const started = lines.some((line) => line.kind === "input");
   return (
     <div className="terminal-slot">
       {docked ? (
@@ -604,7 +630,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       ) : null}
       <div
         ref={shellRef}
-        className={`terminal-shell${docked ? " terminal-shell--docked" : ""}`}
+        className={`terminal-shell${docked ? " terminal-shell--docked" : ""}${live ? " terminal-shell--live" : ""}`}
         role={docked ? "region" : undefined}
         aria-label={docked ? panelCopy.panel : undefined}
         onKeyDown={(event) => {
@@ -616,7 +642,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       >
         <div ref={rootRef} className="terminal glow-card" data-cursor={copy.cursor}>
           <div className="terminal__bar" dir="ltr">
-            <span className="terminal__dots" aria-hidden="true"><i /><i /><i /></span>
+            {docked ? <span className="agent-orb" data-busy={busy || undefined} aria-hidden="true" /> : <span className="terminal__dots" aria-hidden="true"><i /><i /><i /></span>}
             <p dir="auto">{docked ? panelCopy.panel : copy.title}</p>
             {!booted ? (
               <button type="button" onClick={skipBoot}>{copy.skip}</button>
@@ -641,11 +667,30 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
               if (line.card) return <div key={line.id} className="terminal__card" aria-live="off">{renderLine(line)}</div>;
               const dir = textDir(line.text.replace(LEADING_TAG, ""));
               return (
-                <p key={line.id} className={`terminal__line terminal__line--${line.kind}`} dir={dir} aria-hidden={line.streaming || undefined}>
+                <p key={line.id} className={`terminal__line terminal__line--${line.kind}${line.boot ? " terminal__line--boot" : ""}`} dir={dir} aria-hidden={line.streaming || undefined}>
                   {renderLine(line)}
                 </p>
               );
             })}
+            {docked && live && !started ? (
+              <div className="agent-welcome" aria-live="off">
+                <span className="agent-orb agent-orb--large" aria-hidden="true" />
+                <p className="agent-welcome__title">{agentCopy.welcome.title}</p>
+                <p className="agent-welcome__body">{agentCopy.welcome.body}</p>
+                <div className="agent-starters" role="group" aria-label={agentCopy.welcome.aria}>
+                  {starters.map((starter) => {
+                    const Icon = STARTER_ICONS[starter.icon] ?? Sparkles;
+                    return (
+                      <button key={starter.title} type="button" disabled={busy} onClick={() => start(starter)}>
+                        <Icon size={18} aria-hidden="true" />
+                        <span className="agent-starters__title">{starter.title}</span>
+                        <span className="agent-starters__hint">{starter.hint}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
           </div>
           <form className="terminal__input" onSubmit={handleSubmit}>
             <label htmlFor="terminal-input" className="sr-only">{copy.input}</label>
@@ -663,7 +708,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
               spellCheck={false}
               enterKeyHint="send"
               maxLength={6000}
-              placeholder={live ? agentCopy.placeholder : copy.placeholder}
+              placeholder={live ? (docked ? agentCopy.panelPlaceholder : agentCopy.placeholder) : copy.placeholder}
               dir="auto"
             />
             <button type="submit" className="terminal__send" aria-label={panelCopy.send} disabled={!value.trim()}>
@@ -676,7 +721,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
               <button key={command} type="button" onClick={() => { if (!booted) skipBoot(); submit(command); }}>{command}</button>
             ))}
           </div>
-          {live ? (
+          {live && (started || !docked) ? (
             <div className="terminal__chips terminal__chips--agent" aria-label={agentCopy.chipsAria} dir="auto">
               {agentChips.map((question) => (
                 <button key={question} type="button" disabled={busy} onClick={() => submit(question)}>{question}</button>

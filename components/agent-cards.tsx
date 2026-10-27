@@ -42,7 +42,7 @@ export type AgentStep = { step: string; text: string; tool?: string; error?: boo
 export function ActivityLine({ steps, state, locale }: { steps: AgentStep[]; state: "running" | "done"; locale: Locale }) {
   const copy = getContent(locale).ui.terminal.agent;
   if (state === "running") {
-    const latest = steps.findLast((step) => step.step === "result");
+    const latest = steps.findLast((step) => step.step === "result" || step.step === "prep");
     return (
       <p className="agent-activity agent-activity--running" dir="auto">
         <span className="agent-activity__pulse" aria-hidden="true" />
@@ -54,7 +54,7 @@ export function ActivityLine({ steps, state, locale }: { steps: AgentStep[]; sta
     <details className="agent-activity">
       <summary>{[copy.activity(steps.filter((step) => step.step === "tool").length), steps.findLast((step) => step.step === "result")?.text].filter(Boolean).join(" · ")}</summary>
       <ol>
-        {steps.map((step, index) => (
+        {steps.filter((step) => step.step !== "prep").map((step, index) => (
           <li key={index} className={step.error || step.step === "guard" ? "agent-activity__warn" : undefined} dir="auto">
             <span className="terminal__step">{copy.steps[step.step] ?? step.step}</span> {step.text}
           </li>

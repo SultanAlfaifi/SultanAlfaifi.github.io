@@ -55,6 +55,9 @@ test("tool calls run on the server and reach the page as actions", async () => {
   assert.equal(action.type, "open");
   assert.equal(action.anchor, "project-masari");
   assert.equal(action.external.href, "https://sultanalfaifi.github.io/Masari/");
+  const prep = opened.findIndex((event) => event.event === "trace" && event.data.step === "prep" && event.data.tool === "open_on_page");
+  const ran = opened.findIndex((event) => event.event === "trace" && event.data.step === "tool");
+  assert.ok(prep >= 0 && prep < ran, "the visitor hears which tool the agent picked before its arguments are done");
 
   const fit = await readEvents(await harness.request(worker, "/chat", { token, body: { locale: "en", messages: [{ role: "user", content: "Fit check for this role or job description:\nbackend engineer" }] } }));
   const traces = fit.filter((event) => event.event === "trace").map((event) => event.data.text);
