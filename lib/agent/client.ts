@@ -162,7 +162,10 @@ export async function withSession<T>(slot: HTMLElement, locale: "en" | "ar", run
   }
 }
 
-export type ChatTurn = { role: "user" | "assistant"; content: string; sig?: string };
+// A tool the agent ran for a turn, exactly as the Worker signed it. It goes back with the turn so the
+// agent remembers what it already showed.
+export type TurnTool = { name: string; args: Record<string, unknown>; memo: string };
+export type ChatTurn = { role: "user" | "assistant"; content: string; sig?: string; tools?: TurnTool[] };
 export type Bilingual = { en: string; ar: string };
 export type FitItem = { point: string; evidence: string[] };
 export type FitReport = { role: string; strong: FitItem[]; partial: FitItem[]; gaps: { point: string; plan: string }[]; summary: string };
@@ -172,10 +175,10 @@ export type AgentAction =
   | { type: "draft_email"; draft: { subject: string; body: string; topic: string } };
 
 export type AgentEvent =
-  | { event: "trace"; data: { step: string; text: string; error?: boolean } }
+  | { event: "trace"; data: { step: string; text: string; tool?: string; error?: boolean } }
   | { event: "delta"; data: { text: string } }
   | { event: "action"; data: AgentAction }
-  | { event: "done"; data: { signature: string; sources: string[]; removed: string[] } }
+  | { event: "done"; data: { signature: string; tools: TurnTool[]; sources: string[]; removed: string[] } }
   | { event: "error"; data: { code: string; partial: boolean } };
 
 export async function streamChat(token: string, turns: ChatTurn[], locale: "en" | "ar", onEvent: (event: AgentEvent) => void, signal?: AbortSignal) {

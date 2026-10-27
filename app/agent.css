@@ -20,6 +20,36 @@
 .agent-turnstile:empty { display: none; }
 .agent-turnstile { padding: 8px 20px 0; }
 
+/* Everything the agent did for an answer, as one quiet line that opens to the steps. */
+.agent-activity { margin: 0; color: #8fa39b; font-size: 0.8rem; line-height: 1.6; }
+.agent-activity--running { display: flex; align-items: center; gap: 8px; }
+.agent-activity__pulse { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--mint); }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .agent-activity__pulse { animation: agent-pulse 1.1s ease-in-out infinite; }
+}
+@keyframes agent-pulse { 50% { opacity: 0.3; transform: scale(0.7); } }
+.agent-activity summary { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; cursor: pointer; list-style: none; }
+.agent-activity summary::-webkit-details-marker { display: none; }
+.agent-activity summary::before {
+  content: ""; border-block: 4px solid transparent; border-inline-start: 5px solid var(--mint);
+  transition: transform 200ms ease;
+}
+.agent-activity[open] summary::before { transform: rotate(90deg); }
+[dir="rtl"] .agent-activity[open] summary::before { transform: rotate(-90deg); }
+.agent-activity summary:hover { color: var(--paper); }
+.agent-activity summary:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 6px; }
+.agent-activity ol { display: grid; gap: 4px; margin: 6px 0 0; padding: 6px 12px; list-style: none; border-inline-start: 1px solid rgb(125 226 209 / 25%); }
+.agent-activity__warn { color: #ffbf3f; }
+
+/* The places on the page an answer drew on. Each one scrolls there. */
+.agent-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; color: #8fa39b; font-family: var(--font-arabic), sans-serif; font-size: 0.76rem; }
+.agent-sources button {
+  min-height: 28px; padding: 0 10px; border: 1px solid rgb(125 226 209 / 35%); border-radius: 999px;
+  background: transparent; color: var(--mint); font: inherit; cursor: pointer;
+}
+.agent-sources button:hover { background: rgb(125 226 209 / 12%); }
+.agent-sources button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
 .agent-card {
   display: grid; gap: 10px; padding: 16px;
   border: 1px solid rgb(255 255 255 / 14%); border-radius: 14px;

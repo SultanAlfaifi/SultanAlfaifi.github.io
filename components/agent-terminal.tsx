@@ -9,13 +9,18 @@ import { LEADING_TAG, textDir } from "@/lib/agent/direction";
 import { AgentError, agentConfigured, checkHealth, prepareSession, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
 import { useVisitor } from "./use-visitor";
-import { AgentText, DraftCard, FitCard, type Draft } from "./agent-cards";
+import { ActivityLine, AgentText, DraftCard, FitCard, type AgentStep, type Draft } from "./agent-cards";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
 import { foundSecrets, SECRET_IDS, secretCopy, unlockSecret } from "./secrets";
 
 type LineKind = "input" | "out" | "muted" | "ok" | "warn" | "accent" | "answer";
-type Card = { type: "draft"; draft: Draft } | { type: "fit"; report: FitReport } | { type: "link"; href: string; label: string };
-type Line = { id: number; kind: LineKind; text: string; href?: string; step?: string; streaming?: boolean; card?: Card };
+type Card =
+  | { type: "draft"; draft: Draft }
+  | { type: "fit"; report: FitReport }
+  | { type: "link"; href: string; label: string }
+  | { type: "activity"; steps: AgentStep[]; state: "running" | "done" }
+  | { type: "sources"; anchors: string[] };
+type Line = { id: number; kind: LineKind; text: string; href?: string; streaming?: boolean; card?: Card };
 type Output = Omit<Line, "id">;
 type AgentState = "off" | "checking" | "live" | "offline" | "budget";
 
@@ -25,7 +30,6 @@ const COMMANDS = ["help", "whoami", "projects", "open", "achievements", "stack",
 const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements", "stack", "socials", "contact", "email", "secrets", "time", "date", "clear", "exit", "عربي", "ar", "motion", "run", "open", "cd"]);
 const BOOT_KINDS: LineKind[] = ["muted", "muted", "muted", "accent", "ok"];
 const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "warn", "muted"];
-const STEP_KINDS: Record<string, LineKind> = { plan: "muted", tool: "out", result: "ok", sources: "muted", guard: "warn", policy: "warn" };
 // Below this width the panel covers the whole page.
 const PHONE_PANEL = "(max-width: 760px)";
 
@@ -321,14 +325,17 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     stream(result, input.toLowerCase().startsWith("run") ? 340 : gap);
   }
 
+  // On a phone the panel covers the page, so it steps aside to show what it points at.
+  function showAnchor(id: string) {
+    if (docked && window.matchMedia(PHONE_PANEL).matches) closePanel("none");
+    revealAnchor(id);
+  }
+
   function handleAction(action: AgentAction) {
     if (action.type === "open") {
-      // On a phone the panel covers the page, so it steps aside to show what it highlighted.
-      if (docked && window.matchMedia(PHONE_PANEL).matches) closePanel("none");
-      revealAnchor(action.anchor);
-      const outputs: Output[] = [{ kind: "ok", text: `${locale === "ar" ? "←" : "→"} ${agentCopy.highlighted(action.label[locale])}` }];
-      if (action.external) outputs.push({ kind: "out", text: "", card: { type: "link", href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } });
-      append(outputs);
+      // The activity line already says what was highlighted; only a demo button needs a line of its own.
+      showAnchor(action.anchor);
+      if (action.external) append([{ kind: "out", text: "", card: { type: "link", href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } }]);
     } else if (action.type === "fit_report") {
       append([{ kind: "out", text: "", card: { type: "fit", report: action.report } }]);
     } else {
@@ -359,12 +366,15 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     let open: { id: number; text: string } | null = null;
     let answer = "";
     let failure: string | null = null;
-    const thinking = append([{ kind: "muted", text: agentCopy.thinking }])[0];
-    const dropThinking = () => setLines((current) => current.filter((line) => line.id !== thinking));
+    // Everything the agent does on the way to its answer folds into one line above it. Without any
+    // tool calls there's nothing worth unfolding, so the line goes once the answer is in.
+    const steps: AgentStep[] = [];
+    const activity = append([{ kind: "muted", text: "", card: { type: "activity", steps: [], state: "running" } }])[0];
+    const showSteps = (state: "running" | "done") =>
+      setLines((current) => current.map((line) => (line.id === activity ? { ...line, card: { type: "activity", steps: [...steps], state } } : line)));
     try {
       await withSession(slotRef.current!, locale, (token) => streamChat(token, history, locale, (event) => {
         if (event.event === "delta") {
-          dropThinking();
           answer += event.data.text;
           if (!open) {
             if (!event.data.text.trim()) return;
@@ -379,16 +389,17 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
         }
         open = null;
         if (event.event === "trace") {
-          append([{ kind: event.data.error ? "warn" : STEP_KINDS[event.data.step] ?? "muted", step: event.data.step, text: event.data.text }]);
+          steps.push(event.data);
+          showSteps("running");
         } else if (event.event === "action") {
-          dropThinking();
           handleAction(event.data);
         } else if (event.event === "done") {
-          dropThinking();
           // Re-key finished answers so screen readers announce them once, complete, instead of word by word.
           const finished = new Map(segments.map((segment) => [segment.id, nextId.current++]));
           setLines((current) => current.map((line) => (finished.has(line.id) ? { ...line, id: finished.get(line.id)!, streaming: false } : line)));
-          turns.current = [...history, { role: "assistant" as const, content: answer, sig: event.data.signature }].slice(-12);
+          if (event.data.sources.length) append([{ kind: "out", text: "", card: { type: "sources", anchors: event.data.sources } }]);
+          // The signed tool list goes back with the turn, so the agent remembers what it already showed.
+          turns.current = [...history, { role: "assistant" as const, content: answer, sig: event.data.signature, tools: event.data.tools }].slice(-12);
         } else if (event.event === "error") {
           failure = event.data.code;
         }
@@ -396,7 +407,8 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     } catch (error) {
       if ((error as Error).name !== "AbortError") failure = error instanceof AgentError ? error.code : "offline";
     } finally {
-      dropThinking();
+      if (steps.some((step) => step.step === "tool")) showSteps("done");
+      else setLines((current) => current.filter((line) => line.id !== activity));
       setBusy(false);
     }
     if (failure) {
@@ -461,7 +473,19 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     }
   }
 
-  function renderLine(line: Line, dir: string) {
+  function renderLine(line: Line) {
+    if (line.card?.type === "activity") return <ActivityLine steps={line.card.steps} state={line.card.state} locale={locale} />;
+    if (line.card?.type === "sources") {
+      return (
+        <p className="agent-sources">
+          <span>{agentCopy.sources}</span>
+          {line.card.anchors.map((id) => {
+            const anchor = anchors.find((item) => item.id === id);
+            return anchor ? <button key={id} type="button" onClick={() => showAnchor(id)}>{anchor.label[locale]}</button> : null;
+          })}
+        </p>
+      );
+    }
     if (line.card?.type === "link") {
       return <a className="terminal__action" href={line.card.href} target="_blank" rel="noreferrer noopener">{line.card.label}</a>;
     }
@@ -472,16 +496,14 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       return <DraftCard draft={line.card.draft} locale={locale} onClose={() => undefined} />;
     }
     if (line.kind === "answer") {
-      return line.streaming ? line.text : <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} />;
+      return <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} />;
     }
     const tag = LEADING_TAG.exec(line.text)?.[0];
     const text = tag ? line.text.slice(tag.length) : line.text;
-    const step = line.step ? <span className="terminal__step">{agentCopy.steps[line.step] ?? line.step} {dir === "rtl" ? "←" : "→"} </span> : null;
     return (
       <>
         {line.kind === "input" ? <span className="terminal__prompt" aria-hidden="true">❯ </span> : null}
         {tag ? <><span className="terminal__tag" dir="ltr">{tag.trim()}</span> </> : null}
-        {step}
         {line.href ? <a href={line.href} target={line.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer noopener">{text}</a> : text}
       </>
     );
@@ -532,11 +554,11 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
           </div>
           <div ref={logRef} className="terminal__log" role="log" aria-live={booted ? "polite" : "off"} aria-label={copy.log}>
             {lines.map((line) => {
-              if (line.card) return <div key={line.id} className="terminal__card" aria-live="off">{renderLine(line, "auto")}</div>;
+              if (line.card) return <div key={line.id} className="terminal__card" aria-live="off">{renderLine(line)}</div>;
               const dir = textDir(line.text.replace(LEADING_TAG, ""));
               return (
                 <p key={line.id} className={`terminal__line terminal__line--${line.kind}`} dir={dir} aria-hidden={line.streaming || undefined}>
-                  {renderLine(line, dir)}
+                  {renderLine(line)}
                 </p>
               );
             })}

@@ -10,8 +10,9 @@ import type { AnchorInfo } from "@/lib/agent/types";
 const LINK = /\[([^\]\n]{1,120})\]\(([^)\s]{1,400})\)/g;
 
 // Renders an answer's markdown links. Only anchors on this page and URLs published on the site become
-// links; anything else the model wrote stays as plain text.
-export function AgentText({ text, anchors, urls, email }: { text: string; anchors: AnchorInfo[]; urls: Set<string>; email: string }) {
+// links; anything else the model wrote stays as plain text, and stray bold markers are dropped.
+export function AgentText({ text: raw, anchors, urls, email }: { text: string; anchors: AnchorInfo[]; urls: Set<string>; email: string }) {
+  const text = raw.split("**").join("");
   const known = new Set(anchors.map((anchor) => anchor.id));
   const parts: ReactNode[] = [];
   let last = 0;
@@ -30,6 +31,35 @@ export function AgentText({ text, anchors, urls, email }: { text: string; anchor
   }
   parts.push(text.slice(last));
   return <>{parts.map((part, index) => <Fragment key={index}>{part}</Fragment>)}</>;
+}
+
+export type AgentStep = { step: string; text: string; tool?: string; error?: boolean };
+
+// Everything the agent did for one answer, folded into a single line. While it works, the line says
+// what it last finished; afterwards it keeps that last result and opens to every tool call and result.
+export function ActivityLine({ steps, state, locale }: { steps: AgentStep[]; state: "running" | "done"; locale: Locale }) {
+  const copy = getContent(locale).ui.terminal.agent;
+  if (state === "running") {
+    const latest = steps.findLast((step) => step.step === "result");
+    return (
+      <p className="agent-activity agent-activity--running" dir="auto">
+        <span className="agent-activity__pulse" aria-hidden="true" />
+        {latest?.text ?? copy.thinking}
+      </p>
+    );
+  }
+  return (
+    <details className="agent-activity">
+      <summary>{[copy.activity(steps.filter((step) => step.step === "tool").length), steps.findLast((step) => step.step === "result")?.text].filter(Boolean).join(" · ")}</summary>
+      <ol>
+        {steps.map((step, index) => (
+          <li key={index} className={step.error || step.step === "guard" ? "agent-activity__warn" : undefined} dir="auto">
+            <span className="terminal__step">{copy.steps[step.step] ?? step.step}</span> {step.text}
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
 }
 
 export type Draft = { subject: string; body: string; topic: string };

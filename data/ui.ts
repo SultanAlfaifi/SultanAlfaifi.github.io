@@ -343,7 +343,7 @@ const en = {
     secrets: (found: number, total: number) => `${found}/${total} secrets found`,
     locked: "locked:",
     agent: {
-      liveLine: "[agent] live. Ask anything about Sultan's work in English or Arabic. I'm his AI assistant, not Sultan, and I answer only from this site.",
+      liveLine: "[agent] live. I know everything on this site about Sultan's work, in English or Arabic. Ask about a project, or paste a job description.",
       offlineLine: "[agent] the AI assistant is offline, so you'll get scripted replies. Every command still works.",
       budgetLine: "[agent] the assistant's budget is used up for now. Scripted replies until it resets.",
       rateLine: "[agent] that's a lot of questions at once. Wait a minute, or use the commands.",
@@ -353,8 +353,10 @@ const en = {
       privacy: "Questions you type here go to an AI assistant (Claude via OpenRouter). They're kept for 30 days without your IP to improve answers, so don't share private details.",
       evalsLink: "See how it's tested, failures included",
       steps: { plan: "planner", tool: "tool", result: "result", policy: "policy", sources: "sources", guard: "guard" } as Record<string, string>,
+      // The one line that stands for everything the agent did on a turn; it opens to show the steps.
+      activity: (count: number) => `Ran ${count} step${count === 1 ? "" : "s"}`,
+      sources: "Sources",
       openDemo: (title: string) => `Open ${title} ↗`,
-      highlighted: (label: string) => `Highlighted ${label} on the page`,
       chips: ["Which project should I try first?", "fit AI engineer intern", "I want to email Sultan about a role"],
       // Suggested questions for visitors who said why they came.
       chipsFor: {
@@ -792,7 +794,7 @@ const ar: UiStrings = {
     secrets: (found: number, total: number) => `لقيت ${found} من ${total} أسرار`,
     locked: "مقفل:",
     agent: {
-      liveLine: "[agent] شغّال. اسأل أي شيء عن أعمال سلطان بالعربي أو بالإنجليزي. أنا مساعده الذكي، مو سلطان نفسه، وأجيب من هذا الموقع فقط.",
+      liveLine: "[agent] جاهز. أعرف كل ما في هذا الموقع عن شغل سلطان، بالعربي أو بالإنجليزي. اسأل عن أي مشروع، أو الصق وصف وظيفة.",
       offlineLine: "[agent] المساعد الذكي متوقف الآن، فالردود مكتوبة مسبقًا. والأوامر كلها تشتغل.",
       budgetLine: "[agent] خلصت ميزانية المساعد حاليًا. الردود مكتوبة مسبقًا لين تتجدد.",
       rateLine: "[agent] أسئلة كثيرة ورا بعض. انتظر دقيقة، أو استخدم الأوامر.",
@@ -802,8 +804,9 @@ const ar: UiStrings = {
       privacy: "ما تكتبه هنا يُرسَل إلى مساعد ذكاء اصطناعي يعمل بـ Claude عبر OpenRouter. ونحتفظ بالأسئلة 30 يومًا دون عنوان IP لتحسين الإجابات، فلا تكتب بيانات خاصة.",
       evalsLink: "شوف كيف نختبره، مع إخفاقاته",
       steps: { plan: "المخطِّط", tool: "أداة", result: "النتيجة", policy: "السياسة", sources: "المصادر", guard: "حماية" },
+      activity: (count: number) => (count === 1 ? "نفّذ خطوة وحدة" : count === 2 ? "نفّذ خطوتين" : `نفّذ ${count} خطوات`),
+      sources: "المصادر",
       openDemo: (title: string) => `افتح ${title} ↗`,
-      highlighted: (label: string) => `ميّزت ${label} في الصفحة`,
       chips: ["أي مشروع أجرّب أول؟", "fit متدرّب هندسة ذكاء اصطناعي", "أبغى أراسل سلطان عن وظيفة"],
       chipsFor: {
         hiring: ["وش يسوّي سلطان في سلة؟", "fit مطوّر Back-end بـ Laravel", "أبغى أراسل سلطان عن وظيفة"],

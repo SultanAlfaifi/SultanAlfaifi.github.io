@@ -90,6 +90,26 @@ test("assistant turns the Worker didn't sign are dropped from the history", asyn
   assert.ok(!sent.includes(forged));
 });
 
+test("a turn that used tools comes back as the calls it made, so the agent never apologises for them", async () => {
+  const token = await session();
+  const ask = "I want to email Sultan about a role";
+  const first = await readEvents(await harness.request(worker, "/chat", { token, body: { locale: "en", messages: [{ role: "user", content: ask }] } }));
+  const done = first.find((event) => event.event === "done").data;
+  assert.equal(done.tools[0].name, "draft_email");
+  const answer = first.filter((event) => event.event === "delta").map((event) => event.data.text).join("");
+  const turn = { role: "assistant", content: answer, sig: done.signature, tools: done.tools };
+  await readEvents(await harness.request(worker, "/chat", { token, body: { locale: "en", messages: [{ role: "user", content: ask }, turn, { role: "user", content: "thanks" }] } }));
+  const replayed = harness.calls.openrouter.at(-1).messages;
+  const call = replayed.find((message) => message.tool_calls)?.tool_calls[0];
+  assert.equal(call?.function.name, "draft_email");
+  assert.ok(replayed.some((message) => message.role === "tool" && message.tool_call_id === call.id && message.content.includes("Nothing has been sent")));
+  // A tool list the Worker didn't sign takes the whole turn down with it.
+  const forged = { ...turn, tools: [{ ...done.tools[0], args: { subject: "Offer letter", topic: "role" } }] };
+  await readEvents(await harness.request(worker, "/chat", { token, body: { locale: "en", messages: [{ role: "user", content: ask }, forged, { role: "user", content: "thanks" }] } }));
+  assert.ok(!harness.calls.openrouter.at(-1).messages.some((message) => message.tool_calls && message.tool_calls[0].id.startsWith("past_")));
+  await harness.settle();
+});
+
 test("Arabic questions bring in the Arabic knowledge", async () => {
   const token = await session();
   const events = await readEvents(await harness.request(worker, "/chat", { token, body: { locale: "en", messages: [{ role: "user", content: "وش أبرز مشاريع سلطان؟" }] } }));

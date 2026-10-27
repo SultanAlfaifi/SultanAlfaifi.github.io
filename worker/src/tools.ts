@@ -13,10 +13,15 @@ export type ClientAction =
   | { type: "fit_report"; report: FitReport }
   | { type: "draft_email"; draft: { subject: string; body: string; topic: string } };
 
+// What a successful call leaves in the conversation: short arguments and a one-line memo of what the
+// visitor saw. Later turns replay it as a real tool call, so the model knows the action happened.
+export type ToolRecord = { name: string; args: Record<string, unknown>; memo: string };
+
 export type ToolOutcome = {
   content: string;
   trace: { call: string; result: string };
   action?: ClientAction;
+  record?: Omit<ToolRecord, "name">;
   error?: boolean;
 };
 
@@ -188,7 +193,8 @@ export function runTool(name: string, rawArguments: string, locale: Locale): Too
     return {
       content: JSON.stringify({ ok: true, highlighted: anchor.label.en, external_button_shown: Boolean(external), note: "The visitor's page scrolled there. External links open only if the visitor clicks the button." }),
       trace: { call: `open_on_page(#${id})`, result: t.opened(anchor.label[locale], Boolean(external)) },
-      action: { type: "open", anchor: id, kind: anchor.kind, label: anchor.label, collapsed: Boolean(anchor.collapsed), external }
+      action: { type: "open", anchor: id, kind: anchor.kind, label: anchor.label, collapsed: Boolean(anchor.collapsed), external },
+      record: { args: { anchor: id }, memo: `The visitor's page scrolled to ${anchor.label.en} and highlighted it${external ? ", with a button to open it" : ""}.` }
     };
   }
 
@@ -198,7 +204,8 @@ export function runTool(name: string, rawArguments: string, locale: Locale): Too
     const result = matchRequirements(requirements);
     return {
       content: JSON.stringify(result),
-      trace: { call: `match_requirements(${requirements.length} requirements${args.role ? ` · ${text(args.role, 60)}` : ""})`, result: t.matched(result.totals.strong, result.totals.partial, result.totals.gap) }
+      trace: { call: `match_requirements(${requirements.length} requirements${args.role ? ` · ${text(args.role, 60)}` : ""})`, result: t.matched(result.totals.strong, result.totals.partial, result.totals.gap) },
+      record: { args: { role: text(args.role, 60), requirements: requirements.slice(0, 20).map((item) => text(item, 60)) }, memo: `${result.totals.strong} strong, ${result.totals.partial} partial, ${result.totals.gap} not on the site.` }
     };
   }
 
@@ -218,7 +225,8 @@ export function runTool(name: string, rawArguments: string, locale: Locale): Too
     return {
       content: JSON.stringify({ ok: true, shown: true, note: "The card is on screen. Now give a short summary and offer to email it to Sultan." }),
       trace: { call: `show_fit_report(${report.strong.length} strong · ${report.partial.length} partial · ${report.gaps.length} gaps)`, result: t.report },
-      action: { type: "fit_report", report }
+      action: { type: "fit_report", report },
+      record: { args: { role: report.role }, memo: `The fit report card for ${report.role} is on screen: ${report.strong.length} strong, ${report.partial.length} partial, ${report.gaps.length} gaps.` }
     };
   }
 
@@ -228,7 +236,8 @@ export function runTool(name: string, rawArguments: string, locale: Locale): Too
     return {
       content: JSON.stringify({ shown_to_visitor: true, sent: false, recipient: "Sultan (fixed)", note: "Only the visitor's click on Send sends it. Do not say it was sent." }),
       trace: { call: `draft_email(${draft.topic})`, result: t.drafted },
-      action: { type: "draft_email", draft }
+      action: { type: "draft_email", draft },
+      record: { args: { subject: draft.subject, topic: draft.topic }, memo: "The draft is on screen for the visitor to edit and send. Nothing has been sent." }
     };
   }
 
