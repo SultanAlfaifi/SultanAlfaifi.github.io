@@ -21,7 +21,12 @@ const INK = "#111816";
 const MUTED = "#5c6762";
 const LINE = "#e3e1d8";
 const LINK = "#0b5c55";
-const FONT = "'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif";
+// The site's typeface where the mail app can load it (Apple Mail, iOS Mail, Samsung, Thunderbird).
+// Gmail and Outlook never load web fonts, so they fall to the reader's own system font: SF on
+// iPhone, Segoe UI on Windows, Roboto and Noto on Android. Outlook on Windows never sees the link,
+// since a web font there turns every line into Times New Roman.
+const FONT = "'IBM Plex Sans Arabic',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Tahoma,Arial,sans-serif";
+const FONT_LINK = `<!--[if !mso]><!--><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&amp;display=swap"><!--<![endif]-->`;
 const BODY = `font-size:15px;line-height:1.7;color:${INK}`;
 
 export const escapeHtml = (value: string) =>
@@ -93,7 +98,7 @@ export function renderMail(mail: Mail): { html: string; text: string } {
   const footerHtml = footer.includes(host) ? footer.replace(host, siteLink) : `${footer} · ${siteLink}`;
   const html = `<!doctype html>
 <html lang="${mail.locale}" dir="${dir}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${escapeHtml(mail.heading)}</title></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only">${FONT_LINK}<title>${escapeHtml(mail.heading)}</title></head>
 <body style="margin:0;padding:0;background:#ffffff">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff"><tr><td align="center">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" dir="${dir}" style="max-width:560px"><tr><td style="padding:32px 24px;font-family:${FONT};text-align:${side};word-break:break-word;overflow-wrap:anywhere">
