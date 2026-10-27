@@ -1,6 +1,6 @@
 import { CV_FIELDS } from "../../data/cv";
 import { cvAsText, decodeSelection, encodeSelection, isCvTarget, resolveSelection, validateSelection, type CvSelection } from "../../lib/cv/select";
-import { mailLocale, replyAddress, sendEmail } from "./email";
+import { OWNER_SENDER, mailLocale, replyAddress, sendEmail } from "./email";
 import type { Env } from "./env";
 import { CV_CATALOG, KNOWLEDGE } from "./generated/knowledge";
 import { HttpError, cleanLine, cleanText, clientIp, isEmail, readJson } from "./http";
@@ -150,7 +150,7 @@ function ownerMail(env: Env, cv: Awaited<ReturnType<typeof readCv>>, heading: st
     { kind: "button", label: "افتح نفس ملف PDF", href: cvLink(env, cv.encoded, cv.company, "ar") },
     { kind: "pre", title: "السيرة كما وصلته", text: cvAsText(resolveSelection(cv.selection)) }
   );
-  return { locale: "ar", siteUrl: env.SITE_URL, preheader: `${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`, heading, blocks, footer: "إشعار تلقائي من موقعك." };
+  return { locale: "ar", siteUrl: env.SITE_URL, heading, blocks, footer: "إشعار تلقائي من موقعك." };
 }
 
 // Sultan gets the company, the field, and the CV whenever a tailored CV is downloaded.
@@ -162,7 +162,7 @@ export async function handleNotify(request: Request, env: Env) {
   return sendEmail(env, {
     to: KNOWLEDGE.owner.email,
     channel: "owner",
-    sender: "sultalfaifi.com",
+    sender: OWNER_SENDER,
     tag: "cv_downloaded",
     subject: `تحميل سيرة · ${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`,
     mail: ownerMail(env, cv, "أحد حمّل سيرتك")
@@ -208,7 +208,7 @@ export async function handleCodeStart(request: Request, env: Env) {
     sender: locale === "ar" ? "سلطان الفيفي" : "Sultan Alfaifi",
     tag: "cv_code",
     subject: copy.subject(code),
-    mail: { locale, siteUrl: env.SITE_URL, preheader: copy.lead, heading: copy.heading, blocks: [{ kind: "text", text: copy.lead }, { kind: "code", code }, { kind: "small", text: copy.ignore }], footer: copy.footer }
+    mail: { locale, siteUrl: env.SITE_URL, heading: copy.heading, blocks: [{ kind: "text", text: copy.lead }, { kind: "code", code }, { kind: "small", text: copy.ignore }], footer: copy.footer }
   });
   // Local testing only: with no Resend key, hand the code back so the flow can be tried end to end.
   return env.ENVIRONMENT === "development" && result.dryRun ? { ...result, devCode: code } : result;
@@ -262,7 +262,6 @@ export async function handleCodeConfirm(request: Request, env: Env) {
     mail: {
       locale,
       siteUrl: env.SITE_URL,
-      preheader: words.lead(cv.company),
       heading: words.heading,
       blocks: [
         { kind: "text", text: words.lead(cv.company) },
@@ -276,7 +275,7 @@ export async function handleCodeConfirm(request: Request, env: Env) {
     to: KNOWLEDGE.owner.email,
     channel: "owner",
     replyTo: email,
-    sender: "sultalfaifi.com",
+    sender: OWNER_SENDER,
     tag: "cv_emailed",
     subject: `إرسال سيرة بالبريد · ${cv.company || "بدون شركة"} · ${fieldLabel(cv.selection)}`,
     mail: ownerMail(env, cv, "أحد طلب سيرتك على بريده", email)

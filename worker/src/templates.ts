@@ -1,6 +1,7 @@
 // Branded emails. Every message is a list of blocks rendered twice: as HTML (table layout and inline
 // styles, the only things mail apps reliably keep) and as plain text, which Resend sends alongside.
-// Anything that came from a visitor or the site's data is escaped here, never upstream.
+// Anything that came from a visitor or the site's data is escaped here, never upstream. No hidden
+// text (no preheader): spam filters weigh hidden content, and a new domain can't afford the doubt.
 
 export type MailLocale = "en" | "ar";
 
@@ -13,7 +14,7 @@ export type Block =
   | { kind: "pre"; title: string; text: string }
   | { kind: "small"; text: string };
 
-export type Mail = { locale: MailLocale; preheader: string; heading: string; blocks: Block[]; footer: string; siteUrl: string };
+export type Mail = { locale: MailLocale; heading: string; blocks: Block[]; footer: string; siteUrl: string };
 
 const INK = "#111816";
 const MUTED = "#5c6762";
@@ -79,7 +80,6 @@ export function renderMail(mail: Mail): { html: string; text: string } {
 <html lang="${mail.locale}" dir="${dir}">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${escapeHtml(mail.heading)}</title></head>
 <body style="margin:0;padding:0;background:${PAPER}">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(mail.preheader)}</div>
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${PAPER}"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" dir="${dir}" style="max-width:600px;font-family:${FONT};text-align:${align}">
 <tr><td style="padding:0 4px 16px;font-size:15px;font-weight:700;color:${INK}"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7de2d1;margin-${rtl ? "left" : "right"}:8px"></span>${rtl ? "سلطان الفيفي" : "Sultan Alfaifi"}</td></tr>

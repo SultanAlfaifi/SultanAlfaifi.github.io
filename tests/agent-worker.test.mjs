@@ -150,7 +150,8 @@ test("email always goes to Sultan, with the visitor only as reply-to", async () 
   assert.equal(email.reply_to, "recruiter@example.com");
   assert.doesNotMatch(email.subject, /[\r\n]/);
   // Sent from the site's own domain, as a branded HTML email with a plain-text part.
-  assert.equal(email.from, "sultalfaifi.com <notifications@sultalfaifi.com>", "Sultan's own alerts come from notifications@");
+  assert.equal(email.from, "موقع سلطان الفيفي <notifications@sultalfaifi.com>", "Sultan's own alerts come from notifications@, under a person-like name");
+  assert.doesNotMatch(email.html, /display:\s*none/, "no hidden text for spam filters to weigh");
   assert.ok(email.html.includes("<html") && email.text.includes("Hello"));
   assert.deepEqual(email.tags, [{ name: "category", value: "contact" }]);
   assert.equal((await harness.request(worker, "/email/send", { body: { turnstileToken: "bad", email: "a@b.co", subject: "x", message: "y" } })).status, 403);
