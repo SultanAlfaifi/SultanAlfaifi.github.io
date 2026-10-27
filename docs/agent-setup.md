@@ -92,7 +92,7 @@ npx wrangler secret put SESSION_SECRET --config worker/wrangler.jsonc --env=""
 | TXT | `resend._domainkey` | مفتاح DKIM من صفحة الدومين في Resend (يبدأ بـ `p=`) |
 | CNAME | `rsend` | `rsend-euw1.forge.rmta.net` |
 | CNAME | `send` | `send.forge.rmta.net` |
-| TXT | `_dmarc` | `v=DMARC1; p=none;` |
+| TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r;` (شُدّد من `p=none` في 27 أكتوبر) |
 
 - Resend صار يتحقق من الإرسال بسجلات CNAME، فما يحتاج سجل MX. وإعدادات البريد في Namecheap تبقى على **Email Forwarding**، وتحويل بريدك ما يتأثر.
 - **لا تضيف** سجل `MX` اللي يقترحه Resend تحت **Enable Receiving** (`@` → `receive-euw1…`). هذا لاستقبال البريد في Resend، ويتعارض مع تحويل بريدك.
