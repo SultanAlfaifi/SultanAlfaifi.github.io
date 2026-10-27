@@ -2,14 +2,16 @@
 
 import { ArrowUp, Maximize2, Sparkles, X } from "lucide-react";
 import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
 import { buildAnchors, collectUrls } from "@/lib/agent/anchors";
-import { OPEN_ASSISTANT } from "@/lib/agent/assistant";
+import { OPEN_ASSISTANT, requestTailoredCv } from "@/lib/agent/assistant";
 import { LEADING_TAG, textDir } from "@/lib/agent/direction";
-import { AgentError, agentConfigured, checkHealth, prepareSession, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport } from "@/lib/agent/client";
-import { revealAnchor } from "@/lib/agent/reveal";
+import { AgentError, agentConfigured, checkHealth, prepareSession, streamChat, withSession, type AgentAction, type ChatTurn, type FitReport, type TourStop } from "@/lib/agent/client";
+import { clearSpotlight, revealAnchor, showOnPage } from "@/lib/agent/reveal";
 import { useVisitor } from "./use-visitor";
-import { ActivityLine, AgentText, DraftCard, FitCard, type AgentStep, type Draft } from "./agent-cards";
+import { ActivityLine, AgentText, DraftCard, FitCard, ProjectCard, TourCard, type AgentStep, type Draft } from "./agent-cards";
+import { Companion, type CompanionView } from "./agent-companion";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
 import { foundSecrets, SECRET_IDS, secretCopy, unlockSecret } from "./secrets";
 
@@ -19,7 +21,9 @@ type Card =
   | { type: "fit"; report: FitReport }
   | { type: "link"; href: string; label: string }
   | { type: "activity"; steps: AgentStep[]; state: "running" | "done" }
-  | { type: "sources"; anchors: string[] };
+  | { type: "sources"; anchors: string[] }
+  | { type: "project"; slug: string }
+  | { type: "tour"; stops: TourStop[] };
 type Line = { id: number; kind: LineKind; text: string; href?: string; streaming?: boolean; card?: Card };
 type Output = Omit<Line, "id">;
 type AgentState = "off" | "checking" | "live" | "offline" | "budget";
@@ -30,8 +34,6 @@ const COMMANDS = ["help", "whoami", "projects", "open", "achievements", "stack",
 const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements", "stack", "socials", "contact", "email", "secrets", "time", "date", "clear", "exit", "عربي", "ar", "motion", "run", "open", "cd"]);
 const BOOT_KINDS: LineKind[] = ["muted", "muted", "muted", "accent", "ok"];
 const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "warn", "muted"];
-// Below this width the panel covers the whole page.
-const PHONE_PANEL = "(max-width: 760px)";
 
 function bootLines({ projects, achievements, ui }: PortfolioContent): Output[] {
   const count = projects.filter((project) => project.enabled).length;
@@ -172,7 +174,17 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   const [busy, setBusy] = useState(false);
   // Docked, the same console (and its conversation) moves into a panel beside the page.
   const [docked, setDocked] = useState(false);
+  // The agent's actions run inside the streaming callback, which still sees the state from when the
+  // question was asked; this ref always knows whether the panel is open right now.
+  const dockedNow = useRef(false);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
+  // While the agent shows the visitor around the page, the conversation rides along in a small
+  // companion instead of being left behind where the console sits.
+  const [companion, setCompanion] = useState<CompanionView | null>(null);
+  const [liveAnswer, setLiveAnswer] = useState({ text: "", streaming: false });
+  const [liveStatus, setLiveStatus] = useState<string | null>(null);
+  const companionRef = useRef<HTMLDivElement>(null);
+  const companionFrom = useRef<"inline" | "docked" | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dockButtonRef = useRef<HTMLButtonElement>(null);
@@ -265,6 +277,16 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     };
   }, [docked]);
 
+  const companionOn = companion !== null;
+  useEffect(() => {
+    if (!companionOn) return;
+    const root = document.documentElement;
+    root.dataset.companion = "on";
+    return () => {
+      delete root.dataset.companion;
+    };
+  }, [companionOn]);
+
   function skipBoot() {
     bootStarted.current = true;
     timers.current.forEach((timer) => window.clearTimeout(timer));
@@ -286,19 +308,22 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   }
 
   function openPanel() {
-    if (docked) {
+    if (companion) closeCompanion();
+    if (dockedNow.current) {
       inputRef.current?.focus({ preventScroll: true });
       return;
     }
     openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setPlaceholderHeight(shellRef.current?.offsetHeight ?? 0);
     if (!booted) skipBoot();
+    dockedNow.current = true;
     setDocked(true);
     warmUp();
   }
 
   // Focus goes back to whatever opened the panel, or to the console itself when it's brought back.
   function closePanel(focus: "opener" | "input" | "none" = "opener") {
+    dockedNow.current = false;
     setDocked(false);
     const opener = openerRef.current;
     openerRef.current = null;
@@ -325,21 +350,69 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     stream(result, input.toLowerCase().startsWith("run") ? 340 : gap);
   }
 
-  // On a phone the panel covers the page, so it steps aside to show what it points at.
+  // Anything that moves the visitor's page hands the conversation to the companion, which stays with
+  // them there. The panel steps aside; the console stays where it is for the way back.
+  function follow(view: CompanionView) {
+    const opening = !companionRef.current;
+    if (!companionFrom.current) companionFrom.current = dockedNow.current ? "docked" : "inline";
+    if (dockedNow.current) closePanel("none");
+    setCompanion(view);
+    if (opening) window.requestAnimationFrame(() => companionRef.current?.focus({ preventScroll: true }));
+  }
+
+  function closeCompanion() {
+    companionFrom.current = null;
+    setCompanion(null);
+    clearSpotlight();
+  }
+
+  // "Back to the chat": the panel reopens if that's where the visitor was, otherwise the page returns
+  // to the console.
+  function backToChat() {
+    const from = companionFrom.current;
+    closeCompanion();
+    if (from === "docked") {
+      openPanel();
+      return;
+    }
+    rootRef.current?.scrollIntoView({ behavior: motionAllowed() ? "smooth" : "auto", block: "center" });
+    inputRef.current?.focus({ preventScroll: true });
+  }
+
+  function goToStop(stops: TourStop[], index: number) {
+    const stop = stops[index];
+    if (!stop) return;
+    follow({ kind: "tour", stops, index });
+    showOnPage(stop.anchor, stop.quote);
+  }
+
   function showAnchor(id: string) {
-    if (docked && window.matchMedia(PHONE_PANEL).matches) closePanel("none");
-    revealAnchor(id);
+    follow({ kind: "answer" });
+    showOnPage(id);
   }
 
   function handleAction(action: AgentAction) {
     if (action.type === "open") {
       // The activity line already says what was highlighted; only a demo button needs a line of its own.
-      showAnchor(action.anchor);
+      follow({ kind: "answer" });
+      showOnPage(action.anchor, action.quote);
       if (action.external) append([{ kind: "out", text: "", card: { type: "link", href: action.external.href, label: agentCopy.openDemo(action.external.label[locale]) } }]);
-    } else if (action.type === "fit_report") {
-      append([{ kind: "out", text: "", card: { type: "fit", report: action.report } }]);
+    } else if (action.type === "tour") {
+      append([{ kind: "out", text: "", card: { type: "tour", stops: action.stops } }]);
+      goToStop(action.stops, 0);
+    } else if (action.type === "project") {
+      append([{ kind: "out", text: "", card: { type: "project", slug: action.slug } }]);
+      // Out on the page already, the visitor is taken to the project rather than to a card they can't see.
+      if (companionRef.current) showOnPage(action.anchor);
+    } else if (action.type === "tailor_cv") {
+      requestTailoredCv({ role: action.role, company: action.company, description: action.description });
+      follow({ kind: "answer" });
+      showOnPage("cv");
     } else {
-      append([{ kind: "out", text: "", card: { type: "draft", draft: action.draft } }]);
+      append([{ kind: "out", text: "", card: action.type === "fit_report" ? { type: "fit", report: action.report } : { type: "draft", draft: action.draft } }]);
+      // A report or a draft needs the room of the full chat. Out on the page, the companion offers it
+      // instead of pulling the visitor away from what they're looking at.
+      if (companionRef.current) setCompanion({ kind: "answer", card: action.type === "fit_report" ? "fit" : "draft" });
     }
   }
 
@@ -361,6 +434,8 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     const controller = new AbortController();
     abortRef.current = controller;
     const history: ChatTurn[] = [...turns.current, { role: "user", content: question }];
+    setLiveAnswer({ text: "", streaming: true });
+    setLiveStatus(agentCopy.thinking);
     // An answer can arrive in several pieces around tool calls; each piece gets its own line.
     const segments: { id: number; text: string }[] = [];
     let open: { id: number; text: string } | null = null;
@@ -376,6 +451,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       await withSession(slotRef.current!, locale, (token) => streamChat(token, history, locale, (event) => {
         if (event.event === "delta") {
           answer += event.data.text;
+          setLiveAnswer({ text: answer.trimStart(), streaming: true });
           if (!open) {
             if (!event.data.text.trim()) return;
             open = { id: append([{ kind: "answer", text: event.data.text.replace(/^\n/, ""), streaming: true }])[0], text: event.data.text.replace(/^\n/, "") };
@@ -391,6 +467,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
         if (event.event === "trace") {
           steps.push(event.data);
           showSteps("running");
+          if (event.data.step === "result") setLiveStatus(event.data.text);
         } else if (event.event === "action") {
           handleAction(event.data);
         } else if (event.event === "done") {
@@ -398,6 +475,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
           const finished = new Map(segments.map((segment) => [segment.id, nextId.current++]));
           setLines((current) => current.map((line) => (finished.has(line.id) ? { ...line, id: finished.get(line.id)!, streaming: false } : line)));
           if (event.data.sources.length) append([{ kind: "out", text: "", card: { type: "sources", anchors: event.data.sources } }]);
+          setLiveAnswer({ text: answer.trimStart(), streaming: false });
           // The signed tool list goes back with the turn, so the agent remembers what it already showed.
           turns.current = [...history, { role: "assistant" as const, content: answer, sig: event.data.signature, tools: event.data.tools }].slice(-12);
         } else if (event.event === "error") {
@@ -407,6 +485,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     } catch (error) {
       if ((error as Error).name !== "AbortError") failure = error instanceof AgentError ? error.code : "offline";
     } finally {
+      setLiveStatus(null);
       if (steps.some((step) => step.step === "tool")) showSteps("done");
       else setLines((current) => current.filter((line) => line.id !== activity));
       setBusy(false);
@@ -475,6 +554,11 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
 
   function renderLine(line: Line) {
     if (line.card?.type === "activity") return <ActivityLine steps={line.card.steps} state={line.card.state} locale={locale} />;
+    if (line.card?.type === "project") return <ProjectCard slug={line.card.slug} locale={locale} onShow={showAnchor} />;
+    if (line.card?.type === "tour") {
+      const { stops } = line.card;
+      return <TourCard stops={stops} locale={locale} onOpen={(index) => goToStop(stops, index)} />;
+    }
     if (line.card?.type === "sources") {
       return (
         <p className="agent-sources">
@@ -496,7 +580,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
       return <DraftCard draft={line.card.draft} locale={locale} onClose={() => undefined} />;
     }
     if (line.kind === "answer") {
-      return <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} />;
+      return <AgentText text={line.text} anchors={anchors} urls={urls} email={content.identity.email} onAnchor={showAnchor} />;
     }
     const tag = LEADING_TAG.exec(line.text)?.[0];
     const text = tag ? line.text.slice(tag.length) : line.text;
@@ -602,6 +686,30 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
         </div>
         {agentConfigured ? <p className="terminal__privacy">{agentCopy.privacy} <a href="/agent-evals/">{agentCopy.evalsLink}</a></p> : null}
       </div>
+      {companion
+        ? createPortal(
+            <Companion
+              view={companion}
+              locale={locale}
+              answer={liveAnswer}
+              status={liveStatus}
+              busy={busy}
+              anchors={anchors}
+              urls={urls}
+              email={content.identity.email}
+              panelRef={companionRef}
+              onStep={(index) => companion.kind === "tour" && goToStop(companion.stops, index)}
+              onAnchor={(id) => showOnPage(id)}
+              onAsk={(question) => {
+                setCompanion({ kind: "answer" });
+                submit(question);
+              }}
+              onBack={backToChat}
+              onClose={closeCompanion}
+            />,
+            document.body
+          )
+        : null}
     </div>
   );
 }

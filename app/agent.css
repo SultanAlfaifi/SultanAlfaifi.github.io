@@ -213,3 +213,119 @@ html[data-assistant="open"] .portfolio-v3 .runtime-section { isolation: auto; }
   html:not([data-motion="off"]) .terminal-shell--docked { animation: assistant-in 280ms var(--ease-arrive) both; }
 }
 @keyframes assistant-in { from { opacity: 0; transform: translateX(var(--assistant-from)); } }
+
+/* ---------- The companion: the chat, small, walking the page with the visitor ---------- */
+.companion {
+  position: fixed; z-index: 130; inset-block-end: 20px; inset-inline-end: 20px;
+  display: grid; gap: 12px;
+  width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 120px));
+  padding: 14px 16px 10px;
+  border: 1px solid rgb(125 226 209 / 28%); border-radius: 20px;
+  background: rgb(14 19 18 / 94%); color: #d6e4df;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 45%), inset 0 0 0 1px rgb(255 255 255 / 4%);
+  backdrop-filter: blur(14px);
+  font-family: var(--font-arabic), sans-serif;
+}
+.companion:focus { outline: none; }
+.companion:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+.companion__bar { display: flex; align-items: center; gap: 10px; }
+.companion__pulse { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgb(125 226 209 / 16%); }
+.companion__name { flex: 1; margin: 0; color: var(--paper); font-size: 0.86rem; font-weight: 600; }
+.companion__step { margin: 0; color: #8fa39b; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.companion__icon {
+  display: inline-grid; place-items: center; width: 32px; height: 32px;
+  border: 0; border-radius: 50%; background: transparent; color: #a7b8b1; cursor: pointer;
+}
+.companion__icon:hover { background: rgb(255 255 255 / 8%); color: var(--paper); }
+.companion__progress { height: 3px; overflow: hidden; border-radius: 999px; background: rgb(255 255 255 / 8%); }
+.companion__progress span { display: block; height: 100%; border-radius: inherit; background: var(--mint); transition: inline-size 400ms ease; }
+.companion__body { min-height: 48px; overflow-y: auto; overscroll-behavior: contain; }
+.companion__where { margin: 0 0 4px; color: var(--mint); font-size: 0.78rem; font-weight: 600; }
+.companion__text { margin: 0; color: var(--paper); font-size: 0.98rem; line-height: 1.75; white-space: pre-wrap; }
+.companion__text a { color: var(--mint); text-underline-offset: 3px; }
+.companion__status { margin: 0; color: #8fa39b; font-size: 0.86rem; }
+.companion__nav { display: flex; justify-content: space-between; gap: 8px; }
+.companion__nav button {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px;
+  border-radius: 999px; font: inherit; font-size: 0.86rem; font-weight: 600; cursor: pointer;
+}
+.companion__primary { border: 1px solid var(--mint); background: var(--mint); color: var(--ink); }
+.companion__open { justify-self: start; min-height: 40px; padding: 0 18px; border-radius: 999px; font: inherit; font-size: 0.86rem; font-weight: 600; cursor: pointer; }
+.companion__ghost { border: 1px solid rgb(255 255 255 / 18%); background: transparent; color: var(--paper); }
+.companion__ghost:disabled { opacity: 0.4; cursor: default; }
+.companion__ask {
+  display: flex; align-items: center; gap: 8px; padding-block: 4px; padding-inline: 14px 4px;
+  border: 1px solid rgb(255 255 255 / 14%); border-radius: 999px; background: rgb(0 0 0 / 25%);
+}
+.companion__ask:focus-within { border-color: var(--mint); }
+/* 16px, so iOS doesn't zoom the page into the field. */
+.companion__ask input { flex: 1; min-width: 0; min-height: 36px; border: 0; background: transparent; color: var(--paper); font: inherit; font-size: 1rem; outline: none; }
+.companion__ask input::placeholder { color: #8fa39b; }
+.companion__ask button {
+  flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px;
+  border: 0; border-radius: 50%; background: var(--mint); color: var(--ink); cursor: pointer;
+}
+.companion__ask button:disabled { background: rgb(255 255 255 / 10%); color: #8a9c95; cursor: default; }
+.companion__back {
+  justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 4px;
+  border: 0; background: transparent; color: #a7b8b1; font: inherit; font-size: 0.8rem; cursor: pointer;
+}
+.companion__back:hover { color: var(--mint); }
+[dir="rtl"] .companion__back svg { transform: scaleX(-1); }
+.companion button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .companion { animation: companion-in 360ms var(--ease-arrive) both; }
+  html:not([data-motion="off"]) .companion__pulse[data-busy] { animation: agent-pulse 1.1s ease-in-out infinite; }
+}
+@keyframes companion-in { from { opacity: 0; transform: translateY(18px) scale(0.98); } }
+/* On a phone it sits along the bottom, leaving the top of the screen for what it's showing. */
+@media (max-width: 760px) {
+  .companion { inset-inline: 12px; inset-block-end: 12px; width: auto; max-height: 46dvh; border-radius: 18px; }
+}
+html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; pointer-events: none; }
+
+/* The exact words an answer rests on, lit until the agent points somewhere else. */
+.agent-spot {
+  border-radius: 6px;
+  background: rgb(125 226 209 / 22%);
+  box-shadow: 0 0 0 4px rgb(125 226 209 / 22%), 0 0 0 5px rgb(125 226 209 / 70%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .agent-spot { animation: agent-spot 1.2s ease-out; }
+}
+@keyframes agent-spot { from { background: rgb(125 226 209 / 0%); box-shadow: 0 0 0 16px rgb(125 226 209 / 0%), 0 0 0 5px rgb(125 226 209 / 0%); } }
+
+/* A project the agent is talking about, as the page shows it. */
+.agent-project { gap: 0; padding: 0; overflow: hidden; }
+.agent-project__media { position: relative; aspect-ratio: 16 / 9; background: #0b0f0e; }
+.agent-project__media img { object-fit: cover; }
+.agent-project__media--icon { aspect-ratio: auto; height: 120px; }
+.agent-project__media--icon img { padding: 18px; object-fit: contain; }
+.agent-project__body { display: grid; gap: 8px; padding: 14px 16px 16px; }
+.agent-project__category { margin: 0; color: var(--mint); font-size: 0.74rem; }
+.agent-project__description { margin: 0; color: #c9d6d1; }
+.agent-project__metrics { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 2px 0; }
+.agent-project__metrics div { display: flex; flex-direction: column-reverse; }
+.agent-project__metrics dd { margin: 0; color: var(--paper); font-size: 1.1rem; font-weight: 700; }
+.agent-project__metrics dt { color: #a7b8b1; font-size: 0.72rem; }
+.agent-card__actions a {
+  display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px;
+  border: 1px solid rgb(255 255 255 / 24%); border-radius: 999px;
+  color: var(--paper); font-size: 0.84rem; font-weight: 600; text-decoration: none;
+}
+.agent-card__actions a:hover { border-color: var(--mint); color: var(--mint); }
+.agent-card__actions a:focus-visible { outline: 2px solid var(--focus-dark); outline-offset: 2px; }
+
+/* The stops of a tour, kept in the chat to jump back to. */
+.agent-tour ol { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; counter-reset: stop; }
+.agent-tour li { counter-increment: stop; }
+.agent-tour button {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 4px 8px;
+  border: 0; border-radius: 10px; background: transparent; color: var(--paper); font: inherit; text-align: start; cursor: pointer;
+}
+.agent-tour button::before {
+  content: counter(stop); flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px;
+  border: 1px solid rgb(125 226 209 / 45%); border-radius: 50%; color: var(--mint); font-size: 0.72rem;
+}
+.agent-tour button:hover { background: rgb(125 226 209 / 10%); }
+.agent-tour button:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }

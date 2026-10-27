@@ -169,8 +169,12 @@ export type ChatTurn = { role: "user" | "assistant"; content: string; sig?: stri
 export type Bilingual = { en: string; ar: string };
 export type FitItem = { point: string; evidence: string[] };
 export type FitReport = { role: string; strong: FitItem[]; partial: FitItem[]; gaps: { point: string; plan: string }[]; summary: string };
+export type TourStop = { anchor: string; label: Bilingual; line: string; quote: string | null };
 export type AgentAction =
-  | { type: "open"; anchor: string; kind: "section" | "project"; label: Bilingual; collapsed: boolean; external: { href: string; label: Bilingual } | null }
+  | { type: "open"; anchor: string; kind: "section" | "project"; label: Bilingual; collapsed: boolean; external: { href: string; label: Bilingual } | null; quote?: string | null }
+  | { type: "tour"; stops: TourStop[] }
+  | { type: "project"; anchor: string; slug: string }
+  | { type: "tailor_cv"; role: string; company: string; description: string }
   | { type: "fit_report"; report: FitReport }
   | { type: "draft_email"; draft: { subject: string; body: string; topic: string } };
 
