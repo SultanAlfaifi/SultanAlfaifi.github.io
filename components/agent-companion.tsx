@@ -70,9 +70,12 @@ export function Companion({ view, locale, answer, status, busy, anchors, urls, e
   }
 
   return (
+    // It renders straight into <body>, outside the page's own lang and dir, so it carries its own.
     <div
       ref={panelRef}
       className="companion"
+      lang={locale}
+      dir={locale === "ar" ? "rtl" : "ltr"}
       role="region"
       aria-label={copy.region}
       tabIndex={-1}
