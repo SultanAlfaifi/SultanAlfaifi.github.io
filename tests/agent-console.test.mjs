@@ -50,6 +50,7 @@ test("moving the page hands the chat to a companion that stays with the visitor 
   assert.ok(terminal.includes('if (companionRef.current) setCompanion({ kind: "answer", card:'), "a report or a draft is offered from the companion, not forced on the visitor");
   assert.ok(terminal.includes("dockedNow.current"), "actions from the stream see whether the panel is open now, not when the question was asked");
   assert.ok(companion.includes('event.key === "Escape"'));
+  assert.ok(companion.includes('dir={locale === "ar" ? "rtl" : "ltr"}'), "portalled outside the page, the companion still reads right to left in Arabic");
   assert.ok(companion.includes("motionAllowed()"), "tour lines type out only while motion is on");
   assert.ok(styles.includes('html[data-companion="on"] .assistant-launcher'), "the floating launcher steps aside for the companion");
 });
