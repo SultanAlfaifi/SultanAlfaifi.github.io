@@ -7,12 +7,13 @@ import { openAssistant } from "@/lib/agent/assistant";
 import { agentConfigured } from "@/lib/agent/client";
 
 // The hero's way in: says plainly that this is an AI assistant, and opens it without leaving the hero.
-export function AssistantButton({ locale = "en" }: { locale?: Locale }) {
+// The hero passes its own shorter label ("Ask my agent"), since the run card beside it is about agents.
+export function AssistantButton({ locale = "en", label }: { locale?: Locale; label?: string }) {
   const copy = getContent(locale).ui.assistant;
   if (!agentConfigured) return null;
   return (
     <button type="button" className="assistant-cta" onClick={openAssistant} data-magnetic>
-      <Sparkles size={18} aria-hidden="true" /> {copy.open}
+      <Sparkles size={18} aria-hidden="true" /> {label ?? copy.open}
     </button>
   );
 }

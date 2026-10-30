@@ -50,7 +50,3 @@ export function openPalette() {
 //    a specific place (#section or a CV link). `?welcome` always shows it, for previewing.
 // 4. A saved "off" never flashes motion, and the intro plays once per visit when the welcome doesn't.
 export const motionBootScript = `try{var d=document.documentElement,p=location.pathname,s=localStorage,n=navigator,q=new URLSearchParams(location.search),bot=n.webdriver||/bot|crawl|spider|slurp|lighthouse|headless/i.test(n.userAgent),home=p==="/"||p==="/index.html",away=false;if(p.indexOf("/ar")===0){d.lang="ar";d.dir="rtl"}if(home&&!bot&&!s.getItem("${LANGUAGE_KEY}")&&/^ar/i.test((n.languages&&n.languages[0])||n.language||"")){away=true;location.replace("/ar/"+location.search+location.hash)}var v=s.getItem("${VISITOR_KEY}");if(${JSON.stringify(VISITORS)}.indexOf(v)>=0)d.dataset.visitor=v;var w=!away&&(home||p==="/ar/"||p==="/ar")&&(q.has("welcome")||(!v&&!bot&&!location.hash&&!q.has("cv")));if(w)d.dataset.welcome="show";if(s.getItem("${STORAGE_KEY}")==="off")d.dataset.motion="off";else if(!w&&!away&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&!sessionStorage.getItem("portfolio-intro")){sessionStorage.setItem("portfolio-intro","1");d.dataset.intro="play"}}catch(e){}`;
-
-export function introPlaying() {
-  return typeof document !== "undefined" && document.documentElement.dataset.intro === "play";
-}

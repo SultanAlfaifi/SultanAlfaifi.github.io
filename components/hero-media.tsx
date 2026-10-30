@@ -3,15 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
+import { motionAllowed, subscribeMotion } from "./motion-preference";
 
 type HeroMediaProps = {
   src: string;
   mobileSrc: string;
   poster: string;
   locale?: Locale;
+  // Set when the visitor opened the film themselves (the hero's dialog): that counts as asking for
+  // playback, so it starts even with motion off, and pause and mute still work as usual.
+  requested?: boolean;
 };
 
-export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaProps) {
+export function HeroMedia({ src, mobileSrc, poster, locale = "en", requested = false }: HeroMediaProps) {
   const copy = getContent(locale).ui.media;
   const videoRef = useRef<HTMLVideoElement>(null);
   const togglePlaybackRef = useRef<() => void>(() => undefined);
@@ -23,10 +27,9 @@ export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaPr
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let inView = false;
     let userPaused = false;
-    let userRequested = false;
+    let userRequested = requested;
     let pending = false;
     let failed = false;
     let disposed = false;
@@ -34,8 +37,9 @@ export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaPr
 
     video.muted = true;
 
+    // The OS setting and the page's own Motion toggle both count (motionAllowed), not the OS alone.
     const shouldPlay = () =>
-      inView && !document.hidden && !userPaused && (!reducedMotion.matches || userRequested);
+      inView && !document.hidden && !userPaused && (motionAllowed() || userRequested);
 
     function pause() {
       requestId += 1;
@@ -119,7 +123,7 @@ export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaPr
     video.addEventListener("waiting", handleWaiting);
     video.addEventListener("error", handleError, true);
     document.addEventListener("visibilitychange", syncPlayback);
-    reducedMotion.addEventListener("change", handleMotionChange);
+    const unsubscribeMotion = subscribeMotion(handleMotionChange);
 
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
@@ -133,14 +137,14 @@ export function HeroMedia({ src, mobileSrc, poster, locale = "en" }: HeroMediaPr
       togglePlaybackRef.current = () => undefined;
       observer.disconnect();
       document.removeEventListener("visibilitychange", syncPlayback);
-      reducedMotion.removeEventListener("change", handleMotionChange);
+      unsubscribeMotion();
       video.removeEventListener("playing", handlePlay);
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("waiting", handleWaiting);
       video.removeEventListener("error", handleError, true);
       video.pause();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- copy is static per locale
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- copy is static per locale, and requested is fixed for a mount
   }, []);
 
   function toggleMute() {

@@ -71,10 +71,80 @@ const pairs = [
     background: "#7DE2D1",
     minimum: 3,
     category: "Borders and controls"
+  },
+  {
+    usage: "Lime gate phrase and checkpoint text on ink",
+    foreground: "#C8FF3D",
+    background: "#131515",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Ink text on the lime Approve button",
+    foreground: "#131515",
+    background: "#C8FF3D",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Ink text on the lime Approve button, hovered",
+    foreground: "#131515",
+    background: "#DBFF7D",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Lime approval border on the run card",
+    foreground: "#C8FF3D",
+    background: "#1A201F",
+    minimum: 3,
+    category: "Borders and controls"
+  },
+  {
+    usage: "Blue data labels (read step) on the run card",
+    foreground: "#9BB0FF",
+    background: "#1A201F",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Mint step labels and links on the run card",
+    foreground: "#7DE2D1",
+    background: "#1A201F",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Quiet captions on the run card",
+    foreground: "#A7B8B1",
+    background: "#1A201F",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Spec strip notes on ink",
+    foreground: "#9FB3AB",
+    background: "#131515",
+    minimum: 4.5,
+    category: "Normal text"
   }
 ];
 
 const excludedPairs = [
+  {
+    usage: "Lime as text on light tints",
+    foreground: "#C8FF3D",
+    background: "#FFFAFB",
+    reason:
+      "Insufficient contrast. Lime is reserved for checkpoints and approvals: text on ink, or a fill behind ink text."
+  },
+  {
+    usage: "Protocol blue as small text on the run card",
+    foreground: "#6D8EFF",
+    background: "#1A201F",
+    reason:
+      "Too close to the AA limit for small text. Small blue text on the raised ink uses #9BB0FF instead."
+  },
   {
     usage: "Mint as small text on blush paper",
     foreground: "#7DE2D1",

@@ -59,10 +59,12 @@ html[data-intro="done"] .intro-curtain { display: none; }
 .intro-curtain__count { color: var(--mint); counter-reset: intro var(--intro-count); animation: intro-count 1.2s cubic-bezier(0.6, 0, 0.2, 1) 60ms forwards; }
 .intro-curtain__count::after { content: counter(intro) "%"; }
 @keyframes intro-count { to { --intro-count: 100; } }
-html[data-intro="play"] .identity-hero__copy { animation-delay: 1.7s; }
-html[data-intro="play"] .intro-film { animation-delay: 1.85s; }
+/* The hero's run starts as the curtain opens. Keyed on data-intro being there at all, not on "play": it
+   turns to "done" while the run may still be playing, and changing a running animation's delay would
+   make it jump. The boot script only ever sets "play", so any value means the curtain ran this visit. */
+html[data-intro] .hero-run { --run-delay: 1.55s; }
 
-/* ---------- Aurora ---------- */
+/* ---------- Aurora (welcome screen only; the hero has none) ---------- */
 .aurora { position: absolute; inset: 0; z-index: -3; overflow: hidden; pointer-events: none; }
 .aurora i { position: absolute; border-radius: 50%; will-change: transform; }
 .aurora i:nth-child(1) { left: 36%; top: -30%; width: 64vw; height: 64vw; background: radial-gradient(circle, rgb(125 226 209 / 20%), transparent 62%); animation: aurora-a 22s ease-in-out infinite alternate; }
@@ -71,7 +73,7 @@ html[data-intro="play"] .intro-film { animation-delay: 1.85s; }
 @keyframes aurora-a { to { transform: translate(-18vw, 14vh) scale(1.2); } }
 @keyframes aurora-b { to { transform: translate(22vw, -12vh) scale(0.85); } }
 @keyframes aurora-c { to { transform: translate(-26vw, -18vh) scale(1.15); } }
-.signature-hero[data-gravity] { cursor: grabbing; user-select: none; }
+.runtime-section[data-gravity] { cursor: grabbing; user-select: none; }
 
 /* ---------- Cursor ring ---------- */
 .cursor-ring { position: fixed; z-index: 150; top: 0; left: 0; pointer-events: none; opacity: 0; mix-blend-mode: difference; transition: opacity 200ms ease; }
@@ -171,8 +173,7 @@ html[data-motion="off"] .cursor-ring { display: none; }
 @keyframes word-rise { from { transform: translateY(108%) rotate(4deg); } to { transform: none; } }
 
 /* ---------- Glare on tilting surfaces ---------- */
-.portfolio-v3 .work-visual::after,
-.portfolio-v3 .intro-film::after {
+.portfolio-v3 .work-visual::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -185,8 +186,7 @@ html[data-motion="off"] .cursor-ring { display: none; }
   transition: opacity 400ms ease;
 }
 @media (hover: hover) and (pointer: fine) {
-  .portfolio-v3 .work-visual:hover::after,
-  .portfolio-v3 .intro-film:hover::after { opacity: 1; }
+  .portfolio-v3 .work-visual:hover::after { opacity: 1; }
 }
 
 /* ---------- Contact orb ---------- */

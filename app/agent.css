@@ -157,6 +157,11 @@
 
 /* The section isolates its noise layer; while the panel is open it must stack above the nav instead. */
 html[data-assistant="open"] .portfolio-v3 .runtime-section { isolation: auto; }
+/* Without that isolation the agent network (z-index -2) would drop behind the section's own background, so
+   it moves up to 0 and the content gets a positioned box to paint over it. The box has no z-index, so the
+   docked console still stacks above the nav. */
+html[data-assistant="open"] .runtime-section .agent-field { z-index: 0; }
+html[data-assistant="open"] .runtime-section > .page-shell { position: relative; }
 .terminal-shell--docked {
   position: fixed; z-index: 135; inset-block: 12px; inset-inline-end: 12px;
   width: min(580px, calc(100vw - 24px));

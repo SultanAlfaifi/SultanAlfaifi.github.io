@@ -12,20 +12,65 @@ const en = {
   },
   motion: { pause: "Pause page motion", resume: "Resume page motion", pauseTitle: "Pause motion", resumeTitle: "Resume motion" },
   hero: {
-    highlight: "AI agents",
-    explore: "See my work",
+    // The words in the headline that carry the approval gate's underline.
+    highlight: "check with you",
+    explore: "See the work",
     getCv: "Get my CV",
+    ask: "Ask my agent",
     talk: "Say hi",
     talkIdea: "Tell me your idea",
-    paletteHint: "to jump anywhere",
     filmCaption: "Hi, I’m Sultan.",
+    filmClose: "Close the video",
     clockCity: "Makkah",
     zone: "AST",
     zoneTitle: "Arabia Standard Time",
-    highlights: "Highlights",
-    cursor: "Press & hold",
-    ticker: ["6.5K+ followers on X & LinkedIn", "Mustakshif · 160+ release downloads", "Mashhad · open-source Agent Skill · 14 GitHub stars", "AccessFinish · Nebius Global AI Hackathon entry"],
-    concepts: ["planner", "memory", "tools", "human ✓"]
+    highlights: "At a glance",
+    spec: {
+      at: (organization: string) => `at ${organization}`,
+      graduating: "Graduating"
+    },
+    // The scripted run beside the headline. Every fact in it comes from the data files; these are only
+    // the agent's own words around them.
+    run: {
+      title: "A short agent run",
+      state: { waiting: "agent · waiting for you", approved: "agent · done, with your yes", held: "agent · holding" },
+      replay: "Replay · from this page’s data · no AI call",
+      labels: { plan: "plan", read: "read", result: "result" },
+      plan: {
+        project: "Find the project that best proves the headline.",
+        hiring: "Find what a hiring manager reads first.",
+        collaborate: "Check what Sultan is open to right now."
+      },
+      count: (featured: number, checks: number) => `${featured} featured · ${checks} stop to check`,
+      more: "+1 step",
+      less: "Hide that step",
+      ask: {
+        project: ["Open ", "? This scrolls the page."] as [string, string],
+        hiring: "Open the CV section? You can download it there.",
+        collaborate: "Open the contact section? This scrolls the page."
+      },
+      approve: "Approve",
+      approveLabel: {
+        project: (title: string) => `Approve: open the ${title} project`,
+        hiring: "Approve: open the CV section",
+        collaborate: "Approve: open the contact section"
+      },
+      notNow: "Not now",
+      caption: "You’re the human in the loop.",
+      done: {
+        project: (title: string) => `Done. Opened ${title}, approved by you.`,
+        hiring: "Done. Opened the CV section, approved by you.",
+        collaborate: "Done. Opened the contact section, approved by you."
+      },
+      held: "Okay. Nothing happened. I’ll wait.",
+      choices: "Other ways in",
+      openCv: "Open my CV",
+      // #work also lists the smaller builds, so the link names what the count counts.
+      seeAll: (count: number) => `See the ${count} featured projects`,
+      strongest: "Open the strongest proof",
+      again: "Ask again",
+      own: "Give it your own task"
+    }
   },
   media: {
     video: "Introductory video featuring Sultan Alfaifi",
@@ -149,7 +194,10 @@ const en = {
     aria: "AI assistant console",
     title: "Ask my AI assistant",
     description: "An AI assistant that answers only from this site’s verified data. It can open a project for you, check how my work fits a role, or draft an email to me. Console commands like “run” and “help” still work.",
-    principles: "How I build agents"
+    principles: "How I build agents",
+    cursor: "Press & hold",
+    // Labels for the agent network behind the console, after the featured projects' names.
+    concepts: ["planner", "memory", "tools", "human ✓"]
   },
   experience: { title: "What I do at Salla", description: "Salla is the platform many Saudi merchants run their online stores on. I’m there for my COOP training." },
   organizations: {
@@ -276,7 +324,7 @@ const en = {
     complete: "All 6 found. You poke at things like an engineer. Email me, I’d like to meet you.",
     items: {
       palette: { title: "Command line", hint: "Some people never touch the mouse. Try ⌘K, Ctrl+K, or /." },
-      gravity: { title: "Gravity well", hint: "Press and hold on the network at the very top." },
+      gravity: { title: "Gravity well", hint: "Press and hold on the network behind the AI console." },
       sudo: { title: "Root access", hint: "The console takes orders. Try hiring someone." },
       policy: { title: "Policy enforcer", hint: "Tell the console to rm -rf something." },
       arabic: { title: "Bilingual", hint: "The console knows one Arabic word. It’s listed in help." },
@@ -498,20 +546,62 @@ const ar: UiStrings = {
   },
   motion: { pause: "أوقف حركة الصفحة", resume: "شغّل حركة الصفحة", pauseTitle: "إيقاف الحركة", resumeTitle: "تشغيل الحركة" },
   hero: {
-    highlight: "وكلاء ذكاء اصطناعي",
+    highlight: "يستأذنونك",
     explore: "شوف أعمالي",
     getCv: "خذ سيرتي",
+    ask: "اسأل وكيلي",
     talk: "راسلني",
     talkIdea: "كلّمني عن فكرتك",
-    paletteHint: "للانتقال إلى أي مكان",
     filmCaption: "هلا، أنا سلطان.",
+    filmClose: "أغلق الفيديو",
     clockCity: "مكة",
     zone: "بتوقيت السعودية",
     zoneTitle: "توقيت السعودية، UTC+3",
-    highlights: "أبرز الإنجازات والأرقام",
-    cursor: "اضغط مطوّلًا",
-    ticker: ["أكثر من 6.5 ألف متابع بين X ولينكدإن", "مستكشف · أكثر من 160 تنزيلًا من GitHub", "مَشهد · مهارة وكيل مفتوحة المصدر · 14 نجمة على GitHub", "مشاركة AccessFinish في هاكاثون Nebius العالمي"],
-    concepts: ["مخطِّط", "ذاكرة", "أدوات", "إنسان ✓"]
+    highlights: "باختصار",
+    spec: {
+      at: (organization: string) => `في ${organization}`,
+      graduating: "سنة التخرّج"
+    },
+    run: {
+      title: "تشغيل قصير للوكيل",
+      state: { waiting: "الوكيل · بانتظار قرارك", approved: "الوكيل · تم بموافقتك", held: "الوكيل · متوقّف" },
+      replay: "إعادة عرض · من بيانات الموقع · بلا ذكاء اصطناعي",
+      labels: { plan: "الخطة", read: "القراءة", result: "النتيجة" },
+      plan: {
+        project: "أدوّر على أقوى مشروع يثبت هالجملة.",
+        hiring: "أدوّر على أول شي يقرؤه مسؤول التوظيف.",
+        collaborate: "أشوف وش يقبل سلطان الحين."
+      },
+      // Written so no number needs the noun to agree with it (2 مشروعان, 11 مشروعًا).
+      count: (featured: number, checks: number) => `المشاريع البارزة: ${featured} · تتوقف للتحقق: ${checks}`,
+      more: "+1 خطوة",
+      less: "أخفِ الخطوة",
+      ask: {
+        project: ["أفتح لك ", "؟ بتنتقل الصفحة لمكانه."],
+        hiring: "أفتح لك قسم السيرة الذاتية؟ تقدر تنزّلها من هناك.",
+        collaborate: "أفتح لك قسم التواصل؟ بتنتقل الصفحة لمكانه."
+      },
+      approve: "موافق",
+      approveLabel: {
+        project: (title: string) => `موافق: افتح مشروع ${title}`,
+        hiring: "موافق: افتح قسم السيرة الذاتية",
+        collaborate: "موافق: افتح قسم التواصل"
+      },
+      notNow: "مو الحين",
+      caption: "القرار لك.",
+      done: {
+        project: () => "تم. فتحته بموافقتك.",
+        hiring: "تم. فتحته بموافقتك.",
+        collaborate: "تم. فتحته بموافقتك."
+      },
+      held: "تمام، ما سوّيت شي. أنتظر قرارك.",
+      choices: "طرق ثانية",
+      openCv: "افتح سيرتي",
+      seeAll: (count: number) => `شوف المشاريع البارزة (${count})`,
+      strongest: "افتح أقوى دليل",
+      again: "اسألني مرة ثانية",
+      own: "جرّبه بمهمة من عندك"
+    }
   },
   media: {
     video: "فيديو تعريفي بسلطان الفيفي",
@@ -635,7 +725,9 @@ const ar: UiStrings = {
     aria: "طرفية المساعد الذكي",
     title: "اسأل مساعدي الذكي",
     description: "مساعد ذكاء اصطناعي يجيب من بيانات هذا الموقع الموثّقة فقط. يفتح لك أي مشروع، ويقارن أعمالي بالوظيفة التي تهمّك، ويكتب لك مسودة رسالة إليّ. وأوامر الطرفية مثل run و help ما زالت تعمل.",
-    principles: "كيف أبني الوكلاء"
+    principles: "كيف أبني الوكلاء",
+    cursor: "اضغط مطوّلًا",
+    concepts: ["مخطِّط", "ذاكرة", "أدوات", "إنسان ✓"]
   },
   experience: { title: "تدريبي في سلة", description: "سلة منصة يدير عليها كثير من التجار في السعودية متاجرهم الإلكترونية، وفيها أقضي تدريبي التعاوني." },
   organizations: {
@@ -762,7 +854,7 @@ const ar: UiStrings = {
     complete: "لقيت الأسرار الستة كلها. فضولك فضول مهندس. راسلني، ودّي أتعرّف عليك.",
     items: {
       palette: { title: "قائمة الأوامر", hint: "بعض الناس ما يلمسون الماوس أبدًا. جرّب ⌘K أو Ctrl+K أو /." },
-      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الشبكة في أعلى الصفحة." },
+      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الشبكة خلف طرفية المساعد." },
       sudo: { title: "صلاحيات root", hint: "الطرفية تسمع الكلام. جرّب أن توظّف أحدًا." },
       policy: { title: "حارس السياسات", hint: "جرّب الأمر rm -rf في الطرفية." },
       arabic: { title: "ثنائي اللغة", hint: "الطرفية تعرف كلمة عربية واحدة. اكتب help وتلقاها." },

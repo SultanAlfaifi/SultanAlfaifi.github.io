@@ -66,15 +66,19 @@ html[data-welcome="show"] .welcome,
 .welcome__enter { min-height: 54px; padding-inline: 30px; border: 0; background: var(--mint); color: var(--ink); font-size: 1rem; font-weight: 700; }
 .welcome__enter:hover { background: #a8f0e3; }
 
-/* The hero waits behind the welcome screen and arrives as it fades. */
-html[data-welcome="show"] :is(.identity-hero__copy, .intro-film) { animation-play-state: paused; }
+/* The hero's run and its status pulses wait behind the welcome screen and play as it fades. It needs
+   !important: the motion rules set the animation shorthand, which resets play-state to running, and they
+   carry more specificity than this rule could reliably match. */
+html[data-welcome="show"] .identity-hero .hero-run *,
+html[data-welcome="show"] .identity-hero .hero-run__gate::before,
+html[data-welcome="show"] .identity-hero :is(.hero-status__pulse, .live-clock__dot)::after { animation-play-state: paused !important; }
 
-/* Hero: the visitor's choice swaps a call to action without a flash, because it's set before paint. */
-.identity-hero__actions [data-visitor-only] { display: none; }
-html[data-visitor="hiring"] .identity-hero__actions [data-visitor-hide="hiring"],
-html[data-visitor="collaborate"] .identity-hero__actions [data-visitor-hide="collaborate"] { display: none; }
-html[data-visitor="hiring"] .identity-hero__actions [data-visitor-only="hiring"],
-html[data-visitor="collaborate"] .identity-hero__actions [data-visitor-only="collaborate"] { display: inline-flex; }
+/* Hero: the visitor's choice swaps a call to action and the run card's proposal without a flash, because
+   it's set before paint. Only hiding is needed, so whatever shows keeps its own display. */
+html:not([data-visitor="hiring"]) .identity-hero [data-visitor-only="hiring"],
+html:not([data-visitor="collaborate"]) .identity-hero [data-visitor-only="collaborate"],
+html[data-visitor="hiring"] .identity-hero [data-visitor-hide~="hiring"],
+html[data-visitor="collaborate"] .identity-hero [data-visitor-hide~="collaborate"] { display: none; }
 
 .visitor-note { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: -10px 0 0; color: #9fb3ab; font-size: 0.86rem; }
 .visitor-note button {

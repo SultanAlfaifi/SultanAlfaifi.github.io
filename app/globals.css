@@ -627,15 +627,6 @@ svg {
   transform: translateY(-2px);
 }
 
-.button--signal {
-  background: var(--signal);
-  color: var(--ink);
-}
-
-.button--signal:hover {
-  background: #dbff7d;
-}
-
 .button--ghost {
   border-color: var(--dark-line);
   background: transparent;
@@ -2388,11 +2379,6 @@ svg {
   align-self: end;
 }
 
-.contact-section .button--signal {
-  background: var(--ink);
-  color: var(--white);
-}
-
 .contact-section .button--ghost {
   margin-top: 0.75rem;
   border-color: rgb(17 24 22 / 35%);
@@ -3290,10 +3276,6 @@ h3,
   border-radius: 999px;
   font-size: 0.72rem;
   letter-spacing: 0.03em;
-}
-
-.button--signal:hover {
-  background: var(--white);
 }
 
 .button--ghost {
@@ -5284,15 +5266,6 @@ body {
   border-color: rgb(125 226 209 / 42%);
   background: var(--ink-soft);
   color: var(--white);
-}
-
-.contact-section .button--signal {
-  background: var(--signal);
-  color: var(--ink);
-}
-
-.contact-section .button--signal:hover {
-  background: var(--paper);
 }
 
 .contact-section__meta svg,
