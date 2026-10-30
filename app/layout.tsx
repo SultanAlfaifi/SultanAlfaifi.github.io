@@ -101,12 +101,6 @@ export default function RootLayout({
     <html lang="en" className={plexArabic.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
-        <link
-          rel="preload"
-          as="image"
-          href="/assets/media/sultan-introduction-poster.webp"
-          fetchPriority="high"
-        />
       </head>
       <body className="portfolio-v3">
         <script

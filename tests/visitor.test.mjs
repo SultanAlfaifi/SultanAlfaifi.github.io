@@ -99,8 +99,14 @@ test("every language link remembers the choice", () => {
   assert.match(palette, /rememberLanguage\(ui\.nav\.language\.hrefLang\);\s*window\.location\.href = ui\.nav\.language\.href;/);
 });
 
-test("the hero's calls to action follow the visitor's choice without a flash", () => {
+test("the hero's calls to action and its run card follow the visitor's choice without a flash", () => {
   assert.match(hero, /href="#cv" data-magnetic data-visitor-only="hiring"/);
   assert.match(hero, /href="#work" data-magnetic data-visitor-hide="hiring"/);
-  assert.match(styles, /html\[data-visitor="hiring"\] \.identity-hero__actions \[data-visitor-only="hiring"\]/);
+  // Only hiding rules: whatever shows keeps its own display, so a link, a line of text, and a button all
+  // swap with the same attributes. The run card's default version hides for both other visitors.
+  assert.match(styles, /html:not\(\[data-visitor="hiring"\]\) \.identity-hero \[data-visitor-only="hiring"\]/);
+  assert.match(styles, /html:not\(\[data-visitor="collaborate"\]\) \.identity-hero \[data-visitor-only="collaborate"\]/);
+  assert.match(styles, /html\[data-visitor="hiring"\] \.identity-hero \[data-visitor-hide~="hiring"\]/);
+  assert.match(styles, /html\[data-visitor="collaborate"\] \.identity-hero \[data-visitor-hide~="collaborate"\] \{ display: none; \}/);
+  assert.doesNotMatch(styles, /\{ display: inline-flex; \}/);
 });

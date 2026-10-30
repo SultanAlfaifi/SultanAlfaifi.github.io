@@ -20,7 +20,7 @@ test("each part of an 'a · b · c' line is isolated, so two English neighbours 
   assert.equal(renderToStaticMarkup(createElement(MetaParts, { text: "One part only" })), "One part only");
   assert.equal(renderToStaticMarkup(createElement(MetaParts, {})), "");
   assert.match(rtl, /\.meta-part \{ unicode-bidi: isolate; \}/);
-  for (const file of ["projects-section", "achievements-section", "journey-timeline", "programs-section", "hero"]) {
+  for (const file of ["projects-section", "achievements-section", "journey-timeline", "programs-section", "hero-run", "spec-strip"]) {
     assert.match(read(`../components/${file}.tsx`), /<MetaParts text=/, file);
   }
 });
@@ -38,5 +38,7 @@ test("the welcome screen arranges the page first, then fades out, and never stic
   assert.ok(finish.indexOf("saveVisitor(detail)") < finish.indexOf("dialog.animate("), "the page is arranged before the fade starts");
   assert.match(finish, /if \(!motionAllowed\(\) \|\| typeof dialog\.animate !== "function"\) return close\(\);/);
   assert.match(finish, /window\.setTimeout\(close, 700\);/);
-  assert.match(welcomeCss, /html\[data-welcome="show"\] :is\(\.identity-hero__copy, \.intro-film\) \{ animation-play-state: paused; \}/);
+  // !important, because the hero's motion rules set the animation shorthand (which resets play-state) at a
+  // higher specificity than this rule; a plain declaration lost to them and the pulse ran behind the screen.
+  assert.match(welcomeCss, /html\[data-welcome="show"\] \.identity-hero \.hero-run \*,\s*html\[data-welcome="show"\] \.identity-hero \.hero-run__gate::before,\s*html\[data-welcome="show"\] \.identity-hero :is\(\.hero-status__pulse, \.live-clock__dot\)::after \{ animation-play-state: paused !important; \}/);
 });

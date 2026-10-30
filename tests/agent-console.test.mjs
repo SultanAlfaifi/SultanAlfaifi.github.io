@@ -30,7 +30,8 @@ test("the boot plays once, even if the visitor types before the console scrolls 
 });
 
 test("visitors reach the AI assistant from the hero, a floating button, and the palette, without losing their place", () => {
-  assert.match(hero, /<AssistantButton locale=\{locale\} \/>/);
+  assert.match(hero, /<AssistantButton locale=\{locale\} label=\{ui\.hero\.ask\} \/>/);
+  assert.match(read("../components/hero-run.tsx"), /onClick=\{openAssistant\}/, "the run card's own-task button opens the same assistant");
   assert.match(home, /<AssistantLauncher locale=\{locale\} \/>/);
   assert.match(palette, /run: openAssistant/);
   assert.match(launcher, /onClick=\{openAssistant\}/);

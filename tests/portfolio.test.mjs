@@ -178,6 +178,9 @@ test("intro keeps a direct route to work and contact without scroll-gated copy",
   assert.match(hero, /href="#work"/);
   assert.match(hero, /href="#contact"/);
   assert.doesNotMatch(hero, /hero__viewport|HeroScrollCue/);
+  assert.match(heroMediaSource, /motionAllowed\(\) \|\| userRequested/, "the film follows the page's Motion toggle, not only the OS setting");
+  assert.match(heroMediaSource, /subscribeMotion\(handleMotionChange\)/);
+  assert.doesNotMatch(heroMediaSource, /prefers-reduced-motion/);
 });
 
 test("videos use lightweight responsive sources and immediate posters", () => {
@@ -250,7 +253,6 @@ const readComponent = (name) => readFileSync(new URL(`../components/${name}`, im
 
 test("signature interactions stay decorative and respect motion preferences", () => {
   const field = readComponent("agent-field.tsx");
-  const decode = readComponent("decode-text.tsx");
   const layer = readComponent("interaction-layer.tsx");
   const terminal = readComponent("agent-terminal.tsx");
   const palette = readComponent("command-palette.tsx");
@@ -260,8 +262,6 @@ test("signature interactions stay decorative and respect motion preferences", ()
   assert.match(field, /IntersectionObserver/);
   assert.match(field, /visibilitychange/);
   assert.match(field, /motionAllowed\(\)/);
-  assert.match(decode, /className="decode__fx" aria-hidden="true"/);
-  assert.match(decode, /Background tabs pause animation frames/);
   assert.match(layer, /\(hover: hover\) and \(pointer: fine\)/);
   assert.match(layer, /nodeValue/);
   assert.match(terminal, /role="log"/);
@@ -270,7 +270,56 @@ test("signature interactions stay decorative and respect motion preferences", ()
   assert.match(palette, /role="combobox"/);
   assert.match(palette, /aria-activedescendant/);
   assert.match(signatureCss, /html\[data-motion="off"\] \.portfolio-v3 \*/);
-  assert.match(signatureCss, /\.hero-ticker__group\[aria-hidden="true"\] \{ display: none; \}/);
+});
+
+test("the hero sheds its loops: no network canvas, scramble, aurora, shine, or ticker", () => {
+  const hero = readComponent("hero.tsx");
+  const signatureCss = readFileSync(new URL("../app/signature.css", import.meta.url), "utf8");
+  const experienceCss = readFileSync(new URL("../app/experience.css", import.meta.url), "utf8");
+  assert.throws(() => readComponent("decode-text.tsx"), /ENOENT/, "the per-letter scramble is gone; it broke Arabic letter joins");
+  assert.doesNotMatch(hero, /AgentField|DecodeText|aurora|hero-ticker|PaletteTrigger|<video/);
+  for (const rule of [/\.hero-ticker/, /\.decode/, /text-shine/, /ticker-run/]) assert.doesNotMatch(signatureCss, rule);
+  assert.doesNotMatch(experienceCss, /\.signature-hero|\.intro-film/);
+  // Everything that still moves in the hero sits in one motion block, and none of it repeats forever.
+  const heroCss = signatureCss.slice(signatureCss.indexOf("/* ---------- Hero:"), signatureCss.indexOf("/* ---------- Work ---------- */"));
+  const motion = heroCss.indexOf("@media (prefers-reduced-motion: no-preference)");
+  assert.ok(motion > 0);
+  assert.doesNotMatch(heroCss, /infinite/);
+  assert.match(heroCss.slice(motion), /^@media \(prefers-reduced-motion: no-preference\) \{\s*html:not\(\[data-motion="off"\]\)/);
+  assert.match(heroCss, /animation: hero-pulse 1\.5s ease-out 3;/, "the status dot pulses three times, then stops");
+  assert.doesNotMatch(heroCss, /@keyframes status-pulse/, "the console's live dot keeps its own keyframes");
+  // WCAG 2.2.2: every movement ends within 5 s, so nothing needs a pause control.
+  const seconds = (time) => (time.endsWith("ms") ? Number.parseFloat(time) / 1000 : Number.parseFloat(time));
+  for (const [, name, duration, count] of heroCss.slice(motion).matchAll(/animation: ([\w-]+) ([\d.]+m?s)\b[^;]*?(?: (\d+))?;/g)) {
+    assert.ok(seconds(duration) * Number(count ?? 1) <= 5, `${name} runs ${duration} × ${count ?? 1}, longer than 5 s`);
+  }
+  // Only transform, opacity, and clip-path move.
+  for (const [, body] of heroCss.matchAll(/@keyframes [\w-]+ \{([\s\S]*?\})\s*\}/g)) {
+    for (const [, property] of body.matchAll(/([\w-]+):/g)) assert.ok(["transform", "opacity", "clip-path", "stroke-dashoffset"].includes(property), `a hero keyframe animates ${property}`);
+  }
+  assert.doesNotMatch(heroCss.slice(0, motion), /animation:(?! none)|transition:/, "the rest state is the default style");
+});
+
+test("the agent network moved behind the console, so the gravity secret keeps a trigger", async () => {
+  const runtime = readComponent("runtime-section.tsx");
+  const field = readComponent("agent-field.tsx");
+  const { SECRET_IDS } = await import("../components/secrets.ts");
+  const { getContent } = await import("../data/i18n.ts");
+  assert.ok(SECRET_IDS.includes("gravity"));
+  assert.match(runtime, /<AgentField labels=\{fieldLabels\} \/>/);
+  assert.ok(runtime.indexOf("<AgentField") < runtime.indexOf("<AgentTerminal"), "the canvas is painted behind the console");
+  assert.match(runtime, /\.\.\.ui\.runtime\.concepts/);
+  assert.match(runtime, /data-cursor=\{ui\.runtime\.cursor\}/);
+  assert.match(field, /unlockSecret\("gravity"\)/);
+  assert.match(field, /closest\("a, button, input, textarea, video, \.terminal-slot"\)/, "typing in the console never starts a well");
+  assert.match(readFileSync(new URL("../app/experience.css", import.meta.url), "utf8"), /\.runtime-section\[data-gravity\] \{ cursor: grabbing;/);
+  for (const locale of ["en", "ar"]) {
+    const { ui } = getContent(locale);
+    assert.equal(ui.runtime.concepts.length, 4);
+    assert.equal("concepts" in ui.hero || "ticker" in ui.hero || "cursor" in ui.hero, false, `${locale}: the hero keeps no copy for the moved parts`);
+  }
+  assert.match(getContent("en").ui.secrets.items.gravity.hint, /behind the AI console/);
+  assert.match(getContent("ar").ui.secrets.items.gravity.hint, /خلف طرفية المساعد/);
 });
 
 test("profile updates from X, LinkedIn, and GitHub keep their sources", () => {

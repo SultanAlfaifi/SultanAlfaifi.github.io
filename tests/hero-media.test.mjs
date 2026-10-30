@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { HeroMedia } from "../components/hero-media.tsx";
 import { SallaExperienceStory } from "../components/salla-experience-story.tsx";
 
-async function mountMedia({ reduced = false, component = HeroMedia } = {}) {
+async function mountMedia({ reduced = false, motionOff = false, requested = false, component = HeroMedia } = {}) {
   const dom = new JSDOM('<div id="root"></div>', { url: "https://portfolio.test" });
   const previous = new Map();
   for (const [key, value] of Object.entries({
@@ -49,9 +49,16 @@ async function mountMedia({ reduced = false, component = HeroMedia } = {}) {
     this.dispatchEvent(new dom.window.Event("pause"));
   };
   dom.window.HTMLMediaElement.prototype.load = () => { loadCalls += 1; };
+  // The page's own Motion toggle (components/motion-toggle.tsx) marks <html> and announces the change.
+  const setMotionToggle = (off) => {
+    if (off) dom.window.document.documentElement.dataset.motion = "off";
+    else delete dom.window.document.documentElement.dataset.motion;
+    dom.window.dispatchEvent(new dom.window.Event("portfolio:motion"));
+  };
+  if (motionOff) dom.window.document.documentElement.dataset.motion = "off";
   const root = createRoot(dom.window.document.getElementById("root"));
   await act(async () => root.render(createElement(component, {
-    src: "/intro.mp4", mobileSrc: "/intro-mobile.mp4", poster: "/poster.webp",
+    src: "/intro.mp4", mobileSrc: "/intro-mobile.mp4", poster: "/poster.webp", requested,
     experience: {
       organization: "Salla", dates: "2026", location: "Makkah", role: "Intern",
       description: "Engineering experience", responsibilities: [], technologies: [], note: "",
@@ -66,6 +73,7 @@ async function mountMedia({ reduced = false, component = HeroMedia } = {}) {
     get paused() { return paused; },
     get status() { return dom.window.document.querySelector('[role="status"]').textContent; },
     rejectPlayback: (value) => { rejection = value; },
+    setMotionToggle: (off) => act(async () => setMotionToggle(off)),
     intersect: (value) => act(async () => intersection([{ isIntersecting: value }])),
     setReduced: (value) => act(async () => { motion.matches = value; motionChange(); }),
     setHidden: (value) => act(async () => {
@@ -149,3 +157,32 @@ test(`${name} failed playback supplies feedback and retries only after a user ac
   } finally { await media.cleanup(); }
 });
 }
+
+test("Intro follows the page's Motion toggle, not only the OS setting", async () => {
+  const media = await mountMedia({ motionOff: true });
+  try {
+    await media.intersect(true);
+    assert.equal(media.playCalls, 0, "motion off keeps the poster, like reduced motion");
+    await media.setMotionToggle(false);
+    assert.equal(media.paused, false, "turning motion back on resumes playback in view");
+    await media.setMotionToggle(true);
+    assert.equal(media.paused, true, "turning it off again stops the film");
+    await media.clickPlayback();
+    assert.equal(media.paused, false, "an explicit play still works with motion off");
+  } finally { await media.cleanup(); }
+});
+
+test("Intro opened from the hero's dialog counts as the visitor's request to play", async () => {
+  const media = await mountMedia({ reduced: true, requested: true });
+  try {
+    assert.equal(media.video.preload, "none");
+    assert.equal(media.playCalls, 0, "nothing is fetched until the dialog shows the film");
+    await media.intersect(true);
+    assert.equal(media.paused, false, "the dialog's film starts even with reduced motion");
+    await media.clickPlayback();
+    assert.equal(media.paused, true, "pause still works");
+    await media.setHidden(true);
+    await media.setHidden(false);
+    assert.equal(media.paused, true, "and stays paused");
+  } finally { await media.cleanup(); }
+});

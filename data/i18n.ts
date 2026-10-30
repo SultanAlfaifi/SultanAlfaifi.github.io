@@ -9,6 +9,19 @@ function mergeByIndex<T>(items: T[], overrides: Partial<T>[]): T[] {
   return items.map((item, index) => ({ ...item, ...overrides[index] }));
 }
 
+// The Arabic copy brings words only. A checkpoint keeps its English step and kind, and each metric keeps
+// its kind and link by position, so /ar/ never loses a field that only the English record carries.
+function arabicProject(project: base.Project): base.Project {
+  const copy = ar.projects[project.slug];
+  if (!copy) return project;
+  return {
+    ...project,
+    ...copy,
+    checkpoint: project.checkpoint && { ...project.checkpoint, ...copy.checkpoint },
+    metrics: project.metrics && (copy.metrics ? mergeByIndex(project.metrics, copy.metrics) : project.metrics)
+  };
+}
+
 const english = {
   locale: "en" as Locale,
   dir: "ltr" as "ltr" | "rtl",
@@ -45,7 +58,7 @@ const arabic: PortfolioContent = {
   about: { ...base.about, ...ar.about },
   navigation: ar.navigation,
   socialLinks: mergeByIndex(base.socialLinks, ar.socialLinks),
-  projects: base.projects.map((project) => ({ ...project, ...ar.projects[project.slug] })),
+  projects: base.projects.map(arabicProject),
   experience: mergeByIndex(base.experience, ar.experience),
   skillGroups: ar.skillGroups,
   achievements: mergeByIndex(base.achievements, ar.achievements),

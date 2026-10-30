@@ -1,6 +1,7 @@
 import type {
   Achievement,
   Certification,
+  Checkpoint,
   Experience,
   HelpPath,
   JourneyStop,
@@ -8,6 +9,7 @@ import type {
   Organization,
   Program,
   Project,
+  ProjectMetric,
   ProofMetric,
   Recommendation,
   SkillGroup,
@@ -16,10 +18,15 @@ import type {
 } from "./portfolio";
 
 // Arabic copy, merged onto the English records in data/i18n.ts. URLs, assets, and flags stay single-sourced.
+// A checkpoint or a metric brings only its words: data/i18n.ts keeps the step, the kind, the link, and the
+// rest from the English record, matched by position.
 type ProjectCopy = Partial<Pick<Project,
   "title" | "category" | "role" | "description" | "status" | "challenge" | "decision" | "evidence" |
-  "highlights" | "flow" | "metrics" | "outcome" | "primaryAction" | "todo"
->>;
+  "highlights" | "flow" | "outcome" | "primaryAction" | "todo" | "caveat" | "boundary"
+>> & {
+  checkpoint?: Pick<Checkpoint, "text">;
+  metrics?: Pick<ProjectMetric, "value" | "label" | "asOf" | "note">[];
+};
 
 export const identity = {
   name: "سلطان الفيفي",
@@ -85,6 +92,8 @@ export const projects: Record<string, ProjectCopy> = {
       { value: "+160", label: "تنزيل من إصدارات GitHub" },
       { value: "11", label: "نجمة على GitHub" }
     ],
+    checkpoint: { text: "لا يثبّت شيئًا قبل موافقتك" },
+    caveat: "المثبّت لم يُوقَّع رقميًا بعد، لذا قد يحذّرك SmartScreen عند التثبيت.",
     primaryAction: { label: "حمّله لويندوز", href: "https://github.com/SultanAlfaifi/mustakshif/releases/latest" }
   },
   accessfinish: {
@@ -104,9 +113,14 @@ export const projects: Record<string, ProjectCopy> = {
     ],
     flow: ["تعديل Nemotron", "بناء في بيئة معزولة", "حجز بلوحة المفاتيح وحدها", "قاعدة البيانات ومتصفح جديد"],
     metrics: [
-      { value: "7 من 7", label: "إصلاحات تحقّقت منها على خلل زرعته عمدًا" },
+      { value: "7 من 7", label: "إصلاحات تحقّقت منها على خلل زرعته عمدًا", asOf: "24 أكتوبر 2026" },
+      { value: "0 من 7", label: "تشغيلات أصلحت خللًا حقيقيًا في المشروع الأصلي، بعد 43 محاولة", asOf: "24 أكتوبر 2026" },
+      { value: "15 من 15", label: "صفحات «تم الحجز» باليوم الخاطئ، رفضها المدقّق كلها", asOf: "24 أكتوبر 2026" },
       { value: "2 من 5", label: "تجارب أولى نجحت في الإجراء الكامل" }
     ],
+    checkpoint: { text: "لا يُحسب الإصلاح إلا إذا حُفظ الحجز صحيحًا." },
+    // The same fact as the English caveat, with both denominators: 0 of 7 runs, across 43 attempts.
+    caveat: "على خلل حقيقي في المشروع الأصلي، فلم ينجح أيٌّ من 7 تشغيلات، بعد 43 محاولة إجمالًا",
     primaryAction: { label: "اقرأ الأدلة", href: "https://sultalfaifi.com/accessfinish/" }
   },
   mashhad: {
@@ -126,6 +140,8 @@ export const projects: Record<string, ProjectCopy> = {
       "تعليق صوتي اختياري عبر ElevenLabs، وتُضبط المشاهد على توقيت التسجيل الفعلي."
     ],
     flow: ["الموجز", "المشاهد", "الصوت", "الرندر", "المراجعة"],
+    checkpoint: { text: "مراجعة للإطارات والملف الناتج قبل الرندر النهائي" },
+    caveat: "لم أختبره بعد في جلسة Claude Code تفاعلية.",
     primaryAction: { label: "شاهد العرض", href: "https://github.com/SultanAlfaifi/mashhad-video/blob/main/docs/media/mashhad-ad-sfx-1080p.mp4" }
   },
   "rajih-engine": {
@@ -167,6 +183,8 @@ export const projects: Record<string, ProjectCopy> = {
       { value: "6", label: "أعضاء في الفريق الذي أقوده" },
       { value: "1,000 لتر/ساعة", label: "الطاقة التصميمية للمحطة" }
     ],
+    checkpoint: { text: "يتوقف الري متى فشلت أي قراءة" },
+    caveat: "المحطة الفعلية لم تُبنَ بعد، وكل القراءات في العرض محاكاة.",
     outcome: "نموذج للمحطة في المتصفح يوقف الري متى فشلت أي قراءة.",
     primaryAction: { label: "جرّب المحطة ثلاثية الأبعاد", href: "https://sultalfaifi.com/mawrid-water-reuse/experience/" }
   },
@@ -185,7 +203,9 @@ export const projects: Record<string, ProjectCopy> = {
       "واجهة عربية من اليمين إلى اليسار، تلخّص بلغة واضحة كل مُحفّز وشرط أمان وإجراء وقاعدة موافقة.",
       "يتحقق الخادم من كل مسودة، ولا يرى المساعد إلا ما يحتاجه الطلب من سياق، فلا تصله بيانات الدخول ولا بيانات البطاقات."
     ],
-    flow: ["طلبك", "مسودة بعد التحقق", "مراجعتك", "تنفيذ بالمحاكاة"]
+    flow: ["طلبك", "مسودة بعد التحقق", "مراجعتك", "تنفيذ بالمحاكاة"],
+    checkpoint: { text: "لا تُفعَّل أي مسودة يكتبها قبل موافقتك" },
+    caveat: "العمليات المالية محاكاة، ولا يوجد تسجيل دخول ولا قاعدة بيانات ولا ربط ببنك حقيقي."
   },
   danna: {
     category: "مساعد صوتي عربي بالذكاء الاصطناعي",
@@ -224,10 +244,13 @@ export const projects: Record<string, ProjectCopy> = {
       "بلا حساب ولا خادم. بياناتك تبقى في التخزين المحلي لمتصفحك.",
       "خطوط عربية وإنجليزية، ومحرّر يناسب الجوال، ومعاينة حيّة، وتصدير PDF بصيغة متجهة."
     ],
+    flow: ["بياناتك", "معاينة حيّة", "ملف PDF واضح مهما كبّرته"],
     metrics: [
-      { value: "نحو 1,600", label: "مستخدم نشط" },
-      { value: "+1,250", label: "سيرة ذاتية نُزّلت" }
-    ]
+      { value: "نحو 1,600", label: "مستخدم نشط", note: "حسب إحصاءاتي، غير مدقّقة" },
+      { value: "+1,250", label: "سيرة ذاتية نُزّلت", note: "حسب إحصاءاتي، غير مدقّقة" }
+    ],
+    boundary: "بلا حساب ولا خادم. بياناتك تبقى في التخزين المحلي لمتصفحك.",
+    caveat: "أرقام الاستخدام من إحصاءاتي، وهي غير مدقّقة."
   },
   "kaust-ai-projects": {
     title: "مشاريع أكاديمية كاوست للذكاء الاصطناعي",

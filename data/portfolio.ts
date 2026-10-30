@@ -17,6 +17,24 @@ export type Expertise = {
   signal: string;
 };
 
+// Where a project stops for a person. "asks" waits for your yes, "verifies" checks the result before it
+// counts, "holds" stops on its own when something fails. The text is quoted word for word from the
+// project's own copy (tests/runs.test.mjs checks that), and the step points into its flow.
+export type CheckpointKind = "asks" | "verifies" | "holds";
+export type Checkpoint = { step: number; kind: CheckpointKind; text: string };
+
+// What kind of number a metric is, so a seeded fault never reads like a real bug and my own count never
+// reads like an audited one.
+export type MetricKind = "seeded-fault" | "real-bug" | "trial" | "public-count" | "own-count" | "team" | "design";
+export type ProjectMetric = {
+  value: string;
+  label: string;
+  kind?: MetricKind;
+  href?: string;
+  asOf?: string;
+  note?: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -33,10 +51,14 @@ export type Project = {
   imagePresentation?: "contain" | "cover" | "icon";
   primaryAction?: Link;
   flow?: string[];
-  metrics?: {
-    value: string;
-    label: string;
-  }[];
+  metrics?: ProjectMetric[];
+  checkpoint?: Checkpoint;
+  // A limit the project states plainly ("Not yet"), quoted from its own copy.
+  caveat?: string;
+  // For a project with no checkpoint: the line it never crosses, quoted from its own copy.
+  boundary?: string;
+  // Position in the featured showcase, 1 first. The hero's Approve opens number 1.
+  showcase?: number;
   outcome: Nullable<string>;
   repository: Nullable<string>;
   liveDemo: Nullable<string>;
@@ -74,7 +96,7 @@ export type Achievement = {
   verificationUrl: Nullable<string>;
   enabled: boolean;
   assetId: Nullable<string>;
-  // Short line for the hero ticker when the title already says what the signal says.
+  // Short line for the console's achievement list when the title already says what the signal says.
   ticker?: string;
 };
 
@@ -670,6 +692,8 @@ export const about = {
 };
 
 export type HelpPath = {
+  // A stable name for the path, so code can pick one without depending on its position in the list.
+  id: "hiring" | "product" | "community";
   audience: string;
   need: string;
   offer: string;
@@ -680,6 +704,7 @@ export type HelpPath = {
 // Who lands here and what they need from Sultan. Rendered just before Contact.
 export const helpPaths: HelpPath[] = [
   {
+    id: "hiring",
     audience: "Hiring an engineer",
     need: "You want someone who takes a ticket and finishes it, tests included.",
     offer: "I build REST endpoints in Laravel that validate input, handle errors, and come with tests. Mustakshif, RAJIH, and AutoFlow ship with tests you can run.",
@@ -687,6 +712,7 @@ export const helpPaths: HelpPath[] = [
     cta: { label: "Email me about a role", href: "mailto:sultalfaifi@gmail.com?subject=A%20role%20for%20you" }
   },
   {
+    id: "product",
     audience: "Building an AI product",
     need: "You want an agent that serves your customers in Arabic and asks before it does anything that matters.",
     offer: "Send me the one task it should handle and what it must never do on its own. I’ll design the tools, memory, and approval step around that, and tell you plainly what the model can’t do yet.",
@@ -694,6 +720,7 @@ export const helpPaths: HelpPath[] = [
     cta: { label: "Tell me about your product", href: "mailto:sultalfaifi@gmail.com?subject=An%20AI%20product" }
   },
   {
+    id: "community",
     audience: "Running a program or community",
     need: "You need someone who can teach AI agents in Arabic to people who have never built one.",
     offer: "I ran a three-day agents bootcamp for Artificial Intelligence Pioneers: tools, memory, planning, then a hands-on build. I’ve also given AI workshops for Fazzah in Madinah and for Riadiat.",
@@ -922,9 +949,12 @@ export const projects: Project[] = [
     imagePresentation: "icon",
     flow: ["Device scan", "Your preferences", "Ranked picks, with reasons"],
     metrics: [
-      { value: "160+", label: "Release downloads" },
-      { value: "11", label: "GitHub stars" }
+      { value: "160+", label: "Release downloads", kind: "public-count", href: "https://github.com/SultanAlfaifi/mustakshif/releases/latest" },
+      { value: "11", label: "GitHub stars", kind: "public-count", href: "https://github.com/SultanAlfaifi/mustakshif" }
     ],
+    checkpoint: { step: 3, kind: "asks", text: "nothing installs until you say yes" },
+    caveat: "The installer isn’t signed yet, so SmartScreen may warn you.",
+    showcase: 2,
     brandAssetId: null,
     flagship: true,
     enabled: true,
@@ -950,10 +980,17 @@ export const projects: Project[] = [
       "On the real upstream bug, the agent never got it right in 43 attempts. Fifteen times it reached a “booked” page with the wrong day saved, and the verifier rejected every one."
     ],
     technologies: ["NVIDIA Nemotron", "Nebius Token Factory", "Docker", "Node.js", "Evaluation"],
+    // The real-bug result comes second, so a view that shows only the first three figures (the agent's
+    // project card) still shows it next to the seeded fault. Arabic merges by position: keep both in step.
     metrics: [
-      { value: "7 / 7", label: "Fixes verified on a fault I seeded" },
-      { value: "2 / 5", label: "Early trials that passed in full" }
+      { value: "7 / 7", label: "Fixes verified on a fault I seeded", kind: "seeded-fault", asOf: "24 Oct 2026" },
+      { value: "0 of 7", label: "Runs fixed on a real upstream bug, across 43 attempts", kind: "real-bug", asOf: "24 Oct 2026" },
+      { value: "15 / 15", label: "“Booked” pages with the wrong day saved, rejected by the verifier", kind: "real-bug", asOf: "24 Oct 2026" },
+      { value: "2 / 5", label: "Early trials that passed in full", kind: "trial" }
     ],
+    checkpoint: { step: 4, kind: "verifies", text: "A fix counts only when the saved booking is right." },
+    caveat: "0 of 7 on a real upstream bug across 43 attempts",
+    showcase: 1,
     outcome: "A repair loop that accepts a fix only once the booking is saved correctly.",
     repository: "https://github.com/SultanAlfaifi/accessfinish",
     liveDemo: "https://sultalfaifi.com/accessfinish/",
@@ -997,6 +1034,11 @@ export const projects: Project[] = [
     },
     screenshot: null,
     flow: ["Brief", "Scenes", "Sound", "Render", "Review"],
+    // No metrics yet: the "14 GitHub stars" the old hero ticker showed waits for Sultan to confirm the
+    // count and its date before it becomes a figure the chapters and the agent repeat.
+    checkpoint: { step: 5, kind: "verifies", text: "a check of the frames and the rendered file before the final render" },
+    caveat: "I haven’t tested it in an interactive Claude Code session yet.",
+    showcase: 4,
     brandAssetId: null,
     flagship: false,
     enabled: true,
@@ -1057,9 +1099,12 @@ export const projects: Project[] = [
     ],
     technologies: ["Three.js", "Python", "SQLite", "Anomaly Detection"],
     metrics: [
-      { value: "6", label: "People on the team I lead" },
-      { value: "1,000 L/h", label: "Design capacity of the plant" }
+      { value: "6", label: "People on the team I lead", kind: "team" },
+      { value: "1,000 L/h", label: "Design capacity of the plant", kind: "design" }
     ],
+    checkpoint: { step: 3, kind: "holds", text: "Irrigation is held whenever a reading fails" },
+    caveat: "The physical plant isn’t built yet, and every reading in the demo is simulated.",
+    showcase: 6,
     outcome: "A browser model of a water-reuse plant that holds irrigation whenever a reading fails.",
     repository: "https://github.com/SultanAlfaifi/mawrid-water-reuse",
     liveDemo: "https://sultalfaifi.com/mawrid-water-reuse/experience/",
@@ -1099,6 +1144,9 @@ export const projects: Project[] = [
     liveDemo: "https://auto-flow-ecru.vercel.app/",
     screenshot: null,
     flow: ["Your request", "Validated draft", "Your review", "Simulated action"],
+    checkpoint: { step: 3, kind: "asks", text: "nothing it drafts turns on until you approve it" },
+    caveat: "Money moves are simulated. There’s no login, no database, and no real bank connection.",
+    showcase: 5,
     brandAssetId: null,
     flagship: false,
     enabled: true,
@@ -1182,10 +1230,16 @@ export const projects: Project[] = [
       "pdfmake",
       "localStorage"
     ],
+    // The same three steps the blueprint on the page draws.
+    flow: ["Your details", "Live preview", "Vector PDF export"],
     metrics: [
-      { value: "About 1,600", label: "Active users" },
-      { value: "1,250+", label: "CVs downloaded" }
+      { value: "About 1,600", label: "Active users", kind: "own-count", note: "My own count, not audited" },
+      { value: "1,250+", label: "CVs downloaded", kind: "own-count", note: "My own count, not audited" }
     ],
+    // No checkpoint: nothing it does needs your yes, because nothing leaves your browser.
+    boundary: "No account and no server. Your data stays in your browser’s local storage.",
+    caveat: "The usage numbers are my own count and aren’t audited.",
+    showcase: 3,
     outcome: "A live CV builder with real-time editing and PDF export.",
     repository: "https://github.com/SultanAlfaifi/Masari",
     liveDemo: "https://sultanalfaifi.github.io/Masari/",

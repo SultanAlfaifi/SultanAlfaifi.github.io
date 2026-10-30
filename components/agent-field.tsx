@@ -17,7 +17,8 @@ const MINT = "125, 226, 209";
 const PAPER = "255, 250, 251";
 
 // A living graph of agents passing messages. Decorative only: every link it hints at exists as real content.
-// It is born in a burst on load, and a press-and-hold turns the pointer into a gravity well.
+// It lives behind the AI console (components/runtime-section.tsx), bursts into place when it mounts on
+// screen (otherwise it starts settled), and a press-and-hold on it turns the pointer into a gravity well.
 export function AgentField({ labels }: { labels: string[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -393,7 +394,8 @@ export function AgentField({ labels }: { labels: string[] }) {
 
     function handlePointerDown(event: PointerEvent) {
       const target = event.target as Element | null;
-      if (!motionAllowed() || event.button > 0 || target?.closest("a, button, input, video, .intro-film")) return;
+      // The console itself stays a console: typing, selecting, and scrolling in it never start a well.
+      if (!motionAllowed() || event.button > 0 || target?.closest("a, button, input, textarea, video, .terminal-slot")) return;
       const rect = canvas!.getBoundingClientRect();
       pointer.clientX = event.clientX;
       pointer.clientY = event.clientY;

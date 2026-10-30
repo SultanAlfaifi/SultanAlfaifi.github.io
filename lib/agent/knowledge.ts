@@ -22,7 +22,8 @@ const LABELS = {
     identity: "Who Sultan is",
     name: "Name", arabicName: "Name in Arabic", role: "Role", headline: "Headline", summary: "Summary", currently: "Currently", openTo: "Open to", location: "Based in", education: "Education", languages: "Languages", email: "Email", about: "About, in his words",
     work: "Projects on the page", featured: "Featured (try these first)", smaller: "Smaller builds",
-    status: "Status", projectRole: "His role", what: "What it is", problem: "The problem", decision: "The call he made", check: "What you can check yourself", highlights: "Highlights", tech: "Technologies", techNone: "not published on the site", figures: "Figures", outcome: "Outcome", repo: "Source code", repoNone: "no public repository", demo: "Live demo", main: "Main link", arabicTitle: "Arabic name",
+    status: "Status", projectRole: "His role", what: "What it is", problem: "The problem", decision: "The call he made", check: "What you can check yourself", highlights: "Highlights", tech: "Technologies", techNone: "not published on the site", figures: "Figures", asOf: "as of", outcome: "Outcome",
+    checkpoint: "Where it stops for a person", step: (step: number, total: number) => `step ${step} of ${total}`, kinds: { asks: "it asks you first", verifies: "it verifies before a result counts", holds: "it holds on its own when a check fails" }, caveat: "Not yet", boundary: "The line it keeps", comma: ", ", repo: "Source code", repoNone: "no public repository", demo: "Live demo", main: "Main link", arabicTitle: "Arabic name",
     experience: "Work experience", dates: "Dates", place: "Location", does: "What he does", tools: "Technologies in this role", note: "His note",
     skills: "Skills", strongest: "strongest",
     achievements: "Recognition and numbers", issuer: "Issuer", date: "Date", dateNone: "no documented date", number: "Number", source: "Source",
@@ -43,7 +44,8 @@ const LABELS = {
     identity: "من هو سلطان",
     name: "الاسم", arabicName: "الاسم بالعربية", role: "التخصص", headline: "العنوان", summary: "نبذة", currently: "حاليًا", openTo: "متاح لـ", location: "مقيم في", education: "التعليم", languages: "اللغات", email: "البريد", about: "عنه بكلماته",
     work: "المشاريع في الصفحة", featured: "المشاريع البارزة", smaller: "مشاريع أصغر",
-    status: "الحالة", projectRole: "دوره", what: "ما هو", problem: "المشكلة", decision: "القرار الذي اتخذه", check: "ما تقدر تتحقق منه", highlights: "أبرز النقاط", tech: "التقنيات", techNone: "غير منشورة في الموقع", figures: "أرقام", outcome: "النتيجة", repo: "الكود", repoNone: "لا يوجد مستودع عام", demo: "عرض حي", main: "الرابط الرئيسي", arabicTitle: "الاسم العربي",
+    status: "الحالة", projectRole: "دوره", what: "ما هو", problem: "المشكلة", decision: "القرار الذي اتخذه", check: "ما تقدر تتحقق منه", highlights: "أبرز النقاط", tech: "التقنيات", techNone: "غير منشورة في الموقع", figures: "أرقام", asOf: "حتى", outcome: "النتيجة",
+    checkpoint: "أين يتوقف لينتظر إنسانًا", step: (step: number, total: number) => `الخطوة ${step} من ${total}`, kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" }, caveat: "ما لم يكتمل بعد", boundary: "الحد الذي يلتزم به", comma: "، ", repo: "الكود", repoNone: "لا يوجد مستودع عام", demo: "عرض حي", main: "الرابط الرئيسي", arabicTitle: "الاسم العربي",
     experience: "الخبرة العملية", dates: "الفترة", place: "المكان", does: "ماذا يعمل", tools: "التقنيات في هذا الدور", note: "ملاحظته",
     skills: "المهارات", strongest: "الأقوى",
     achievements: "الإنجازات والأرقام", issuer: "الجهة", date: "التاريخ", dateNone: "بلا تاريخ موثّق", number: "رقم", source: "المصدر",
@@ -59,6 +61,13 @@ const LABELS = {
     cv: "السيرة الذاتية في الموقع", cvNote: "سيرة ذاتية بالإنجليزية في صفحة واحدة مبنية من بيانات هذا الموقع. العامة تنزل فورًا، والمفصّلة تختار وترتّب نقاطًا معتمدة حسب المجال أو وصف الوظيفة. لا يكتب الذكاء الاصطناعي نقاط السيرة."
   }
 } as const;
+
+// "step 3 of 3 (Ranked picks, with reasons), it asks you first: nothing installs until you say yes"
+function checkpointLine(project: PortfolioContent["projects"][number], t: (typeof LABELS)[keyof typeof LABELS]) {
+  const { step, kind, text } = project.checkpoint!;
+  const name = project.flow?.[step - 1];
+  return `${t.step(step, project.flow?.length ?? step)}${name ? ` (${name})` : ""}${t.comma}${t.kinds[kind]}: ${text}`;
+}
 
 function blocks(content: PortfolioContent, english: PortfolioContent, anchors: AnchorInfo[]): Block[] {
   const t = LABELS[content.locale];
@@ -116,7 +125,10 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
         field(t.check, fresh(project.evidence, base.evidence)),
         project.highlights.length ? field(t.highlights, join(project.highlights, " ")) : null,
         !isArabic && field(t.tech, project.technologies.length ? project.technologies.join(", ") : t.techNone),
-        project.metrics?.length ? field(t.figures, join(project.metrics.map((metric) => `${metric.value} ${metric.label}`))) : null,
+        project.metrics?.length ? field(t.figures, join(project.metrics.map((metric) => `${metric.value} ${metric.label}${metric.asOf ? ` (${t.asOf} ${metric.asOf})` : ""}`))) : null,
+        project.checkpoint ? field(t.checkpoint, checkpointLine(project, t)) : null,
+        field(t.caveat, project.caveat),
+        field(t.boundary, project.boundary),
         field(t.outcome, fresh(project.outcome, base.outcome)),
         !isArabic && field(t.repo, project.repository ?? t.repoNone),
         !isArabic && field(t.demo, project.liveDemo),

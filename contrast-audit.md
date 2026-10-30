@@ -20,9 +20,19 @@ Thresholds:
 | Teal focus ring on blush paper | `#339989` | `#FFFAFB` | 3.35:1 | 3.0:1 | Pass |
 | Mint focus ring on ink | `#7DE2D1` | `#131515` | 11.93:1 | 3.0:1 | Pass |
 | Charcoal structural controls on mint | `#2B2C28` | `#7DE2D1` | 9.15:1 | 3.0:1 | Pass |
+| Lime gate phrase and checkpoint text on ink | `#C8FF3D` | `#131515` | 15.56:1 | 4.5:1 | Pass |
+| Ink text on the lime Approve button | `#131515` | `#C8FF3D` | 15.56:1 | 4.5:1 | Pass |
+| Ink text on the lime Approve button, hovered | `#131515` | `#DBFF7D` | 16.24:1 | 4.5:1 | Pass |
+| Lime approval border on the run card | `#C8FF3D` | `#1A201F` | 14.03:1 | 3.0:1 | Pass |
+| Blue data labels (read step) on the run card | `#9BB0FF` | `#1A201F` | 7.91:1 | 4.5:1 | Pass |
+| Mint step labels and links on the run card | `#7DE2D1` | `#1A201F` | 10.76:1 | 4.5:1 | Pass |
+| Quiet captions on the run card | `#A7B8B1` | `#1A201F` | 7.98:1 | 4.5:1 | Pass |
+| Spec strip notes on ink | `#9FB3AB` | `#131515` | 8.30:1 | 4.5:1 | Pass |
 
 ## Deliberately excluded combinations
 
+- **Lime as text on light tints:** `#C8FF3D` on `#FFFAFB` is 1.14:1. Insufficient contrast. Lime is reserved for checkpoints and approvals: text on ink, or a fill behind ink text.
+- **Protocol blue as small text on the run card:** `#6D8EFF` on `#1A201F` is 5.48:1. Too close to the AA limit for small text. Small blue text on the raised ink uses #9BB0FF instead.
 - **Mint as small text on blush paper:** `#7DE2D1` on `#FFFAFB` is 1.49:1. Insufficient contrast. Mint is reserved for dark surfaces, large decorative type, or backgrounds with ink text.
 
 ## State and link treatment
@@ -33,4 +43,4 @@ Thresholds:
 - There are no disabled interactive controls in the initial portfolio.
 - Organization logos use warm-white monochrome artwork on Ink by default and reveal color on hover or keyboard focus.
 
-Audit result: **PASS** (10/10 approved pairs pass).
+Audit result: **PASS** (18/18 approved pairs pass).
