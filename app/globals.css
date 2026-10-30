@@ -1,23 +1,7 @@
 @import "tailwindcss";
 
+/* Colour tokens live in the second :root block below (the Living Intelligence ground) and in app/living.css. */
 :root {
-  --ink: #111816;
-  --ink-soft: #18211e;
-  --paper: #f4f3ec;
-  --white: #fbfbf8;
-  --graph: #e8ece7;
-  --graph-dark: #2b3531;
-  --text: #252c29;
-  --muted: #5c6762;
-  --line: #7d8882;
-  --line-soft: #c9cec7;
-  --dark-line: #676b67;
-  --signal: #c8ff3d;
-  --signal-dark: #375600;
-  --protocol: #2f55b7;
-  --protocol-bright: #9bb0ff;
-  --focus-light: #754500;
-  --focus-dark: #ffbf3f;
   --focus-ring: var(--focus-light);
   --shell: min(1280px, calc(100vw - 64px));
   --section-space: clamp(6rem, 10vw, 10rem);
@@ -80,7 +64,7 @@ body {
   transform: scale(0.84);
   transform-origin: center;
   background: var(--ink);
-  box-shadow: 0 36px 100px rgb(24 33 30 / 24%);
+  box-shadow: 0 36px 100px rgb(19 19 26 / 24%);
   opacity: 0;
   will-change: transform, opacity;
 }
@@ -96,7 +80,7 @@ body {
 .salla-story__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 55%, rgb(17 24 22 / 42%));
+  background: linear-gradient(to bottom, transparent 55%, rgb(13 13 17 / 42%));
   pointer-events: none;
   opacity: 0.28;
   will-change: opacity;
@@ -114,9 +98,9 @@ body {
   justify-content: center;
   gap: 0.55rem;
   padding: 0.7rem 1rem;
-  border: 1px solid rgb(251 251 248 / 54%);
+  border: 1px solid rgb(251 250 249 / 54%);
   border-radius: 999px;
-  background: rgb(17 24 22 / 76%);
+  background: rgb(13 13 17 / 76%);
   color: var(--white);
   cursor: pointer;
   font-family: var(--font-mono), monospace;
@@ -126,7 +110,7 @@ body {
 }
 
 .salla-story__playback:hover {
-  background: rgb(17 24 22 / 92%);
+  background: rgb(13 13 17 / 92%);
 }
 
 .salla-story__playback:active {
@@ -145,7 +129,7 @@ body {
   margin-top: -16svh;
   padding: clamp(3rem, 7vw, 7rem);
   background: var(--paper);
-  box-shadow: 0 -30px 90px rgb(17 24 22 / 12%);
+  box-shadow: 0 -30px 90px rgb(13 13 17 / 12%);
 }
 
 .salla-story__identity {
@@ -217,7 +201,7 @@ body {
 .salla-story__description {
   max-width: 680px;
   margin: 2rem 0 0;
-  color: #46514c;
+  color: var(--li-ink-2);
   font-size: 1.08rem;
 }
 
@@ -446,7 +430,7 @@ svg {
   justify-content: space-between;
   padding-inline: max(32px, calc((100vw - 1280px) / 2));
   border-bottom: 1px solid var(--dark-line);
-  background: rgb(17 24 22 / 88%);
+  background: rgb(13 13 17 / 88%);
   color: var(--white);
   backdrop-filter: blur(18px);
 }
@@ -465,7 +449,7 @@ svg {
 }
 
 .nav__brand small {
-  color: #ced6d1;
+  color: #d6d4d0;
   font-family: var(--font-mono), monospace;
   font-size: 0.68rem;
   letter-spacing: 0.09em;
@@ -484,7 +468,7 @@ svg {
   display: grid;
   place-items: center;
   padding-inline: 0.75rem;
-  color: #c5cdc9;
+  color: #cdcac6;
   font-family: var(--font-mono), monospace;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
@@ -547,7 +531,7 @@ svg {
   width: 54vw;
   height: 54vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(47 85 183 / 20%), transparent 64%);
+  background: radial-gradient(circle, rgb(143 107 255 / 20%), transparent 64%);
   pointer-events: none;
 }
 
@@ -590,7 +574,7 @@ svg {
 .hero__summary {
   max-width: 690px;
   margin: 2rem 0 0;
-  color: #cbd3cf;
+  color: #d3d1cd;
   font-size: clamp(1.02rem, 1.3vw, 1.2rem);
   line-height: 1.7;
 }
@@ -634,7 +618,7 @@ svg {
 }
 
 .button--ghost:hover {
-  border-color: rgb(244 243 236 / 52%);
+  border-color: rgb(244 242 239 / 52%);
   background: rgb(255 255 255 / 6%);
 }
 
@@ -651,7 +635,7 @@ svg {
   align-items: center;
   gap: 0.45rem;
   padding: 0.55rem 0.75rem;
-  color: #c5cec9;
+  color: #cecbc7;
   font-family: var(--font-mono), monospace;
   font-size: 0.72rem;
   transition:
@@ -677,7 +661,7 @@ svg {
   border: 1px solid var(--dark-line);
   background:
     linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 65%),
-    #141d1a;
+    #111116;
   transform: translate(
     calc(var(--pointer-x) * 5px),
     calc(var(--pointer-y) * 5px)
@@ -693,7 +677,7 @@ svg {
   gap: 1rem;
   padding: 1rem 1.1rem;
   border-bottom: 1px solid var(--dark-line);
-  color: #9ba8a2;
+  color: #a8a59d;
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
   letter-spacing: 0.06em;
@@ -737,7 +721,7 @@ svg {
 .system-map__index {
   grid-area: index;
   align-self: center;
-  color: #84928b;
+  color: #938f85;
   font-family: var(--font-mono), monospace;
   font-size: 0.56rem;
 }
@@ -750,7 +734,7 @@ svg {
   margin-left: 5px;
   border: 2px solid var(--signal);
   border-radius: 50%;
-  box-shadow: 0 0 0 5px rgb(200 255 61 / 10%);
+  box-shadow: 0 0 0 5px rgb(255 180 106 / 10%);
 }
 
 .system-map__label {
@@ -762,7 +746,7 @@ svg {
 
 .system-map__detail {
   grid-area: detail;
-  color: #9faaa5;
+  color: #aba8a0;
   font-family: var(--font-mono), monospace;
   font-size: 0.6rem;
 }
@@ -773,8 +757,8 @@ svg {
   left: 10px;
   width: 118px;
   height: 55px;
-  border-bottom: 1px solid rgb(155 176 255 / 56%);
-  border-left: 1px solid rgb(155 176 255 / 56%);
+  border-bottom: 1px solid rgb(185 168 255 / 56%);
+  border-left: 1px solid rgb(185 168 255 / 56%);
 }
 
 .system-map__route::after {
@@ -796,7 +780,7 @@ svg {
   align-items: center;
   gap: 0.5rem;
   margin: 0;
-  color: #aab5af;
+  color: #b5b2ac;
   font-family: var(--font-mono), monospace;
   font-size: 0.6rem;
   letter-spacing: 0.05em;
@@ -823,7 +807,7 @@ svg {
 
 .hero__stack > p {
   margin: 0;
-  color: #98a59e;
+  color: #a5a29a;
   font-family: var(--font-mono), monospace;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
@@ -841,7 +825,7 @@ svg {
 
 .hero__stack li {
   position: relative;
-  color: #e1e6e3;
+  color: #e8e4dd;
   font-family: var(--font-mono), monospace;
   font-size: 0.73rem;
 }
@@ -860,7 +844,7 @@ svg {
   display: none;
   align-items: center;
   gap: 0.65rem;
-  color: #9ca8a2;
+  color: #a8a59d;
   font-family: var(--font-mono), monospace;
   font-size: 0.6rem;
   text-transform: uppercase;
@@ -896,8 +880,8 @@ svg {
 
 .section--graph {
   background:
-    linear-gradient(rgb(17 24 22 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(17 24 22 / 4%) 1px, transparent 1px),
+    linear-gradient(rgb(var(--li-ink-rgb) / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--li-ink-rgb) / 4%) 1px, transparent 1px),
     var(--graph);
   background-size: 48px 48px;
 }
@@ -955,7 +939,7 @@ svg {
 }
 
 .section-header--inverse .section-header__copy > p {
-  color: #b6c0bb;
+  color: #c0beb8;
 }
 
 .reveal {
@@ -992,11 +976,11 @@ svg {
   position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border: 1px solid #b9c0ba;
+  border: 1px solid #c0beb9;
   background:
-    linear-gradient(rgb(17 24 22 / 5%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(17 24 22 / 5%) 1px, transparent 1px),
-    #e2e8e0;
+    linear-gradient(rgb(var(--li-ink-rgb) / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--li-ink-rgb) / 5%) 1px, transparent 1px),
+    #eae6df;
   background-size: 32px 32px;
 }
 
@@ -1006,7 +990,7 @@ svg {
   inset: 0;
   pointer-events: none;
   content: "";
-  background: linear-gradient(to top, rgb(17 24 22 / 18%), transparent 28%);
+  background: linear-gradient(to top, rgb(13 13 17 / 18%), transparent 28%);
 }
 
 .about-portrait__frame img {
@@ -1045,7 +1029,7 @@ svg {
 
 .about-layout__copy > p + p {
   margin-top: 1.6rem;
-  color: #4b5550;
+  color: var(--li-ink-2);
 }
 
 .text-link {
@@ -1101,7 +1085,7 @@ svg {
 .organization-rail {
   padding-block: 3rem;
   overflow: hidden;
-  border-block: 1px solid #2c3732;
+  border-block: 1px solid #262633;
   background: var(--ink-soft);
   color: var(--white);
 }
@@ -1117,7 +1101,7 @@ svg {
 .organization-rail__header p,
 .organization-rail__header > span {
   margin: 0;
-  color: #98a69f;
+  color: #a6a29b;
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
   letter-spacing: 0.06em;
@@ -1163,7 +1147,7 @@ svg {
   justify-content: center;
   padding: 1.2rem 1.4rem;
   border: 1px solid var(--dark-line);
-  background: #1b2521;
+  background: #16161d;
   transition:
     background-color 180ms ease,
     color 180ms ease;
@@ -1171,7 +1155,7 @@ svg {
 
 .organization-item:hover,
 .organization-item:focus-visible {
-  background: #222f2a;
+  background: #1c1c26;
 }
 
 .organization-item__mark {
@@ -1213,7 +1197,7 @@ svg {
 }
 
 .organization-item__wordmark {
-  color: #dde4e0;
+  color: #e6e2d9;
   font-size: 0.92rem;
   font-weight: 650;
   letter-spacing: -0.015em;
@@ -1226,7 +1210,7 @@ svg {
 
 .organization-item__relationship {
   margin-top: 0.55rem;
-  color: #9ca8a2;
+  color: #a8a59d;
   font-family: var(--font-mono), monospace;
   font-size: 0.59rem;
   letter-spacing: 0.04em;
@@ -1251,7 +1235,7 @@ svg {
 }
 
 .expertise-card--primary {
-  background: #eef3e9;
+  background: var(--li-bg-2);
 }
 
 .expertise-card__signal {
@@ -1290,8 +1274,8 @@ svg {
 .expertise-card__route span:first-child {
   position: absolute;
   inset: 0;
-  border-top: 1px solid #87928d;
-  border-right: 1px solid #87928d;
+  border-top: 1px solid #948f86;
+  border-right: 1px solid #948f86;
 }
 
 .expertise-card__route span:last-child {
@@ -1308,7 +1292,7 @@ svg {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  background: rgb(244 243 236 / 16%);
+  background: rgb(244 242 239 / 16%);
   border: 1px solid var(--dark-line);
 }
 
@@ -1320,7 +1304,7 @@ svg {
   height: 100%;
   display: grid;
   grid-template-rows: 220px 1fr;
-  background: #151e1b;
+  background: #111117;
 }
 
 .project-card--flagship {
@@ -1337,7 +1321,7 @@ svg {
   background:
     linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px),
-    #1b2622;
+    #16161e;
   background-size: 32px 32px;
 }
 
@@ -1386,7 +1370,7 @@ svg {
   height: 12px;
   border: 2px solid var(--signal);
   border-radius: 50%;
-  background: #1b2622;
+  background: #16161e;
 }
 
 .project-signal__rail span:nth-child(1) {
@@ -1416,8 +1400,8 @@ svg {
   z-index: 2;
   inset: 22% 12% 24%;
   overflow: hidden;
-  border: 1px solid rgb(17 24 22 / 14%);
-  background: rgb(251 251 248 / 94%);
+  border: 1px solid rgb(var(--li-ink-rgb) / 14%);
+  background: rgb(251 250 249 / 94%);
   box-shadow: 0 18px 40px rgb(0 0 0 / 14%);
 }
 
@@ -1425,7 +1409,7 @@ svg {
   position: absolute;
   inset: 8px;
   content: "";
-  border: 1px solid rgb(17 24 22 / 8%);
+  border: 1px solid rgb(var(--li-ink-rgb) / 8%);
 }
 
 .project-signal__brand-tile img {
@@ -1451,7 +1435,7 @@ svg {
   right: 1.3rem;
   bottom: 1.2rem;
   margin: 0;
-  color: #8f9c95;
+  color: #9d9990;
   font-family: var(--font-mono), monospace;
   font-size: 0.56rem;
   letter-spacing: 0.06em;
@@ -1468,7 +1452,7 @@ svg {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
-  color: #9ca8a2;
+  color: #a8a59d;
   font-family: var(--font-mono), monospace;
   font-size: 0.61rem;
   letter-spacing: 0.045em;
@@ -1496,7 +1480,7 @@ svg {
 .project-card__description {
   max-width: 700px;
   margin: 1.3rem 0 0;
-  color: #c0c9c4;
+  color: #c9c7c2;
   font-size: 1rem;
 }
 
@@ -1529,14 +1513,14 @@ svg {
 .tag-list li {
   padding: 0.32rem 0.55rem;
   border: 1px solid var(--dark-line);
-  color: #b8c1bc;
+  color: #c1beb9;
   font-family: var(--font-mono), monospace;
   font-size: 0.6rem;
 }
 
 .tag-list--dark li {
-  border-color: #b9c0ba;
-  color: #424d48;
+  border-color: var(--li-line-2);
+  color: var(--li-ink-2);
 }
 
 .project-card__details {
@@ -1558,7 +1542,7 @@ svg {
 .project-card__details ul {
   margin: 0.8rem 0 0;
   padding-left: 1.2rem;
-  color: #aeb9b3;
+  color: #b9b7b1;
   font-size: 0.9rem;
 }
 
@@ -1680,7 +1664,7 @@ svg {
 .experience-entry__content > p:not(.experience-entry__organization, .experience-entry__note) {
   max-width: 800px;
   margin: 0;
-  color: #46514c;
+  color: var(--li-ink-2);
   font-size: 1.05rem;
 }
 
@@ -1753,7 +1737,7 @@ svg {
 .skill-group li span {
   width: 6px;
   height: 6px;
-  border: 1px solid #7e8984;
+  border: 1px solid #8a867c;
   border-radius: 50%;
 }
 
@@ -1778,8 +1762,8 @@ svg {
   display: flex;
   flex-direction: column;
   padding: 1.8rem;
-  border: 1px solid #bec5be;
-  background: rgb(251 251 248 / 82%);
+  border: 1px solid var(--li-line);
+  background: rgb(251 250 249 / 82%);
 }
 
 .achievement-card__index {
@@ -1847,9 +1831,9 @@ svg {
   grid-row: span 2;
   min-height: 650px;
   background:
-    linear-gradient(rgb(17 24 22 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(17 24 22 / 4%) 1px, transparent 1px),
-    #eaf0e4;
+    linear-gradient(rgb(var(--li-ink-rgb) / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--li-ink-rgb) / 4%) 1px, transparent 1px),
+    #f0eee9;
   background-size: 42px 42px;
 }
 
@@ -1918,7 +1902,7 @@ svg {
 
 .program-card__story p {
   margin: 0;
-  color: #4f5a55;
+  color: var(--li-ink-2);
   font-size: 0.86rem;
 }
 
@@ -1934,7 +1918,7 @@ svg {
 }
 
 .section--community {
-  background: #17201d;
+  background: #121219;
   color: var(--white);
 }
 
@@ -1965,7 +1949,7 @@ svg {
 }
 
 .community-metric span {
-  color: #b1bbb6;
+  color: #bbb8b3;
   font-family: var(--font-mono), monospace;
   font-size: 0.66rem;
   letter-spacing: 0.05em;
@@ -1982,7 +1966,7 @@ svg {
 .volunteer-note {
   padding: clamp(1.7rem, 4vw, 3.4rem);
   border: 1px solid var(--dark-line);
-  background: #1b2521;
+  background: #16161d;
 }
 
 .workshop--primary {
@@ -1993,7 +1977,7 @@ svg {
   background:
     linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px),
-    #1b2521;
+    #16161d;
   background-size: 42px 42px;
 }
 
@@ -2023,7 +2007,7 @@ svg {
 .workshop > p:not(.workshop__meta) {
   max-width: 650px;
   margin: 0;
-  color: #b8c2bd;
+  color: #c2c0ba;
 }
 
 .workshop a {
@@ -2047,7 +2031,7 @@ svg {
 .workshop__diagram span {
   position: relative;
   padding-top: 1.5rem;
-  color: #9ca8a2;
+  color: #a8a59d;
   font-family: var(--font-mono), monospace;
   font-size: 0.59rem;
   text-align: center;
@@ -2072,7 +2056,7 @@ svg {
   content: "";
   border: 2px solid var(--signal);
   border-radius: 50%;
-  background: #1b2521;
+  background: #16161d;
 }
 
 .community-editorial__supporting {
@@ -2091,11 +2075,11 @@ svg {
 
 .volunteer-note p {
   margin: 1rem 0 0;
-  color: #b8c2bd;
+  color: #c2c0ba;
 }
 
 .section--recommendations {
-  background: #edf0ea;
+  background: transparent;
 }
 
 .recommendations-grid {
@@ -2114,7 +2098,7 @@ svg {
   display: flex;
   flex-direction: column;
   padding: clamp(2rem, 5vw, 4.8rem);
-  border: 1px solid #bfc6bf;
+  border: 1px solid var(--li-line);
   background: var(--white);
 }
 
@@ -2212,7 +2196,7 @@ svg {
 }
 
 .section--ideas {
-  background: #111917;
+  background: #0d0d12;
   color: var(--white);
 }
 
@@ -2255,7 +2239,7 @@ svg {
 }
 
 .ideas-metric span {
-  color: #aeb8b3;
+  color: #b8b5af;
   font-family: var(--font-mono), monospace;
   font-size: 0.64rem;
   letter-spacing: 0.05em;
@@ -2293,7 +2277,7 @@ svg {
 
 .ideas-pillar p {
   margin: 0;
-  color: #aeb8b3;
+  color: #b8b5af;
 }
 
 .ideas-footer {
@@ -2317,7 +2301,7 @@ svg {
 .ideas-footer li {
   padding: 0.35rem 0.6rem;
   border: 1px solid var(--dark-line);
-  color: #b8c2bd;
+  color: #c2c0ba;
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
 }
@@ -2381,7 +2365,7 @@ svg {
 
 .contact-section .button--ghost {
   margin-top: 0.75rem;
-  border-color: rgb(17 24 22 / 35%);
+  border-color: rgb(var(--li-ink-rgb) / 35%);
   color: var(--ink);
 }
 
@@ -2404,7 +2388,7 @@ svg {
   align-items: center;
   margin-top: 2.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgb(17 24 22 / 30%);
+  border-top: 1px solid rgb(var(--li-ink-rgb) / 30%);
 }
 
 .contact-section__meta > p {
@@ -2421,13 +2405,13 @@ svg {
 }
 
 .contact-section .social-links a:hover {
-  background: rgb(17 24 22 / 10%);
+  background: rgb(var(--li-ink-rgb) / 10%);
 }
 
 .footer {
   padding-block: 2.5rem;
-  background: #0b100f;
-  color: #aab4af;
+  background: #07070a;
+  color: #b5b1ab;
 }
 
 .footer__inner {
@@ -2445,7 +2429,7 @@ svg {
 
 .footer p + p {
   margin-top: 0.35rem;
-  color: #78847e;
+  color: #868176;
 }
 
 .footer nav {
@@ -2458,7 +2442,7 @@ svg {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  color: #c4cdc8;
+  color: #cdcac6;
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
 }
@@ -2577,7 +2561,7 @@ svg {
     visibility: hidden;
     opacity: 0;
     border-bottom: 1px solid var(--dark-line);
-    background: #111816;
+    background: var(--li-bg);
     box-shadow: 0 24px 48px rgb(0 0 0 / 28%);
     transform: translateY(-12px);
     transition:
@@ -2606,7 +2590,7 @@ svg {
     align-items: center;
     gap: 1.2rem;
     border-bottom: 1px solid var(--dark-line);
-    color: #d7dedb;
+    color: #deddda;
     font-size: 1.2rem;
   }
 
@@ -3024,24 +3008,29 @@ svg {
 /* Reference-led editorial redesign
    Interactive controls use pills; media and editorial blocks stay nearly square. */
 
+/* The older layers were written for light "paper" sections with a few dark "ink" bands. On the Living
+   Intelligence ground the whole page is dark, so these names are inverted here: --paper is the deep black
+   ground, --ink and --text are off-white, --white is a raised surface. Every pair the older rules set
+   (paper/ink, white/ink) still contrasts the same way. Sections that were dark bands restore the original
+   meanings inside them (see "Dark bands" in app/living.css). New work uses the --li-* tokens. */
 :root {
-  --ink: #131515;
-  --ink-soft: #2b2c28;
-  --paper: #fffafb;
-  --white: #fffafb;
-  --graph: #7de2d1;
-  --graph-dark: #2b2c28;
-  --text: #131515;
-  --muted: #2b2c28;
-  --line: rgb(19 21 21 / 24%);
-  --line-soft: rgb(19 21 21 / 14%);
-  --dark-line: rgb(255 250 251 / 22%);
-  --signal: #7de2d1;
-  --signal-dark: #339989;
-  --protocol: #339989;
-  --protocol-bright: #7de2d1;
-  --focus-light: #131515;
-  --focus-dark: #7de2d1;
+  --ink: #f4f2ee;
+  --ink-soft: #d6d3ce;
+  --paper: #030304;
+  --white: #0c0c11;
+  --graph: #9fe3ff;
+  --graph-dark: #131318;
+  --text: #d6d3ce;
+  --muted: #b1afab;
+  --line: rgb(244 242 238 / 22%);
+  --line-soft: rgb(244 242 238 / 11%);
+  --dark-line: rgb(244 242 238 / 16%);
+  --signal: #9fe3ff;
+  --signal-dark: #47c8f5;
+  --protocol: #c9beff;
+  --protocol-bright: #9fe3ff;
+  --focus-light: #9cc9ff;
+  --focus-dark: #9cc9ff;
   --shell: min(1480px, calc(100vw - clamp(40px, 6vw, 108px)));
   --section-space: clamp(7rem, 11vw, 12rem);
   --nav-height: 60px;
@@ -3105,7 +3094,7 @@ h3,
   transform: translateX(-50%);
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 999px;
-  background: rgb(9 11 10 / 72%);
+  background: rgb(6 6 7 / 72%);
   box-shadow: 0 20px 60px rgb(0 0 0 / 18%);
   backdrop-filter: blur(18px) saturate(130%);
 }
@@ -3121,7 +3110,7 @@ h3,
 }
 
 .nav__brand small {
-  color: rgb(255 250 251 / 78%);
+  color: rgb(252 252 251 / 78%);
   font-size: 0.62rem;
 }
 
@@ -3187,8 +3176,8 @@ h3,
 .hero__veil {
   z-index: -1;
   background:
-    linear-gradient(90deg, rgb(4 5 5 / 82%) 0%, rgb(4 5 5 / 48%) 46%, rgb(4 5 5 / 15%) 78%),
-    linear-gradient(180deg, rgb(4 5 5 / 38%) 0%, transparent 42%, rgb(4 5 5 / 80%) 100%);
+    linear-gradient(90deg, rgb(2 2 3 / 82%) 0%, rgb(2 2 3 / 48%) 46%, rgb(2 2 3 / 15%) 78%),
+    linear-gradient(180deg, rgb(2 2 3 / 38%) 0%, transparent 42%, rgb(2 2 3 / 80%) 100%);
 }
 
 .hero-media__controls {
@@ -3207,7 +3196,7 @@ h3,
   place-items: center;
   border: 1px solid rgb(255 255 255 / 30%);
   border-radius: 999px;
-  background: rgb(8 10 9 / 58%);
+  background: rgb(4 4 6 / 58%);
   color: var(--white);
   cursor: pointer;
   backdrop-filter: blur(12px);
@@ -3261,7 +3250,7 @@ h3,
 .hero__summary {
   max-width: 620px;
   margin-top: 1.5rem;
-  color: rgb(255 250 251 / 86%);
+  color: rgb(252 252 251 / 86%);
   font-size: clamp(1rem, 1.25vw, 1.18rem);
   line-height: 1.55;
 }
@@ -3280,7 +3269,7 @@ h3,
 
 .button--ghost {
   border-color: rgb(255 255 255 / 42%);
-  background: rgb(8 10 9 / 24%);
+  background: rgb(4 4 6 / 24%);
   backdrop-filter: blur(10px);
 }
 
@@ -3427,7 +3416,7 @@ h3,
 }
 
 .about-portrait__frame::before {
-  background: linear-gradient(to top, rgb(11 13 12 / 20%), transparent 35%);
+  background: linear-gradient(to top, rgb(7 7 9 / 20%), transparent 35%);
 }
 
 .about-layout__content {
@@ -3475,7 +3464,7 @@ h3,
 
 .organization-rail__header > div > p,
 .organization-rail__header > span {
-  color: rgb(11 13 12 / 66%);
+  color: rgb(var(--li-ink-rgb) / 66%);
 }
 
 .organization-rail__header h2 {
@@ -3490,13 +3479,13 @@ h3,
 
 .organization-item {
   min-width: 230px;
-  border-color: rgb(11 13 12 / 28%);
+  border-color: rgb(var(--li-ink-rgb) / 28%);
   background: transparent;
   color: var(--ink);
 }
 
 .organization-item__relationship {
-  color: rgb(11 13 12 / 66%);
+  color: rgb(var(--li-ink-rgb) / 66%);
 }
 
 .expertise-grid {
@@ -3591,7 +3580,7 @@ h3,
   inset: 0;
   pointer-events: none;
   content: "";
-  background: linear-gradient(180deg, transparent 55%, rgb(11 13 12 / 68%));
+  background: linear-gradient(180deg, transparent 55%, rgb(7 7 9 / 68%));
 }
 
 .project-signal,
@@ -3614,11 +3603,11 @@ h3,
   position: absolute;
   inset: 0;
   content: "";
-  background: linear-gradient(90deg, rgb(7 8 8 / 90%) 0%, rgb(7 8 8 / 54%) 46%, transparent 78%);
+  background: linear-gradient(90deg, rgb(3 3 5 / 90%) 0%, rgb(3 3 5 / 54%) 46%, transparent 78%);
 }
 
 .projects-grid > .reveal:nth-child(even) .project-signal::after {
-  background: linear-gradient(270deg, rgb(7 8 8 / 90%) 0%, rgb(7 8 8 / 54%) 46%, transparent 78%);
+  background: linear-gradient(270deg, rgb(3 3 5 / 90%) 0%, rgb(3 3 5 / 54%) 46%, transparent 78%);
 }
 
 .project-signal__media {
@@ -3649,7 +3638,7 @@ h3,
 .project-card__meta {
   max-width: 520px;
   margin-bottom: 1.1rem;
-  color: rgb(255 250 251 / 78%);
+  color: rgb(252 252 251 / 78%);
 }
 
 .project-card__meta span + span::before {
@@ -3680,7 +3669,7 @@ h3,
 
 .project-card__description {
   max-width: 560px;
-  color: rgb(255 250 251 / 90%);
+  color: rgb(252 252 251 / 90%);
   font-size: clamp(1rem, 1.35vw, 1.18rem);
   line-height: 1.55;
   text-shadow: 0 2px 18px rgb(0 0 0 / 55%);
@@ -3698,8 +3687,8 @@ h3,
 .project-card .tag-list--dark li {
   border-color: rgb(255 255 255 / 35%);
   border-radius: 999px;
-  background: rgb(8 10 9 / 34%);
-  color: rgb(255 250 251 / 90%);
+  background: rgb(4 4 6 / 34%);
+  color: rgb(252 252 251 / 90%);
   backdrop-filter: blur(8px);
 }
 
@@ -3778,7 +3767,7 @@ h3,
 
 .skill-group:nth-child(2),
 .skill-group:nth-child(3) {
-  background: color-mix(in srgb, var(--paper) 88%, var(--signal));
+  background: var(--li-bg-1);
 }
 
 .skill-group h3 {
@@ -4201,8 +4190,8 @@ h3,
 
   .hero__veil {
     background:
-      linear-gradient(180deg, rgb(4 5 5 / 50%) 0%, rgb(4 5 5 / 12%) 34%, rgb(4 5 5 / 88%) 80%),
-      linear-gradient(90deg, rgb(4 5 5 / 54%), transparent 82%);
+      linear-gradient(180deg, rgb(2 2 3 / 50%) 0%, rgb(2 2 3 / 12%) 34%, rgb(2 2 3 / 88%) 80%),
+      linear-gradient(90deg, rgb(2 2 3 / 54%), transparent 82%);
   }
 
   .hero-media__controls {
@@ -4797,7 +4786,7 @@ body {
 :root {
   --panel-gutter: clamp(10px, 1.4vw, 22px);
   --panel-radius: clamp(22px, 2.8vw, 40px);
-  --panel-shadow: 0 28px 80px rgb(19 21 21 / 14%);
+  --panel-shadow: 0 28px 80px rgb(12 12 15 / 14%);
 }
 
 #about {
@@ -4830,7 +4819,7 @@ body {
   border-radius: 14px;
   background: var(--signal);
   clip-path: none;
-  box-shadow: 0 24px 60px rgb(19 21 21 / 12%);
+  box-shadow: 0 24px 60px rgb(12 12 15 / 12%);
 }
 
 @media (min-width: 841px) {
@@ -4844,7 +4833,7 @@ body {
   z-index: 0;
   inset: auto -14px -14px 14px;
   height: 82%;
-  border: 1px solid rgb(19 21 21 / 28%);
+  border: 1px solid rgb(var(--li-ink-rgb) / 28%);
   border-radius: 14px;
   background: transparent;
 }
@@ -4941,7 +4930,7 @@ body {
 }
 
 .projects-grid > .reveal {
-  border-top: 1px solid rgb(125 226 209 / 28%);
+  border-top: 1px solid rgb(71 200 245 / 28%);
 }
 
 .project-card,
@@ -5039,7 +5028,7 @@ body {
 
 .project-card__description {
   max-width: 54ch;
-  color: rgb(255 250 251 / 88%);
+  color: rgb(252 252 251 / 88%);
   font-size: clamp(0.98rem, 1.1vw, 1.08rem);
   line-height: 1.65;
   text-shadow: none;
@@ -5056,18 +5045,18 @@ body {
 
 .project-card .tag-list li,
 .project-card .tag-list--dark li {
-  border-color: rgb(125 226 209 / 42%);
+  border-color: rgb(71 200 245 / 42%);
   background: var(--ink-soft);
   color: var(--white);
   backdrop-filter: none;
 }
 
 .project-card__details {
-  border-color: rgb(255 250 251 / 28%);
+  border-color: rgb(252 252 251 / 28%);
 }
 
 .project-card__details li {
-  color: rgb(255 250 251 / 82%);
+  color: rgb(252 252 251 / 82%);
 }
 
 .project-card__actions a {
@@ -5154,7 +5143,7 @@ body {
   z-index: -1;
   top: -0.35em;
   left: -0.15em;
-  color: rgb(51 153 137 / 9%);
+  color: rgb(61 147 184 / 9%);
   content: "“";
   font-family: Georgia, serif;
   font-size: clamp(12rem, 26vw, 28rem);
@@ -5205,7 +5194,7 @@ body {
 }
 
 .recommendation-card .tag-list li {
-  border-color: rgb(19 21 21 / 34%);
+  border-color: rgb(var(--li-ink-rgb) / 34%);
   background: transparent;
   color: var(--ink);
 }
@@ -5235,7 +5224,7 @@ body {
 .contact-section__meta,
 .footer p,
 .footer nav {
-  color: rgb(255 250 251 / 82%);
+  color: rgb(252 252 251 / 82%);
   opacity: 1;
 }
 
@@ -5256,14 +5245,14 @@ body {
 .workshop,
 .volunteer-note,
 .ideas-metric {
-  border-color: rgb(125 226 209 / 26%);
+  border-color: rgb(71 200 245 / 26%);
 }
 
 .workshop__diagram span,
 .ideas-footer li,
 .contact-section .button--ghost,
 .contact-section .social-links a {
-  border-color: rgb(125 226 209 / 42%);
+  border-color: rgb(71 200 245 / 42%);
   background: var(--ink-soft);
   color: var(--white);
 }
@@ -5676,9 +5665,9 @@ body {
   display: grid;
   place-items: center;
   transform: translate(-50%, 18px);
-  border: 1px solid rgb(255 250 251 / 48%);
+  border: 1px solid rgb(252 252 251 / 48%);
   border-radius: 50%;
-  background: rgb(19 21 21 / 58%);
+  background: rgb(12 12 15 / 58%);
   color: var(--white);
   opacity: 0;
   pointer-events: none;
@@ -5739,7 +5728,7 @@ body {
 /* Dark flagship content uses the palette's light foreground, not inherited gray. */
 
 .program-card--flagship .program-card__story > div {
-  border-color: rgb(255 250 251 / 24%);
+  border-color: rgb(252 252 251 / 24%);
 }
 
 .program-card--flagship .program-card__story span {
@@ -5747,7 +5736,7 @@ body {
 }
 
 .program-card--flagship .program-card__story p {
-  color: rgb(255 250 251 / 84%);
+  color: rgb(252 252 251 / 84%);
 }
 
 /* The odd final credential spans the grid instead of leaving a dead half-column. */
@@ -5791,7 +5780,7 @@ body {
 }
 
 .achievement-card p {
-  color: rgb(19 21 21 / 82%);
+  color: rgb(var(--li-ink-rgb) / 82%);
 }
 
 .achievement-card__top img {
@@ -5908,7 +5897,7 @@ body {
   width: 100%;
   grid-column: auto;
   overflow: visible;
-  border-top: 1px solid rgb(125 226 209 / 28%);
+  border-top: 1px solid rgb(71 200 245 / 28%);
 }
 
 .project-card,
@@ -5945,7 +5934,7 @@ body {
   aspect-ratio: 1586 / 992;
   align-self: start;
   overflow: hidden;
-  border: 1px solid rgb(255 250 251 / 12%);
+  border: 1px solid rgb(252 252 251 / 12%);
   border-radius: 14px;
   background: var(--paper);
   box-shadow: 0 28px 80px rgb(0 0 0 / 28%);
@@ -6024,7 +6013,7 @@ body {
 .project-card__description {
   max-width: 56ch;
   margin-top: 0;
-  color: rgb(255 250 251 / 88%);
+  color: rgb(252 252 251 / 88%);
   font-size: clamp(0.98rem, 1.1vw, 1.08rem);
   line-height: 1.65;
   text-shadow: none;
@@ -6039,7 +6028,7 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   margin: 0 0 clamp(1.8rem, 3vw, 2.6rem);
-  background: rgb(125 226 209 / 34%);
+  background: rgb(71 200 245 / 34%);
 }
 
 .project-card__metrics > div {
@@ -6052,7 +6041,7 @@ body {
 }
 
 .project-card__metrics dt {
-  color: rgb(255 250 251 / 72%);
+  color: rgb(252 252 251 / 72%);
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
   letter-spacing: 0.045em;
@@ -6236,7 +6225,7 @@ body {
   padding: clamp(3.5rem, 6vw, 6rem) 0;
   overflow: clip;
   transform: none;
-  background: #7de2d1;
+  background: #9fe3ff;
   color: var(--ink);
   transition:
     color 520ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -6263,7 +6252,7 @@ body {
   position: absolute;
   inset: 0;
   content: "";
-  background: rgb(6 12 12 / 20%);
+  background: rgb(6 6 7 / 20%);
 }
 
 .organization-rail[data-foreground="dark"] .organization-rail__surface::after {
@@ -6277,11 +6266,11 @@ body {
 }
 
 .organization-rail.has-active-organization[data-foreground="light"] {
-  color: #fffafb;
+  color: #fcfcfb;
 }
 
 .organization-rail.has-active-organization[data-foreground="dark"] {
-  color: #111816;
+  color: #0d0d11;
 }
 
 .organization-rail__header {
@@ -6465,7 +6454,7 @@ body {
   z-index: -1;
   inset: 0;
   content: "";
-  background: linear-gradient(125deg, rgb(5 12 12 / 38%), rgb(5 12 12 / 16%));
+  background: linear-gradient(125deg, rgb(6 6 7 / 38%), rgb(6 6 7 / 16%));
   transition: opacity 520ms ease;
 }
 
@@ -6474,7 +6463,7 @@ body {
 }
 
 .organization-card[data-foreground="dark"] {
-  color: #111816;
+  color: #0d0d11;
 }
 
 .organization-card.is-active {
@@ -6485,7 +6474,7 @@ body {
   border-radius: 0;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 34%),
-    0 30px 90px rgb(5 13 13 / 25%);
+    0 30px 90px rgb(6 6 7 / 25%);
   animation-duration: 13s;
 }
 
@@ -6510,7 +6499,7 @@ body {
 }
 
 .organization-card[data-foreground="dark"] .organization-card__trigger:focus-visible {
-  outline-color: #111816;
+  outline-color: #0d0d11;
 }
 
 .organization-card__logo-panel {
@@ -6520,7 +6509,7 @@ body {
   padding: 0.85rem;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 0;
-  background: rgb(5 12 12 / 9%);
+  background: rgb(var(--li-ink-rgb) / 9%);
   transition:
     min-height 720ms cubic-bezier(0.16, 1, 0.3, 1),
     padding 620ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -6839,7 +6828,7 @@ body {
   overflow: clip;
   padding: clamp(3.75rem, 6vw, 6rem) 0 0;
   background: var(--paper);
-  color: #101716;
+  color: var(--li-ink);
 }
 
 .organization-showcase__header {
@@ -6852,7 +6841,7 @@ body {
 
 .organization-showcase__header > p:first-child {
   margin: 0 0 1.2rem;
-  color: rgb(16 23 22 / 66%);
+  color: rgb(var(--li-ink-rgb) / 66%);
   font-family: var(--font-mono), monospace;
   font-size: 0.65rem;
   letter-spacing: 0.055em;
@@ -6863,7 +6852,7 @@ body {
 .organization-showcase__header h2 {
   max-width: 15ch;
   margin: 0;
-  color: #101716;
+  color: var(--li-ink);
   font-size: clamp(3.1rem, 6.2vw, 6.5rem);
   font-weight: 560;
   letter-spacing: -0.065em;
@@ -6874,7 +6863,7 @@ body {
 .organization-showcase__intro {
   max-width: 55ch;
   margin: 1rem 0 0;
-  color: rgb(16 23 22 / 70%);
+  color: rgb(var(--li-ink-rgb) / 70%);
   font-family: var(--font-mono), monospace;
   font-size: 0.68rem;
   letter-spacing: 0.035em;
@@ -6889,8 +6878,8 @@ body {
   height: 108px;
   overflow-x: auto;
   overflow-y: hidden;
-  border-block: 1px solid rgb(16 23 22 / 18%);
-  background: rgb(16 23 22 / 8%);
+  border-block: 1px solid rgb(var(--li-ink-rgb) / 18%);
+  background: rgb(var(--li-ink-rgb) / 8%);
   clip-path: polygon(
     0 var(--rail-slant),
     100% 0,
@@ -6965,7 +6954,7 @@ body {
   border: 0;
   border-radius: 0;
   color: inherit;
-  background: linear-gradient(135deg, rgb(7 15 14 / 9%), rgb(7 15 14 / 22%));
+  background: linear-gradient(135deg, rgb(7 7 9 / 9%), rgb(7 7 9 / 22%));
   cursor: pointer;
 }
 
@@ -6974,7 +6963,7 @@ body {
 }
 
 .journey-tile__trigger:focus-visible {
-  outline: 3px solid #f8fffd;
+  outline: 3px solid #fefdfd;
   outline-offset: -6px;
 }
 
@@ -7035,8 +7024,8 @@ body {
   align-self: start;
   margin: 0;
   padding-top: 0.95rem;
-  border-top: 1px solid rgb(16 23 22 / 20%);
-  color: rgb(16 23 22 / 62%);
+  border-top: 1px solid rgb(var(--li-ink-rgb) / 20%);
+  color: rgb(var(--li-ink-rgb) / 62%);
   font-family: var(--font-mono), monospace;
   font-size: 0.66rem;
   letter-spacing: 0.04em;
@@ -7074,13 +7063,13 @@ body {
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 38%);
   border-radius: 0;
-  color: #f8fffd;
+  color: #fefdfd;
   background:
     radial-gradient(circle at 12% 8%, var(--brand-c), transparent 36%),
     radial-gradient(circle at 90% 94%, var(--brand-d), transparent 40%),
     linear-gradient(125deg, var(--brand-a), var(--brand-b));
   background-size: 145% 145%;
-  box-shadow: 0 24px 64px rgb(12 28 25 / 18%);
+  box-shadow: 0 24px 64px rgb(14 14 19 / 18%);
   opacity: 0;
   clip-path: inset(0 0 100% 0);
   transform: translate3d(0, -12px, 0) scaleY(0.985);
@@ -7097,7 +7086,7 @@ body {
   inset: 0;
   z-index: -1;
   content: "";
-  background: linear-gradient(100deg, rgb(8 17 16 / 36%), rgb(8 17 16 / 24%));
+  background: linear-gradient(100deg, rgb(7 7 10 / 36%), rgb(7 7 10 / 24%));
 }
 
 .organization-detail-panel.is-open {
@@ -7117,10 +7106,10 @@ body {
   place-items: center;
   padding: 1.75rem;
   border: 1px solid rgb(255 255 255 / 72%);
-  background: #fbfdfc;
+  background: #fdfcfc;
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 90%),
-    0 18px 48px rgb(5 16 14 / 18%);
+    0 18px 48px rgb(7 7 9 / 18%);
 }
 
 .organization-detail-panel__copy {
@@ -7137,7 +7126,7 @@ body {
 
 .organization-detail-panel__copy > span,
 .organization-detail-panel__copy > strong {
-  color: rgb(248 255 253 / 82%);
+  color: rgb(254 253 253 / 82%);
   font-family: var(--font-mono), monospace;
   font-size: 0.66rem;
   letter-spacing: 0.055em;
@@ -7148,7 +7137,7 @@ body {
 .organization-detail-panel__copy h3 {
   max-width: 14ch;
   margin: 0.5rem 0 0.35rem;
-  color: #f8fffd;
+  color: #fefdfd;
   font-size: clamp(2.25rem, 4.2vw, 5rem);
   font-weight: 620;
   letter-spacing: -0.058em;
@@ -7158,7 +7147,7 @@ body {
 .organization-detail-panel__copy p {
   max-width: 54ch;
   margin: 1.05rem 0 0;
-  color: #f8fffd;
+  color: #fefdfd;
   font-size: clamp(1rem, 1.3vw, 1.15rem);
   font-weight: 560;
   line-height: 1.45;
@@ -7171,7 +7160,7 @@ body {
   margin-top: 1.25rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid currentColor;
-  color: #f8fffd;
+  color: #fefdfd;
   font-family: var(--font-mono), monospace;
   font-size: 0.67rem;
   font-weight: 680;
@@ -7209,14 +7198,14 @@ body {
   place-items: center;
   border: 1px solid rgb(255 255 255 / 54%);
   border-radius: 0;
-  color: #f8fffd;
-  background: rgb(7 15 14 / 18%);
+  color: #fefdfd;
+  background: rgb(7 7 9 / 18%);
   cursor: pointer;
 }
 
 .organization-detail-panel__close:focus-visible,
 .organization-detail-panel__copy a:focus-visible {
-  outline: 3px solid #f8fffd;
+  outline: 3px solid #fefdfd;
   outline-offset: 3px;
 }
 

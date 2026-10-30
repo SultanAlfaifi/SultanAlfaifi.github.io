@@ -2,7 +2,7 @@
 .terminal-slot, .terminal-shell { min-width: 0; }
 .terminal-shell { display: grid; gap: 12px; }
 .terminal-shell .terminal__log { height: clamp(360px, 54vh, 540px); overscroll-behavior: contain; }
-.terminal__step { color: #8fa39b; }
+.terminal__step { color: #a29f97; }
 .terminal__line--answer { margin-top: 6px; color: var(--paper); font-family: var(--font-arabic), sans-serif; font-size: 1.02rem; line-height: 1.8; }
 .terminal__line--answer a { color: var(--mint); }
 .terminal__live--agent { color: var(--mint); }
@@ -14,14 +14,14 @@
 }
 .terminal__action:hover { background: var(--mint); color: var(--ink); }
 .terminal__chips--agent { padding-top: 0; font-family: var(--font-arabic), sans-serif; }
-.terminal__chips--agent button { border-color: rgb(125 226 209 / 40%); }
+.terminal__chips--agent button { border-color: rgb(71 200 245 / 40%); }
 .terminal__chips button:disabled { opacity: 0.55; cursor: progress; }
-.terminal__privacy { margin: 0; color: #c5cfcb; font-family: var(--font-arabic), sans-serif; font-size: 0.84rem; line-height: 1.6; }
+.terminal__privacy { margin: 0; color: #cfcdc8; font-family: var(--font-arabic), sans-serif; font-size: 0.84rem; line-height: 1.6; }
 .agent-turnstile:empty { display: none; }
 .agent-turnstile { padding: 8px 20px 0; }
 
 /* Everything the agent did for an answer, as one quiet line that opens to the steps. */
-.agent-activity { margin: 0; color: #8fa39b; font-size: 0.8rem; line-height: 1.6; }
+.agent-activity { margin: 0; color: #a29f97; font-size: 0.8rem; line-height: 1.6; }
 .agent-activity--running { display: flex; align-items: center; gap: 8px; }
 .agent-activity__pulse { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--mint); }
 @media (prefers-reduced-motion: no-preference) {
@@ -38,26 +38,26 @@
 [dir="rtl"] .agent-activity[open] summary::before { transform: rotate(-90deg); }
 .agent-activity summary:hover { color: var(--paper); }
 .agent-activity summary:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 6px; }
-.agent-activity ol { display: grid; gap: 4px; margin: 6px 0 0; padding: 6px 12px; list-style: none; border-inline-start: 1px solid rgb(125 226 209 / 25%); }
-.agent-activity__warn { color: #ffbf3f; }
+.agent-activity ol { display: grid; gap: 4px; margin: 6px 0 0; padding: 6px 12px; list-style: none; border-inline-start: 1px solid rgb(71 200 245 / 25%); }
+.agent-activity__warn { color: #ffb46a; }
 
 /* The places on the page an answer drew on. Each one scrolls there. */
-.agent-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; color: #8fa39b; font-family: var(--font-arabic), sans-serif; font-size: 0.76rem; }
+.agent-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; color: #a29f97; font-family: var(--font-arabic), sans-serif; font-size: 0.76rem; }
 .agent-sources button {
-  min-height: 28px; padding: 0 10px; border: 1px solid rgb(125 226 209 / 35%); border-radius: 999px;
+  min-height: 28px; padding: 0 10px; border: 1px solid rgb(71 200 245 / 35%); border-radius: 999px;
   background: transparent; color: var(--mint); font: inherit; cursor: pointer;
 }
-.agent-sources button:hover { background: rgb(125 226 209 / 12%); }
+.agent-sources button:hover { background: rgb(71 200 245 / 12%); }
 .agent-sources button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 
 .agent-card {
   display: grid; gap: 10px; padding: 16px;
   border: 1px solid rgb(255 255 255 / 14%); border-radius: 14px;
-  background: #121615; color: #d6e4df;
+  background: #0c0c10; color: #e5e1d8;
   font-family: var(--font-arabic), sans-serif; font-size: 0.86rem; line-height: 1.6;
 }
 .agent-card__title { margin: 0; color: var(--paper); font-weight: 600; font-size: 0.95rem; }
-.agent-card label { display: grid; gap: 4px; color: #a7b8b1; font-size: 0.78rem; }
+.agent-card label { display: grid; gap: 4px; color: #b7b4ad; font-size: 0.78rem; }
 .agent-card input, .agent-card textarea {
   width: 100%; min-height: 38px; padding: 8px 10px;
   border: 1px solid rgb(255 255 255 / 18%); border-radius: 10px;
@@ -74,26 +74,26 @@
 .agent-card__actions button.agent-card__ghost { background: transparent; color: var(--paper); border-color: rgb(255 255 255 / 24%); }
 .agent-card__actions button:disabled { opacity: 0.6; cursor: progress; }
 .agent-card__actions button:focus-visible { outline: 2px solid var(--focus-dark); outline-offset: 2px; }
-.agent-card__note, .agent-draft__to { margin: 0; color: #a7b8b1; font-size: 0.76rem; }
+.agent-card__note, .agent-draft__to { margin: 0; color: #b7b4ad; font-size: 0.76rem; }
 .agent-draft__to span { color: var(--paper); font-weight: 600; }
 .agent-card__status { margin: 0; color: var(--mint); }
 .agent-card__status a, .agent-card a { color: var(--mint); text-underline-offset: 3px; }
-.agent-card__error { margin: 0; color: #ffbf3f; }
+.agent-card__error { margin: 0; color: #ffb46a; }
 .agent-fit h4 { margin: 4px 0 0; color: var(--paper); font-size: 0.82rem; }
 .agent-fit ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; }
-.agent-fit__summary { margin: 0; color: #e3e9e6; }
-.agent-fit__evidence { color: #a7b8b1; font-size: 0.78rem; }
-.agent-fit__plan { display: block; color: #a7b8b1; font-size: 0.78rem; }
+.agent-fit__summary { margin: 0; color: #ebe8e1; }
+.agent-fit__evidence { color: #b7b4ad; font-size: 0.78rem; }
+.agent-fit__plan { display: block; color: #b7b4ad; font-size: 0.78rem; }
 
 /* Where the agent took the visitor. A steady outline; the pulse only plays when motion is allowed. */
-.agent-highlight { outline: 3px solid var(--mint, #7de2d1); outline-offset: 8px; border-radius: 12px; transition: outline-color 600ms ease; }
+.agent-highlight { outline: 3px solid var(--mint, #9fe3ff); outline-offset: 8px; border-radius: 12px; transition: outline-color 600ms ease; }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="off"]) .agent-highlight { animation: agent-highlight 1.4s ease-out 2; }
 }
 @keyframes agent-highlight {
-  0% { outline-color: rgb(125 226 209 / 100%); }
-  60% { outline-color: rgb(125 226 209 / 35%); }
-  100% { outline-color: rgb(125 226 209 / 100%); }
+  0% { outline-color: rgb(71 200 245 / 100%); }
+  60% { outline-color: rgb(71 200 245 / 35%); }
+  100% { outline-color: rgb(71 200 245 / 100%); }
 }
 
 /* ---------- /agent-evals ---------- */
@@ -114,12 +114,12 @@
 .evals-questions { display: grid; gap: 10px; padding-inline-start: 22px; }
 .evals-tag { display: inline-block; padding: 1px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.75rem; font-weight: 400; }
 .evals-result { margin-top: 12px; padding: 16px 18px; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--white); }
-.evals-result--failed { border-color: #7a3d00; }
+.evals-result--failed { border-color: #ffb46a; }
 .evals-result h3 { margin: 0 0 6px; font-size: 1rem; }
 .evals-badge { font-weight: 700; }
-.evals-result--failed .evals-badge { color: #7a3d00; }
+.evals-result--failed .evals-badge { color: #ffb46a; }
 .evals-result__question { margin: 0 0 8px; }
-.evals-result__failures { margin: 0 0 8px; color: #7a3d00; }
+.evals-result__failures { margin: 0 0 8px; color: #ffb46a; }
 .evals-result__answer { white-space: pre-wrap; line-height: 1.7; }
 .evals-result__trace { color: var(--muted); font-size: 0.85rem; }
 .evals-result__meta { color: var(--muted); font-size: 0.8rem; }
@@ -130,7 +130,7 @@
 /* ---------- AI assistant: how visitors find it, and the larger panel ---------- */
 .terminal__input .terminal__prompt { align-self: flex-end; line-height: 40px; }
 [dir="rtl"] .terminal__prompt { display: inline-block; transform: scaleX(-1); }
-.terminal__tag { color: #8fa39b; }
+.terminal__tag { color: #a29f97; }
 /* On the Arabic page every line lines up on the right, including the ones written in English. */
 [dir="rtl"] .terminal__line[dir="ltr"] { text-align: right; }
 .terminal__live svg { flex: none; }
@@ -142,11 +142,11 @@
   transition: background-color 200ms ease, transform 200ms var(--ease-arrive);
 }
 .terminal__send:hover:not(:disabled) { transform: translateY(-2px); }
-.terminal__send:disabled { background: rgb(255 255 255 / 10%); color: #8a9c95; cursor: default; }
+.terminal__send:disabled { background: rgb(255 255 255 / 10%); color: #9c988f; cursor: default; }
 
 .terminal-placeholder {
   display: grid; place-content: center; justify-items: center; gap: 14px; padding: 32px;
-  border: 1px dashed rgb(125 226 209 / 40%); border-radius: 18px; color: #c5cfcb; text-align: center;
+  border: 1px dashed rgb(71 200 245 / 40%); border-radius: 18px; color: #cfcdc8; text-align: center;
 }
 .terminal-placeholder p { margin: 0; }
 .terminal-placeholder button {
@@ -179,8 +179,8 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 
 .assistant-cta {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px;
-  border: 1px solid rgb(125 226 209 / 60%); border-radius: 999px;
-  background: rgb(125 226 209 / 10%); color: var(--paper);
+  border: 1px solid rgb(71 200 245 / 60%); border-radius: 999px;
+  background: rgb(71 200 245 / 10%); color: var(--paper);
   font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
@@ -191,10 +191,10 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 .assistant-launcher {
   position: fixed; z-index: 125; inset-block-end: 20px; inset-inline-end: 20px;
   display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding-inline: 16px 20px;
-  border: 1px solid rgb(125 226 209 / 55%); border-radius: 999px;
+  border: 1px solid rgb(71 200 245 / 55%); border-radius: 999px;
   background: var(--ink); color: var(--paper);
   font: inherit; font-family: var(--font-arabic), sans-serif; font-size: 0.95rem; font-weight: 600;
-  box-shadow: 0 18px 50px rgb(0 0 0 / 30%), 0 0 0 6px rgb(125 226 209 / 10%);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 30%), 0 0 0 6px rgb(71 200 245 / 10%);
   cursor: pointer;
   transition: opacity 220ms ease, transform 260ms var(--ease-arrive), visibility 220ms, background-color 200ms ease, color 200ms ease;
 }
@@ -225,8 +225,8 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
   display: grid; gap: 12px;
   width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 120px));
   padding: 14px 16px 10px;
-  border: 1px solid rgb(125 226 209 / 28%); border-radius: 20px;
-  background: rgb(14 19 18 / 94%); color: #d6e4df;
+  border: 1px solid rgb(71 200 245 / 28%); border-radius: 20px;
+  background: rgb(9 9 13 / 94%); color: #e5e1d8;
   box-shadow: 0 24px 60px rgb(0 0 0 / 45%), inset 0 0 0 1px rgb(255 255 255 / 4%);
   backdrop-filter: blur(14px);
   font-family: var(--font-arabic), sans-serif;
@@ -235,10 +235,10 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 .companion:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
 .companion__bar { display: flex; align-items: center; gap: 10px; }
 .companion__name { flex: 1; margin: 0; color: var(--paper); font-size: 0.86rem; font-weight: 600; }
-.companion__step { margin: 0; color: #8fa39b; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.companion__step { margin: 0; color: #a29f97; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
 .companion__icon {
   display: inline-grid; place-items: center; width: 32px; height: 32px;
-  border: 0; border-radius: 50%; background: transparent; color: #a7b8b1; cursor: pointer;
+  border: 0; border-radius: 50%; background: transparent; color: #b7b4ad; cursor: pointer;
 }
 .companion__icon:hover { background: rgb(255 255 255 / 8%); color: var(--paper); }
 .companion__progress { height: 3px; overflow: hidden; border-radius: 999px; background: rgb(255 255 255 / 8%); }
@@ -247,7 +247,7 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 .companion__where { margin: 0 0 4px; color: var(--mint); font-size: 0.78rem; font-weight: 600; }
 .companion__text { margin: 0; color: var(--paper); font-size: 0.98rem; line-height: 1.75; white-space: pre-wrap; }
 .companion__text a { color: var(--mint); text-underline-offset: 3px; }
-.companion__status { margin: 0; color: #8fa39b; font-size: 0.86rem; }
+.companion__status { margin: 0; color: #a29f97; font-size: 0.86rem; }
 .companion__nav { display: flex; justify-content: space-between; gap: 8px; }
 .companion__nav button {
   display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px;
@@ -268,15 +268,15 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 .companion__ask:focus-within { border-color: var(--mint); }
 /* 16px, so iOS doesn't zoom the page into the field. */
 .companion__ask input { flex: 1; min-width: 0; min-height: 36px; border: 0; background: transparent; color: var(--paper); font: inherit; font-size: 1rem; outline: none; }
-.companion__ask input::placeholder { color: #8fa39b; }
+.companion__ask input::placeholder { color: #a29f97; }
 .companion__ask button {
   flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px;
   border: 0; border-radius: 50%; background: var(--mint); color: var(--ink); cursor: pointer;
 }
-.companion__ask button:disabled { background: rgb(255 255 255 / 10%); color: #8a9c95; cursor: default; }
+.companion__ask button:disabled { background: rgb(255 255 255 / 10%); color: #9c988f; cursor: default; }
 .companion__back {
   justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 4px;
-  border: 0; background: transparent; color: #a7b8b1; font: inherit; font-size: 0.8rem; cursor: pointer;
+  border: 0; background: transparent; color: #b7b4ad; font: inherit; font-size: 0.8rem; cursor: pointer;
 }
 .companion__back:hover { color: var(--mint); }
 [dir="rtl"] .companion__back svg { transform: scaleX(-1); }
@@ -294,27 +294,27 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
 /* The exact words an answer rests on, lit until the agent points somewhere else. */
 .agent-spot {
   border-radius: 6px;
-  background: rgb(125 226 209 / 22%);
-  box-shadow: 0 0 0 4px rgb(125 226 209 / 22%), 0 0 0 5px rgb(125 226 209 / 70%);
+  background: rgb(71 200 245 / 22%);
+  box-shadow: 0 0 0 4px rgb(71 200 245 / 22%), 0 0 0 5px rgb(71 200 245 / 70%);
 }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="off"]) .agent-spot { animation: agent-spot 1.2s ease-out; }
 }
-@keyframes agent-spot { from { background: rgb(125 226 209 / 0%); box-shadow: 0 0 0 16px rgb(125 226 209 / 0%), 0 0 0 5px rgb(125 226 209 / 0%); } }
+@keyframes agent-spot { from { background: rgb(71 200 245 / 0%); box-shadow: 0 0 0 16px rgb(71 200 245 / 0%), 0 0 0 5px rgb(71 200 245 / 0%); } }
 
 /* A project the agent is talking about, as the page shows it. */
 .agent-project { gap: 0; padding: 0; overflow: hidden; }
-.agent-project__media { position: relative; aspect-ratio: 16 / 9; background: #0b0f0e; }
+.agent-project__media { position: relative; aspect-ratio: 16 / 9; background: #07070a; }
 .agent-project__media img { object-fit: cover; }
 .agent-project__media--icon { aspect-ratio: auto; height: 120px; }
 .agent-project__media--icon img { padding: 18px; object-fit: contain; }
 .agent-project__body { display: grid; gap: 8px; padding: 14px 16px 16px; }
 .agent-project__category { margin: 0; color: var(--mint); font-size: 0.74rem; }
-.agent-project__description { margin: 0; color: #c9d6d1; }
+.agent-project__description { margin: 0; color: #d4d3cf; }
 .agent-project__metrics { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 2px 0; }
 .agent-project__metrics div { display: flex; flex-direction: column-reverse; }
 .agent-project__metrics dd { margin: 0; color: var(--paper); font-size: 1.1rem; font-weight: 700; }
-.agent-project__metrics dt { color: #a7b8b1; font-size: 0.72rem; }
+.agent-project__metrics dt { color: #b7b4ad; font-size: 0.72rem; }
 .agent-card__actions a {
   display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px;
   border: 1px solid rgb(255 255 255 / 24%); border-radius: 999px;
@@ -332,26 +332,32 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
 }
 .agent-tour button::before {
   content: counter(stop); flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px;
-  border: 1px solid rgb(125 226 209 / 45%); border-radius: 50%; color: var(--mint); font-size: 0.72rem;
+  border: 1px solid rgb(71 200 245 / 45%); border-radius: 50%; color: var(--mint); font-size: 0.72rem;
 }
-.agent-tour button:hover { background: rgb(125 226 209 / 10%); }
+.agent-tour button:hover { background: rgb(71 200 245 / 10%); }
 .agent-tour button:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }
 
-/* ---------- The assistant's face: one orb, in the panel, its welcome, and the companion ---------- */
+/* ---------- The assistant's face: the living orb, in the panel, its welcome, and the companion ---------- */
+/* The static mark (public/brand/sultan-alfaifi-mark.svg) with its aurora rim turning slowly; faster while it works. */
 .agent-orb {
-  position: relative; flex: none; width: 22px; height: 22px; overflow: hidden;
-  border-radius: 50%; background: #0e1312;
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 12%), 0 0 16px rgb(125 226 209 / 30%);
+  position: relative; flex: none; width: 24px; height: 24px; overflow: visible;
+  border-radius: 50%; background: url("/brand/sultan-alfaifi-mark.svg") center / 128% no-repeat;
+  box-shadow: 0 0 14px rgb(var(--li-iris-rgb) / 35%);
 }
 .agent-orb::before {
-  content: ""; position: absolute; inset: -25%; border-radius: 50%;
-  background: conic-gradient(from 0deg, #7de2d1, #6d8eff, #c8ff3d, #7de2d1);
+  content: ""; position: absolute; inset: 9%; border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 71%, transparent 74%);
+  mask: radial-gradient(circle, transparent 60%, #000 71%, transparent 74%);
+  opacity: 0.75; mix-blend-mode: screen;
 }
 .agent-orb::after {
-  content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, rgb(255 255 255 / 80%) 0 6%, transparent 24%), radial-gradient(circle, transparent 45%, rgb(0 0 0 / 28%));
+  content: ""; position: absolute; inset: 14%; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, rgb(255 250 244 / 30%) 0 8%, transparent 26%);
 }
-.agent-orb--large { width: 48px; height: 48px; box-shadow: 0 0 0 1px rgb(255 255 255 / 12%), 0 0 42px rgb(125 226 209 / 32%); }
+.agent-orb[data-busy] { box-shadow: 0 0 18px rgb(var(--li-rose-rgb) / 45%), 0 0 30px rgb(var(--li-iris-rgb) / 35%); }
+.agent-orb[data-busy]::before { opacity: 1; }
+.agent-orb--large { width: 52px; height: 52px; box-shadow: 0 0 40px rgb(var(--li-iris-rgb) / 40%); }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="off"]) .agent-orb::before { animation: agent-orb 7s linear infinite; }
   html:not([data-motion="off"]) .agent-orb[data-busy]::before { animation-duration: 1.2s; }
@@ -369,13 +375,13 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
   border: 1px solid rgb(255 255 255 / 12%); border-radius: 18px; background: rgb(255 255 255 / 3%);
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
-.terminal-shell--docked .terminal__input:focus-within { border-color: rgb(125 226 209 / 60%); box-shadow: 0 0 0 3px rgb(125 226 209 / 14%); }
+.terminal-shell--docked .terminal__input:focus-within { border-color: rgb(71 200 245 / 60%); box-shadow: 0 0 0 3px rgb(71 200 245 / 14%); }
 .terminal-shell--docked .terminal__input .terminal__prompt { display: none; }
 
 /* Centred in the empty panel, so the first screen reads as a greeting, not as an empty log. */
 .agent-welcome { display: grid; align-content: center; justify-items: start; gap: 8px; min-height: 100%; padding: 22px 2px 8px; font-family: var(--font-arabic), sans-serif; }
 .agent-welcome__title { margin: 10px 0 0; color: var(--paper); font-size: 1.4rem; font-weight: 700; line-height: 1.4; }
-.agent-welcome__body { max-width: 44ch; margin: 0; color: #b9c8c2; font-size: 0.96rem; line-height: 1.7; }
+.agent-welcome__body { max-width: 44ch; margin: 0; color: #c7c4c0; font-size: 0.96rem; line-height: 1.7; }
 .agent-starters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; margin-top: 14px; }
 .agent-starters button {
   display: grid; align-content: start; justify-items: start; gap: 4px; min-height: 104px; padding: 14px 14px 12px;
@@ -384,12 +390,12 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
   color: var(--paper); font: inherit; text-align: start; cursor: pointer;
   transition: border-color 200ms ease, background-color 200ms ease, transform 220ms var(--ease-arrive);
 }
-.agent-starters button:hover:not(:disabled) { border-color: rgb(125 226 209 / 55%); background-color: rgb(125 226 209 / 7%); transform: translateY(-2px); }
+.agent-starters button:hover:not(:disabled) { border-color: rgb(71 200 245 / 55%); background-color: rgb(71 200 245 / 7%); transform: translateY(-2px); }
 .agent-starters button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 .agent-starters button:disabled { opacity: 0.55; cursor: progress; }
 .agent-starters svg { margin-bottom: 6px; color: var(--mint); }
 .agent-starters__title { font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
-.agent-starters__hint { color: #9fb1aa; font-size: 0.8rem; line-height: 1.5; }
+.agent-starters__hint { color: #b0aca6; font-size: 0.8rem; line-height: 1.5; }
 /* On a phone the four starts stay side by side, smaller, so they fit without scrolling. */
 @media (max-width: 480px) {
   .agent-welcome { gap: 6px; padding-top: 12px; }

@@ -10,6 +10,7 @@ import "./agent.css";
 import "./cv.css";
 import "./welcome.css";
 import "./rtl.css";
+import "./living.css";
 
 // One family for the whole site, in both languages: IBM Plex Sans Arabic carries Arabic and Latin glyphs.
 const plexArabic = IBM_Plex_Sans_Arabic({
@@ -69,8 +70,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#111816",
-  colorScheme: "light dark"
+  themeColor: "#030304",
+  colorScheme: "dark"
 };
 
 export default function RootLayout({

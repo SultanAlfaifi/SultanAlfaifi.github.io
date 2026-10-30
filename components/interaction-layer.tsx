@@ -28,7 +28,7 @@ export function InteractionLayer() {
     function paint() {
       frame = 0;
       // Read every rect first, then write, so one frame never forces repeated style recalcs.
-      const cards = Array.from(document.querySelectorAll<HTMLElement>(".glow-card"), (element) => ({ element, rect: element.getBoundingClientRect() }));
+      const cards = Array.from(document.querySelectorAll<HTMLElement>(".glow-card, .li-glass--light"), (element) => ({ element, rect: element.getBoundingClientRect() }));
       const characters = Array.from(document.querySelectorAll<HTMLElement>("[data-proximity] .px-char"), (element) => ({ element, rect: element.getBoundingClientRect() }));
       root.style.setProperty("--mx", `${pointerX}px`);
       root.style.setProperty("--my", `${pointerY}px`);

@@ -214,8 +214,10 @@ test("featured work reflects current products and preserves supplied usage evide
   for (const slug of ["mustakshif", "rajih-engine", "autoflow"]) assert.ok(dataSource.includes(`slug: "${slug}"`));
 });
 
-test("the S monogram is shared by the browser and navigation brand", () => {
-  assert.match(navbarSource, /\/brand\/sultan-alfaifi-mark\.svg/);
+test("the living orb is the navigation brand, with the static orb mark as its stand-in", () => {
+  assert.match(navbarSource, /import \{ BrandOrb \} from "\.\/living-orb";/);
+  assert.match(navbarSource, /<BrandOrb \/>/);
+  assert.match(readFileSync(new URL("../components/living-orb.tsx", import.meta.url), "utf8"), /poster="\/brand\/sultan-alfaifi-mark\.svg"/);
   assert.doesNotMatch(navbarSource, />SA<\/span>/);
 });
 
@@ -223,13 +225,17 @@ test("social metadata uses a static image with a reliable PNG extension", () => 
   assert.match(layoutSource, /url: "\/opengraph-image\.png"/);
 });
 
-test("the supplied mint palette meets its intended contrast roles", () => {
-  assert.ok(contrastRatio("#131515", "#fffafb") >= 4.5);
-  assert.ok(contrastRatio("#2b2c28", "#fffafb") >= 4.5);
-  assert.ok(contrastRatio("#131515", "#7de2d1") >= 4.5);
-  assert.ok(contrastRatio("#7de2d1", "#131515") >= 4.5);
-  assert.ok(contrastRatio("#fffafb", "#131515") >= 4.5);
-  assert.ok(contrastRatio("#339989", "#fffafb") >= 3);
+test("the living palette meets its intended contrast roles on the black ground", () => {
+  const ground = "#030304";
+  assert.ok(contrastRatio("#f4f2ee", ground) >= 4.5, "primary ink");
+  assert.ok(contrastRatio("#b1afab", ground) >= 4.5, "secondary ink");
+  assert.ok(contrastRatio("#8c8a87", "#131318") >= 4.5, "quiet captions, even on raised glass");
+  assert.ok(contrastRatio("#050507", "#f4f2ee") >= 4.5, "dark text on the off-white primary button");
+  assert.ok(contrastRatio("#9fe3ff", ground) >= 4.5, "glacier tint labels");
+  assert.ok(contrastRatio("#050507", "#ffd3a8") >= 4.5, "dark text on the apricot Approve");
+  assert.ok(contrastRatio("#9cc9ff", ground) >= 3, "focus ring");
+  for (const lamp of ["#ffb46a", "#47c8f5", "#ff5c8d"]) assert.ok(contrastRatio(lamp, ground) >= 3, `checkpoint lamp ${lamp}`);
+  assert.ok(contrastRatio("#f4f2ee", "#47c8f5") < 3, "off-white never sits on a glacier fill");
 });
 
 test("responsive and reduced-motion safeguards are present", () => {
@@ -241,7 +247,7 @@ test("responsive and reduced-motion safeguards are present", () => {
   );
   assert.match(
     cssSource,
-    /\.nav__drawer\s*\{[\s\S]*?position:\s*absolute[\s\S]*?100dvh[\s\S]*?background:\s*#111816/
+    /\.nav__drawer\s*\{[\s\S]*?position:\s*absolute[\s\S]*?100dvh[\s\S]*?background:\s*var\(--li-bg\)/
   );
   assert.match(navbarSource, /matchMedia\("\(min-width: 841px\)"\)/);
   assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);

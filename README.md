@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./public/brand/sultan-alfaifi-mark.svg" alt="Sultan Alfaifi monogram" width="88" height="88">
+  <img src="./public/brand/sultan-alfaifi-mark.svg" alt="Sultan Alfaifi, the living orb mark" width="88" height="88">
 
   <h1>Sultan Alfaifi — Portfolio</h1>
 

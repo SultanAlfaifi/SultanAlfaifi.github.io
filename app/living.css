@@ -1,0 +1,337 @@
+/* ==========================================================================================
+   Living Intelligence: the design system.
+   Deep black ground, off-white type, and colour that lives only in light: the orb, approvals,
+   checkpoint lamps. Surfaces are quiet glass: a faint fill, a hairline, a one-pixel inner highlight.
+   Loaded last, so the dark bands and the light-section fixes at the end win over the older layers.
+   docs/living-design.md lists every token and class with when to use it.
+   ========================================================================================== */
+
+@property --li-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+:root {
+  color-scheme: dark;
+
+  /* channels, for alpha: rgb(var(--li-ink-rgb) / 40%) */
+  --li-bg-rgb: 3 3 4;
+  --li-ink-rgb: 244 242 238;
+  --li-apricot-rgb: 255 180 106;
+  --li-rose-rgb: 255 92 141;
+  --li-iris-rgb: 143 107 255;
+  --li-glacier-rgb: 71 200 245;
+
+  /* ground */
+  --li-bg: #030304;
+  --li-bg-1: #07070a;
+  --li-bg-2: #0c0c11;
+  --li-bg-3: #131318;
+
+  /* ink: solid values, so every text pair is auditable (scripts/contrast-audit.mjs) */
+  --li-ink: #f4f2ee;
+  --li-ink-2: #b1afab;
+  --li-ink-3: #8c8a87;
+  --li-ink-4: rgb(var(--li-ink-rgb) / 30%); /* decorative only, never text */
+  --li-on-light: #050507;                   /* text on off-white or tinted fills */
+
+  /* hairlines */
+  --li-line: rgb(var(--li-ink-rgb) / 8%);
+  --li-line-2: rgb(var(--li-ink-rgb) / 15%);
+  --li-line-3: rgb(var(--li-ink-rgb) / 26%);
+
+  /* the living light: the orb's aurora palette */
+  --li-apricot: #ffb46a;
+  --li-rose: #ff5c8d;
+  --li-iris: #8f6bff;
+  --li-glacier: #47c8f5;
+  --li-violet: #a684ff;
+  --li-frost: #e8f6ff;
+  /* tints: the same hues, light enough for small text on the ground */
+  --li-tint-apricot: #ffd3a8;
+  --li-tint-rose: #ffb3c8;
+  --li-tint-iris: #c9beff;
+  --li-tint-glacier: #9fe3ff;
+  --li-aurora: linear-gradient(90deg, var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier));
+  --li-aurora-ring: conic-gradient(from var(--li-angle), var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
+  --li-focus: #9cc9ff;
+
+  /* where an agent stops for a person (data/portfolio.ts CheckpointKind) */
+  --li-k-asks: var(--li-apricot);      /* waits for your yes */
+  --li-k-verifies: var(--li-glacier);  /* checks the result before it counts */
+  --li-k-holds: var(--li-rose);        /* stops on its own when something fails */
+  --li-k-bound: rgb(var(--li-ink-rgb) / 85%); /* a line it never crosses */
+
+  /* glass */
+  --li-glass: rgb(255 255 255 / 3.5%);
+  --li-glass-2: rgb(255 255 255 / 6.5%);
+  --li-glass-fill: linear-gradient(180deg, rgb(255 255 255 / 4.5%), rgb(255 255 255 / 1.2%) 40%, rgb(255 255 255 / 0.8%));
+  --li-glass-raised: linear-gradient(180deg, rgb(24 24 30 / 80%), rgb(10 10 13 / 96%) 32%);
+  --li-glass-solid: rgb(10 10 14 / 92%);
+  --li-highlight: inset 0 1px 0 rgb(255 255 255 / 8%);
+  --li-shadow: 0 50px 120px -40px rgb(0 0 0 / 95%);
+  --li-shadow-soft: 0 30px 80px -30px rgb(0 0 0 / 90%);
+  --li-blur: 18px; /* the sticky nav only: blur is costly on phones */
+
+  /* shape: two radii and a pill */
+  --li-r: 16px;
+  --li-r-s: 10px;
+  --li-r-pill: 999px;
+
+  /* motion */
+  --li-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --li-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html { background: var(--li-bg); }
+body.portfolio-v3 { background: var(--li-bg); color: var(--text); }
+::selection { background: rgb(var(--li-iris-rgb) / 45%); color: #fff; }
+.skip-link { background: var(--li-ink); color: var(--li-on-light); }
+
+/* ------------------------------------------------------------------------------------------
+   Dark bands. These sections were written as dark bands on a light page; inside them the older
+   token names keep their first meanings (ink = ground, paper = type), now on the new black.
+   ------------------------------------------------------------------------------------------ */
+:where(
+  .nav, .nav__drawer, .identity-hero, .work-section, .kinetic-band, .timeline, .runtime-section,
+  .help-section, .contact-section, .footer, .section--community, .section--ideas, .section--ink,
+  .terminal, .terminal-shell, .assistant-launcher, .companion, .palette, .toast, .toast-region,
+  .film-dialog, .welcome, .intro-curtain, .agent-card, .cursor-ring, .organization-rail
+) {
+  --ink: var(--li-bg);
+  --ink-soft: var(--li-bg-3);
+  --paper: var(--li-ink);
+  --white: #ffffff;
+  --text: #d6d3ce;
+  --muted: var(--li-ink-2);
+  --line: rgb(var(--li-ink-rgb) / 22%);
+  --line-soft: rgb(var(--li-ink-rgb) / 11%);
+  --dark-line: rgb(var(--li-ink-rgb) / 14%);
+  --focus-ring: var(--li-focus);
+}
+
+/* ------------------------------------------------------------------------------------------
+   Glass. Quiet translucent panels: fill, hairline, inner highlight. Few radii, minimal blur.
+   ------------------------------------------------------------------------------------------ */
+.li-glass {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid var(--li-line);
+  border-radius: var(--li-r);
+  background: var(--li-glass-fill);
+  box-shadow: var(--li-highlight);
+}
+/* The run card and the assistant console: denser, lifted off the ground. */
+.li-glass--raised {
+  border-color: var(--li-line-2);
+  background: var(--li-glass-raised);
+  box-shadow: var(--li-shadow), 0 0 0 1px rgb(0 0 0 / 60%), var(--li-highlight);
+}
+/* Over moving light (the hero orb) on phones, where blur is too costly: nearly opaque instead. */
+.li-glass--solid { background: var(--li-glass-solid); }
+/* A hairline on top only, for quiet rows in a grid. */
+.li-glass--flat { border: 0; border-top: 1px solid var(--li-line-2); border-radius: 0; background: none; box-shadow: none; }
+/* Inner parts of a panel. */
+.li-glass--inset { border-radius: var(--li-r-s); background: var(--li-glass); box-shadow: none; }
+
+/* Lit in a checkpoint colour: set --li-k (or a .li-k-* class) and add .is-lit when the demo reaches its stop. */
+.li-k-asks { --li-k: var(--li-k-asks); }
+.li-k-verifies { --li-k: var(--li-k-verifies); }
+.li-k-holds { --li-k: var(--li-k-holds); }
+.li-k-bound { --li-k: var(--li-k-bound); }
+.li-glass { transition: border-color 0.7s var(--li-ease), box-shadow 1s var(--li-ease); }
+.li-glass.is-lit {
+  border-color: color-mix(in srgb, var(--li-k, var(--li-glacier)) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--li-k, var(--li-glacier)) 25%, transparent), 0 40px 110px -60px var(--li-k, var(--li-glacier)), var(--li-highlight);
+}
+
+/* A pointer-following light on desktop (components/interaction-layer.tsx writes --gx/--gy). None on touch. */
+.li-glass--light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 0%), rgb(255 255 255 / 6%), transparent 45%);
+  transition: opacity 0.4s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .li-glass--light:hover::before { opacity: 1; }
+}
+html[data-motion="off"] .li-glass--light::before { display: none; }
+
+/* A spinning aurora edge, for a card that is waiting on the visitor. Runs a few turns, then rests. */
+.li-ring::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  background: var(--li-aurora-ring);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  transition: opacity 0.8s ease;
+}
+.li-ring.is-asking::after { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .li-ring.is-asking::after { animation: li-spin 5s linear 4; }
+}
+@keyframes li-spin { to { --li-angle: 360deg; } }
+
+/* ------------------------------------------------------------------------------------------
+   Type and small parts
+   ------------------------------------------------------------------------------------------ */
+.li-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--li-ink-3);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.li-eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
+.li-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.li-aurora-text {
+  background: var(--li-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.li-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: var(--li-r-pill);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s var(--li-ease);
+}
+.li-btn:active { transform: scale(0.98); }
+.li-btn svg { width: 16px; height: 16px; flex: none; }
+.li-btn--primary { background: var(--li-ink); color: var(--li-on-light); }
+.li-btn--primary:hover { background: #fff; box-shadow: 0 0 0 6px rgb(255 255 255 / 6%); }
+.li-btn--ghost { border-color: var(--li-line-2); background: var(--li-glass); color: var(--li-ink); }
+.li-btn--ghost:hover { border-color: var(--li-line-3); background: var(--li-glass-2); }
+.li-btn--sm { min-height: 44px; padding: 0 16px; font-size: 0.875rem; }
+
+.li-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 2px 12px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  background: var(--li-glass);
+  color: var(--li-ink-2);
+  font-size: 0.8125rem;
+}
+
+/* A checkpoint lamp: a small dot in the checkpoint colour, lit while that stop is waiting. */
+.li-lamp {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--li-k, var(--li-glacier));
+  box-shadow: 0 0 10px 1px var(--li-k, var(--li-glacier));
+}
+
+:where(.li-glass, .li-btn, .li-pill) :focus-visible,
+.li-btn:focus-visible { outline: 2px solid var(--li-focus); outline-offset: 3px; }
+
+/* ------------------------------------------------------------------------------------------
+   The living orb (components/living-orb.tsx). A canvas over a soft CSS glow: the glow is what you
+   see before the first frame, without JavaScript, and in a browser without canvas.
+   ------------------------------------------------------------------------------------------ */
+.li-orb {
+  --li-orb-size: 240px;
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--li-orb-size);
+  height: var(--li-orb-size);
+  pointer-events: none;
+}
+.li-orb::before {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 22%), transparent 30%),
+    conic-gradient(from 200deg, rgb(var(--li-apricot-rgb) / 70%), rgb(var(--li-rose-rgb) / 70%), rgb(var(--li-iris-rgb) / 70%), rgb(var(--li-glacier-rgb) / 70%), rgb(var(--li-apricot-rgb) / 70%));
+  box-shadow: 0 0 calc(var(--li-orb-size) * 0.18) rgb(var(--li-iris-rgb) / 45%);
+  filter: blur(calc(var(--li-orb-size) * 0.02));
+  opacity: 0.85;
+  transition: opacity 0.6s ease;
+}
+.li-orb[data-ready]::before { opacity: 0; }
+.li-orb canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.li-orb--interactive { pointer-events: auto; }
+
+/* ------------------------------------------------------------------------------------------
+   The brand mark: the small living orb in the navigation, and its static twin everywhere else.
+   ------------------------------------------------------------------------------------------ */
+.li-mark { display: inline-block; flex: none; width: 32px; height: 32px; }
+.li-mark img, .li-mark canvas { display: block; width: 100%; height: 100%; }
+.li-brand-orb { --li-orb-size: 34px; margin: -3px; }
+.li-brand-orb::before { inset: 14%; filter: none; box-shadow: none; }
+
+/* ------------------------------------------------------------------------------------------
+   The older sections on the new ground: cards that were dark on a light page become glass.
+   ------------------------------------------------------------------------------------------ */
+:where(.program-card--flagship) {
+  --ink: var(--li-bg);
+  --paper: var(--li-ink);
+  --white: #ffffff;
+  --text: #d6d3ce;
+  --muted: var(--li-ink-2);
+  --focus-ring: var(--li-focus);
+}
+.portfolio-v3 .program-card--flagship {
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r);
+  background: radial-gradient(90% 120% at 0% 0%, rgb(var(--li-iris-rgb) / 14%), transparent 60%), var(--li-glass-raised);
+  box-shadow: var(--li-highlight);
+  color: var(--li-ink);
+}
+
+/* The poster: the static mark under the canvas until the first frame (and without JavaScript). */
+.li-orb__poster { position: absolute; inset: 0; display: block; width: 100%; height: 100%; transition: opacity 0.5s ease; }
+.li-orb[data-ready] .li-orb__poster { opacity: 0; }
+.li-orb--poster::before { display: none; }
+
+/* ------------------------------------------------------------------------------------------
+   Navigation: a glass pill on the black, the living orb as its mark. The only blurred surface.
+   ------------------------------------------------------------------------------------------ */
+.portfolio-v3 .nav,
+.portfolio-v3 .nav--hero {
+  border-color: var(--li-line-2);
+  background: rgb(var(--li-bg-rgb) / 72%);
+  box-shadow: var(--li-highlight), 0 24px 60px -24px rgb(0 0 0 / 85%);
+  -webkit-backdrop-filter: saturate(1.5) blur(var(--li-blur));
+  backdrop-filter: saturate(1.5) blur(var(--li-blur));
+}
+.portfolio-v3 .nav__brand small { color: var(--li-ink-2); }
+.portfolio-v3 .nav__desktop { border-color: var(--li-line); }
+.portfolio-v3 .nav__desktop a:last-child { color: var(--li-tint-glacier); }
+.portfolio-v3 .nav__desktop a:hover,
+.portfolio-v3 .nav__desktop a.is-active { background: var(--li-ink); color: var(--li-on-light); }
+.scroll-progress { background: var(--li-aurora); }
+.portfolio-v3 .nav__menu-button { border: 1px solid var(--li-line-2); background: var(--li-glass-2); color: var(--li-ink); }
+.portfolio-v3 .nav__menu-button:hover { background: var(--li-ink); color: var(--li-on-light); }

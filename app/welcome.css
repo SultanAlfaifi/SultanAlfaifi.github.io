@@ -10,61 +10,67 @@ html[data-welcome="show"] .welcome,
   width: 100%; max-width: none; height: 100%; max-height: none; margin: 0;
   padding: clamp(18px, 3vw, 34px) clamp(16px, 4vw, 48px) clamp(24px, 4vw, 48px);
   overflow-y: auto; border: 0;
-  background: radial-gradient(110% 80% at 50% 0%, #1d2724 0%, var(--ink) 62%);
-  color: var(--paper); font-family: var(--font-arabic), sans-serif;
-  --focus-ring: var(--mint);
+  background:
+    radial-gradient(60% 46% at 50% -6%, rgb(var(--li-iris-rgb) / 18%), transparent 70%),
+    radial-gradient(40% 30% at 82% 0%, rgb(var(--li-rose-rgb) / 9%), transparent 70%),
+    var(--li-bg);
+  color: var(--li-ink); font-family: var(--font-arabic), sans-serif;
+  --focus-ring: var(--li-focus);
 }
-.welcome::backdrop { background: var(--ink); }
-.welcome :focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+.welcome::backdrop { background: var(--li-bg); }
+.welcome :focus-visible { outline: 3px solid var(--li-focus); outline-offset: 3px; }
 
 .welcome__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .welcome__brand { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
+.welcome__brand img { width: 34px; height: 34px; margin: -3px; }
 .welcome__tools { display: flex; align-items: center; gap: 10px; }
 .welcome__language, .welcome__skip, .welcome__back {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
-  border: 1px solid rgb(255 255 255 / 18%); border-radius: 999px; background: transparent;
-  color: var(--paper); font: inherit; font-size: 0.92rem; font-weight: 600; text-decoration: none; cursor: pointer;
+  border: 1px solid var(--li-line-2); border-radius: 999px; background: var(--li-glass);
+  color: var(--li-ink); font: inherit; font-size: 0.92rem; font-weight: 600; text-decoration: none; cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
-.welcome__language:hover, .welcome__skip:hover, .welcome__back:hover { border-color: var(--mint); background: var(--mint); color: var(--ink); }
+.welcome__language:hover, .welcome__skip:hover, .welcome__back:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
 
 .welcome__body { align-self: center; justify-self: center; display: grid; justify-items: center; gap: 14px; width: min(1080px, 100%); text-align: center; }
-.welcome__hello { margin: 0; color: var(--mint); font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
-.welcome h2 { margin: 0; color: var(--paper); font-size: clamp(2.4rem, 6.4vw, 4.6rem); line-height: 1.1; letter-spacing: -0.01em; }
-.welcome__lead { max-width: 56ch; margin: 0; color: #c5cfcb; font-size: clamp(1rem, 1.6vw, 1.15rem); line-height: 1.7; }
+.welcome__hello { margin: 0; color: var(--li-tint-glacier); font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
+.welcome h2 { margin: 0; color: var(--li-ink); font-size: clamp(2.4rem, 6.4vw, 4.6rem); line-height: 1.1; letter-spacing: -0.01em; }
+.welcome__lead { max-width: 56ch; margin: 0; color: var(--li-ink-2); font-size: clamp(1rem, 1.6vw, 1.15rem); line-height: 1.7; }
 
 .welcome__options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; margin-top: 22px; }
 .welcome__option {
   position: relative; display: grid; align-content: start; justify-items: start; gap: 12px;
   min-height: 210px; padding: 28px 26px;
-  border: 1px solid rgb(255 255 255 / 12%); border-radius: 24px;
-  background: linear-gradient(160deg, rgb(255 255 255 / 6%), rgb(255 255 255 / 2%));
-  color: var(--paper); font: inherit; text-align: start; cursor: pointer;
+  border: 1px solid var(--li-line-2); border-radius: var(--li-r);
+  background: var(--li-glass-fill); box-shadow: var(--li-highlight);
+  color: var(--li-ink); font: inherit; text-align: start; cursor: pointer;
   transition: transform 260ms var(--ease-arrive), border-color 200ms ease, background-color 200ms ease, box-shadow 260ms ease;
 }
 .welcome__option:hover, .welcome__option:focus-visible {
-  border-color: var(--mint); background-color: rgb(125 226 209 / 9%);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 35%), 0 0 0 6px rgb(125 226 209 / 10%);
-  transform: translateY(-6px);
+  border-color: var(--li-line-3); background-color: var(--li-glass);
+  box-shadow: var(--li-highlight), 0 30px 80px -30px rgb(var(--li-iris-rgb) / 55%);
+  transform: translateY(-4px);
 }
-.welcome__icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 16px; background: rgb(125 226 209 / 14%); color: var(--mint); }
+.welcome__icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: var(--li-r-s); border: 1px solid var(--li-line-2); background: var(--li-glass); color: var(--li-tint-glacier); }
+.welcome__option:nth-child(2) .welcome__icon { color: var(--li-tint-apricot); }
+.welcome__option:nth-child(3) .welcome__icon { color: var(--li-tint-iris); }
 .welcome__option strong { font-size: clamp(1.3rem, 2vw, 1.55rem); }
-.welcome__detail { color: #c5cfcb; font-size: 0.98rem; line-height: 1.65; }
+.welcome__detail { color: var(--li-ink-2); font-size: 0.98rem; line-height: 1.65; }
 
 .welcome__body--form { width: min(720px, 100%); }
 .welcome__body--form h2 { font-size: clamp(2rem, 4.6vw, 3.3rem); }
 .welcome__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; margin-top: 14px; text-align: start; }
 .welcome__field { display: grid; gap: 6px; }
-.welcome__field label { color: #c5cfcb; font-size: 0.92rem; }
+.welcome__field label { color: var(--li-ink-2); font-size: 0.92rem; }
 .welcome__field input {
-  min-height: 54px; padding: 0 16px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 14px;
-  background: rgb(255 255 255 / 5%); color: var(--paper); font: inherit; font-size: 1.02rem;
+  min-height: 54px; padding: 0 16px; border: 1px solid var(--li-line-2); border-radius: var(--li-r-s);
+  background: var(--li-glass); color: var(--li-ink); font: inherit; font-size: 1.02rem;
 }
-.welcome__field input::placeholder { color: #8a9c95; }
-.welcome__field input:focus { border-color: var(--mint); outline: none; box-shadow: 0 0 0 3px rgb(125 226 209 / 30%); }
+.welcome__field input::placeholder { color: var(--li-ink-3); }
+.welcome__field input:focus { border-color: var(--li-focus); outline: none; box-shadow: 0 0 0 3px rgb(var(--li-glacier-rgb) / 25%); }
 .welcome__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 10px; }
-.welcome__enter { min-height: 54px; padding-inline: 30px; border: 0; background: var(--mint); color: var(--ink); font-size: 1rem; font-weight: 700; }
-.welcome__enter:hover { background: #a8f0e3; }
+.welcome__enter { min-height: 54px; padding-inline: 30px; border: 0; background: var(--li-ink); color: var(--li-on-light); font-size: 1rem; font-weight: 700; }
+.welcome__enter:hover { background: #fff; }
 
 /* The hero's run and its status pulses wait behind the welcome screen and play as it fades. It needs
    !important: the motion rules set the animation shorthand, which resets play-state to running, and they
@@ -80,7 +86,7 @@ html:not([data-visitor="collaborate"]) .identity-hero [data-visitor-only="collab
 html[data-visitor="hiring"] .identity-hero [data-visitor-hide~="hiring"],
 html[data-visitor="collaborate"] .identity-hero [data-visitor-hide~="collaborate"] { display: none; }
 
-.visitor-note { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: -10px 0 0; color: #9fb3ab; font-size: 0.86rem; }
+.visitor-note { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: -10px 0 0; color: var(--li-ink-2); font-size: 0.86rem; }
 .visitor-note button {
   padding: 4px 0; border: 0; background: none; color: var(--mint); font: inherit; font-weight: 600;
   text-decoration: underline; text-underline-offset: 4px; cursor: pointer;
