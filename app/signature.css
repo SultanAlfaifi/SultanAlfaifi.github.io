@@ -12,7 +12,6 @@
   --lime: var(--li-tint-apricot);
   --lime-dim: rgb(var(--li-apricot-rgb) / 42%);
   --blue-bright: var(--li-tint-iris);
-  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .sr-only {
@@ -109,25 +108,7 @@ html[data-motion="off"] .glow-card::after { display: none; }
 @media (prefers-reduced-motion: reduce) { .motion-toggle { display: none; } }
 .portfolio-v3 .nav__desktop a > span { display: inline-block; }
 
-/* ---------- Hero: its rules live in hero.css, on the deep black without grain ---------- */
-.runtime-section::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: var(--noise);
-  opacity: 0.05;
-}
-/* The agent network now sits behind the AI console in the runtime section. */
-.agent-field {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  display: block;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent);
-}
+/* ---------- Hero and AI section: their rules live in hero.css and ai.css, on the deep black without grain ---------- */
 
 /* ---------- Work ---------- */
 /* The showcase lives in app/showcase.css. */

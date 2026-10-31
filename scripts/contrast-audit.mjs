@@ -158,6 +158,20 @@ const pairs = [
     category: "Normal text"
   },
   {
+    usage: "Aurora display text (the lead achievement, the band's accent words) at its darkest stop (iris) on the ground",
+    foreground: "#8F6BFF",
+    background: "#030304",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
+    usage: "Aurora display text at its darkest stop (iris) on the lead achievement's raised glass (--li-bg-3)",
+    foreground: "#8F6BFF",
+    background: "#131318",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
     usage: "Focus ring (--li-focus) on the ground",
     foreground: "#9CC9FF",
     background: "#030304",
@@ -207,7 +221,7 @@ const pairs = [
     category: "Borders and controls"
   },
   {
-    usage: "Showcase: the bottom of the numeral and headline gradient (#a3a19d) on the ground",
+    usage: "Showcase: the bottom of the numeral gradient (#a3a19d) on the ground",
     foreground: "#A3A19D",
     background: "#030304",
     minimum: 3,

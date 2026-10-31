@@ -19,7 +19,7 @@ export function RuntimeSection({ locale = "en" }: { locale?: Locale }) {
     <section id="runtime" className="section runtime-section ai-section" aria-labelledby="runtime-title">
       <div className="page-shell ai-grid">
         <header className="ai-head">
-          <p className="li-eyebrow ai-eyebrow">{copy.eyebrow}</p>
+          <p className="li-eyebrow li-eyebrow--live ai-eyebrow">{copy.eyebrow}</p>
           <h2 id="runtime-title" className="ai-title">
             {copy.title.split(" ").map((word, index) => (
               <span key={`${word}-${index}`}>

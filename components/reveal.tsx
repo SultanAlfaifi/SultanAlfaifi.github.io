@@ -27,8 +27,11 @@ export function Reveal({ children, className = "", delay = 0, variant = "soft" }
       if (!entry.isIntersecting) return;
       observer.disconnect();
       if (!motionAllowed()) return;
-      const frames = [{ transform: `translateY(${variant === "title" ? 16 : 28}px)`, opacity: 0.35 }, { transform: "translateY(0)", opacity: 1 }];
-      animation = element.animate(frames, { duration: 640, delay: Math.min(delay, 240), easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" });
+      // Titles arrive like the hero's and the AI section's headlines: blur to sharp with a slight rise.
+      const frames = variant === "title"
+        ? [{ transform: "translateY(16px)", opacity: 0, filter: "blur(10px)" }, { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" }]
+        : [{ transform: "translateY(28px)", opacity: 0.35 }, { transform: "translateY(0)", opacity: 1 }];
+      animation = element.animate(frames, { duration: variant === "title" ? 820 : 640, delay: Math.min(delay, 240), easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" });
     }, { threshold: 0, rootMargin: "0px 0px 64px 0px" });
     const stopMotion = () => { if (preference.matches) animation?.cancel(); };
     preference.addEventListener("change", stopMotion);

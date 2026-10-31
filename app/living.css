@@ -78,6 +78,12 @@
   /* motion */
   --li-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --li-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* one rhythm for the whole page (see "One product" at the end) */
+  --li-display: clamp(2.75rem, min(5.4vw, 8.5svh), 5.5rem); /* the work and AI headlines: the hero headline's size on desktop */
+  --li-h2: clamp(2.2rem, 4vw, 3.6rem);                      /* every other section's headline */
+  --li-space-feature: clamp(88px, 9vw, 136px);              /* above and below the work and AI sections */
+  --li-seam: linear-gradient(90deg, transparent, var(--li-line-2) 22%, var(--li-line-2) 78%, transparent);
 }
 
 html { background: var(--li-bg); }
@@ -93,7 +99,7 @@ body.portfolio-v3 { background: var(--li-bg); color: var(--text); }
   .nav, .nav__drawer, .identity-hero, .work-section, .kinetic-band, .timeline, .runtime-section,
   .help-section, .contact-section, .footer, .section--community, .section--ideas, .section--ink,
   .terminal, .terminal-shell, .assistant-launcher, .companion, .palette, .toast, .toast-region,
-  .film-dialog, .welcome, .intro-curtain, .agent-card, .cursor-ring, .organization-rail
+  .film-dialog, .welcome, .agent-card, .cursor-ring, .organization-rail
 ) {
   --ink: var(--li-bg);
   --ink-soft: var(--li-bg-3);
@@ -335,3 +341,113 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .scroll-progress { background: var(--li-aurora); }
 .portfolio-v3 .nav__menu-button { border: 1px solid var(--li-line-2); background: var(--li-glass-2); color: var(--li-ink); }
 .portfolio-v3 .nav__menu-button:hover { background: var(--li-ink); color: var(--li-on-light); }
+
+/* ==========================================================================================
+   One product. The hero, the showcase and the AI section were rebuilt on this system; the older
+   sections between and after them now share their rhythm: one headline scale, one primary button
+   (off-white, dark text), glass cards, colour only as living light, and seams that fade at both ends
+   instead of hard full-width edges. The rebuilt sections use the same tokens in their own files.
+   ========================================================================================== */
+
+/* Section eyebrows: a short line in the living light, as in the work and AI sections. */
+.li-eyebrow--live::before { width: 22px; background: var(--li-aurora); opacity: 1; }
+
+/* Seams. Where one section meets the next on the black, a hairline that fades at both ends. */
+.portfolio-v3 :is(.kinetic-band, .organization-rail, .organization-showcase) {
+  border-top: 1px solid transparent;
+  border-bottom: 0;
+  border-image: var(--li-seam) 1;
+}
+
+/* Headlines. Every section below the hero speaks at one size and weight, in ink. The rebuilt sections
+   (work, AI) use --li-display; the rest use --li-h2. Contact keeps its larger closing size. */
+.portfolio-v3 :is(.section-header h2, .timeline__head h2) {
+  max-width: 19ch;
+  color: var(--li-ink);
+  font-size: var(--li-h2);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+.portfolio-v3 :is(.organization-rail__header, .organization-showcase__header) h2 { font-size: var(--li-h2); font-weight: 600; line-height: 1.08; letter-spacing: -0.035em; }
+.portfolio-v3 .contact-section h2 { color: var(--li-ink); font-weight: 600; }
+.portfolio-v3 [dir="rtl"] :is(.section-header h2, .timeline__head h2, .organization-rail__header h2, .organization-showcase__header h2, .contact-section h2) { line-height: 1.25; letter-spacing: 0; }
+
+/* Word-by-word headings arrive like the hero's and the AI section's: blur to sharp with a slight rise,
+   not a slide out of a clipping mask. Scroll-driven, so they are finished wherever the page rests. */
+.portfolio-v3 .split-word { overflow: visible; }
+@keyframes word-rise {
+  from { opacity: 0; transform: translateY(0.38em); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* One primary button: off-white with dark text, a soft halo on hover. */
+.portfolio-v3 .help-card__cta {
+  background: var(--li-ink);
+  color: var(--li-on-light);
+  transition: background-color 0.2s ease, box-shadow 0.3s ease;
+}
+.portfolio-v3 .help-card__cta:hover { background: #fff; box-shadow: 0 0 0 6px rgb(255 255 255 / 6%); }
+.portfolio-v3 .contact-orb__core {
+  background: var(--li-ink);
+  color: var(--li-on-light);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 30%), 0 0 70px -12px rgb(var(--li-iris-rgb) / 70%);
+}
+.portfolio-v3 .contact-orb:hover .contact-orb__core { box-shadow: 0 0 0 14px rgb(255 255 255 / 6%), 0 0 90px -10px rgb(var(--li-rose-rgb) / 60%); }
+.portfolio-v3 .contact-orb:focus-visible { outline-color: var(--li-focus); }
+.cursor-ring[data-state="label"] .cursor-ring__shape { border-color: var(--li-ink); background: var(--li-ink); }
+.cursor-ring__label { color: var(--li-on-light); }
+.portfolio-v3 :is(.motion-toggle, .palette-trigger, .language-switch):hover { border-color: var(--li-ink); background: var(--li-ink); color: var(--li-on-light); }
+
+/* Glass cards and pill links, as in the rebuilt sections. */
+.portfolio-v3 .help-card {
+  border-color: var(--li-line);
+  border-radius: var(--li-r);
+  background: var(--li-glass-fill);
+  box-shadow: var(--li-highlight);
+}
+.portfolio-v3 .help-card__proof { border-top-color: var(--li-line); }
+.portfolio-v3 .contact-section .social-links a,
+.portfolio-v3 .contact-section .button--ghost {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  background: var(--li-glass);
+  color: var(--li-ink);
+}
+.portfolio-v3 .contact-section .social-links a:hover,
+.portfolio-v3 .contact-section .button--ghost:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
+
+/* Colour as living light: the big signals are ink, the lead one and the band's accents carry the aurora. */
+.portfolio-v3 .proof-card__signal { color: var(--li-ink); }
+.portfolio-v3 .proof-card--lead .proof-card__signal,
+.kinetic-band__row .kinetic-band__accent {
+  background: var(--li-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.kinetic-band__row i { color: var(--li-tint-iris); }
+.portfolio-v3 .timeline__track::before { background: linear-gradient(90deg, var(--li-apricot), var(--li-rose) 30%, var(--li-iris) 60%, rgb(var(--li-glacier-rgb) / 12%)); }
+.timeline__progress span { background: var(--li-aurora); }
+
+/* The assistant wherever it appears (console, cards, companion, launcher): the same off-white primary
+   and the same glass ghost as the rest of the page. */
+.portfolio-v3 :is(.terminal__send, .companion__ask button, .companion__primary, .agent-card__actions button:not(.agent-card__ghost)):not(:disabled) {
+  border-color: var(--li-ink);
+  background: var(--li-ink);
+  color: var(--li-on-light);
+}
+.portfolio-v3 :is(.terminal__send, .companion__ask button, .companion__primary, .agent-card__actions button:not(.agent-card__ghost)):not(:disabled):hover { background: #fff; }
+.portfolio-v3 :is(.terminal__action, .terminal-placeholder button):hover { border-color: var(--li-ink); background: var(--li-ink); color: var(--li-on-light); }
+.portfolio-v3 :is(.assistant-cta, .assistant-launcher) {
+  border-color: var(--li-line-2);
+  background: rgb(var(--li-bg-rgb) / 86%);
+  color: var(--li-ink);
+}
+.portfolio-v3 .assistant-launcher { box-shadow: var(--li-highlight), 0 18px 50px rgb(0 0 0 / 55%), 0 0 40px -12px rgb(var(--li-iris-rgb) / 55%); }
+.portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover { border-color: var(--li-line-3); background: var(--li-bg-3); color: var(--li-ink); }
+.portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover svg { color: var(--li-tint-glacier); }

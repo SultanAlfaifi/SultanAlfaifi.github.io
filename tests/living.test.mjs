@@ -154,3 +154,40 @@ test("the living design system defines its tokens, glass, checkpoints and dark b
   assert.match(read("../app/layout.tsx"), /themeColor: "#030304"/);
   assert.match(read("../docs/living-design.md"), /<LivingOrb/);
 });
+
+test("the rebuilt sections and the older ones read as one product", () => {
+  const living = read("../app/living.css");
+  const showcase = read("../app/showcase.css");
+  const ai = read("../app/ai.css");
+  for (const token of ["--li-display", "--li-h2", "--li-space-feature", "--li-seam"]) assert.match(living, new RegExp(`${token}:`), `${token} is defined`);
+  // One display scale and one rhythm for the work and AI sections.
+  for (const [name, css, rule] of [["work", showcase, /\.portfolio-v3 \.sc-head__h2 \{[\s\S]*?\}/], ["AI", ai, /\.ai-title \{[\s\S]*?\}/]]) {
+    assert.match(css.match(rule)[0], /font-size: var\(--li-display\);/, `${name}: the shared display scale`);
+    assert.doesNotMatch(css.match(rule)[0], /background-clip: text/, `${name}: the headline is plain ink, like the hero's`);
+  }
+  assert.match(showcase, /#work\.sc-section \{[\s\S]*?padding: var\(--li-space-feature\) 0;[\s\S]*?border-image: var\(--li-seam\) 1;/);
+  assert.match(ai, /\.ai-section \{[\s\S]*?padding-block: var\(--li-space-feature\);[\s\S]*?border-image: var\(--li-seam\) 1;/);
+  assert.match(showcase, /#work\.sc-section::after \{[\s\S]*?linear-gradient\(180deg, transparent, var\(--li-bg\)\)/, "the work light fades out before the next section");
+  // No grain or starfield left behind the AI section.
+  const signature = read("../app/signature.css");
+  assert.doesNotMatch(signature, /\.runtime-section::after|\.agent-field|--noise:/);
+  // The older sections: seams, headline scale, one primary button, glass, living light.
+  const block = living.slice(living.indexOf("One product."));
+  assert.ok(block.length > 100, "the One product block exists");
+  assert.match(block, /:is\(\.kinetic-band, \.organization-rail, \.organization-showcase\) \{[\s\S]*?border-image: var\(--li-seam\) 1;/);
+  assert.match(block, /:is\(\.section-header h2, \.timeline__head h2\) \{[\s\S]*?font-size: var\(--li-h2\);/);
+  assert.match(block, /@keyframes word-rise \{[\s\S]*?filter: blur\(10px\)/, "split headings arrive blur to sharp");
+  for (const selector of [".help-card__cta", ".contact-orb__core", ".terminal__send", ".companion__primary"]) {
+    const at = block.indexOf(selector);
+    assert.ok(at > 0, `${selector} is styled`);
+    const rule = block.slice(at, block.indexOf("}", at));
+    assert.ok(rule.includes("background: var(--li-ink);") && rule.includes("color: var(--li-on-light);"), `${selector} is the off-white primary`);
+  }
+  assert.match(block, /\.help-card \{[\s\S]*?background: var\(--li-glass-fill\);/);
+  assert.match(block, /\.proof-card--lead \.proof-card__signal,\s*\.kinetic-band__row \.kinetic-band__accent \{[\s\S]*?background: var\(--li-aurora\);/);
+  // Both section eyebrows carry the living rule.
+  assert.match(read("../components/projects-section.tsx"), /li-eyebrow li-eyebrow--live sc-head__eyebrow/);
+  assert.match(read("../components/runtime-section.tsx"), /li-eyebrow li-eyebrow--live ai-eyebrow/);
+  // Section titles everywhere arrive like the hero's: blur to sharp.
+  assert.match(read("../components/reveal.tsx"), /variant === "title"\s*\? \[\{ transform: "translateY\(16px\)", opacity: 0, filter: "blur\(10px\)" \}/);
+});

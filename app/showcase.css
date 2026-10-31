@@ -16,9 +16,11 @@
   isolation: isolate;
   width: 100%;
   margin: 0;
-  padding: clamp(96px, 11vw, 168px) 0 clamp(80px, 9vw, 136px);
+  padding: var(--li-space-feature) 0;
   border-radius: 0;
-  border-top: 1px solid var(--li-line);
+  /* The seam every section shares (app/living.css, "One product"): a hairline that fades at both ends. */
+  border-top: 1px solid transparent;
+  border-image: var(--li-seam) 1;
   background: transparent;
   box-shadow: none;
   color: var(--li-ink);
@@ -45,6 +47,16 @@
 }
 .sc-light::before,
 .sc-light::after { content: ""; position: absolute; border-radius: 50%; }
+/* The light settles back into the ground before the section ends, so the next section meets plain black. */
+.portfolio-v3 #work.sc-section::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: min(360px, 40vh);
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, var(--li-bg));
+}
 .sc-light::before { inset-inline-end: -40vmax; top: 2vh; width: 84vmax; height: 84vmax; background: radial-gradient(closest-side, var(--sc-a), transparent); opacity: 0.15; }
 .sc-light::after { inset-inline-start: -38vmax; bottom: 2vh; width: 68vmax; height: 68vmax; background: radial-gradient(closest-side, var(--sc-b), transparent); opacity: 0.09; }
 
@@ -56,15 +68,12 @@
   margin: 0;
   max-width: none;
   padding-bottom: 0.06em;
-  font-size: clamp(3rem, 7.4vw, 7.25rem);
+  /* The page's display scale, shared with the hero and the AI section. */
+  font-size: var(--li-display);
   font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.045em;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
   color: var(--li-ink);
-  background: linear-gradient(180deg, #ffffff 34%, #a3a19d);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 .sc-head__lede { max-width: 46ch; margin: 0; color: var(--li-ink-2); font-size: clamp(1rem, 1.2vw, 1.125rem); line-height: 1.8; }
 

@@ -73,6 +73,15 @@ Classes `.li-k-asks`, `.li-k-verifies`, `.li-k-holds` and `.li-k-bound` set `--l
 | `--li-ease` | `cubic-bezier(.2,.8,.2,1)`, the default. |
 | `--li-ease-spring` | `cubic-bezier(.16,1,.3,1)`, for arrivals (the orb emerging, cards rising). |
 
+### One rhythm for the page
+
+| Token | Use |
+|---|---|
+| `--li-display` | The work and AI headlines: the hero headline's size on desktop (76.5px at 1440x900), 44px on phones. |
+| `--li-h2` | Every other section's headline (57.6px at 1440). Weight 600, in `--li-ink`. |
+| `--li-space-feature` | Padding above and below the work and AI sections. |
+| `--li-seam` | The hairline where one section meets the next: it fades out at both ends. Use as `border-image: var(--li-seam) 1` on a 1px top border. |
+
 ## Classes
 
 | Class | What it is |
@@ -89,6 +98,7 @@ Classes `.li-k-asks`, `.li-k-verifies`, `.li-k-holds` and `.li-k-bound` set `--l
 | `.li-pill` | A small glass tag. |
 | `.li-lamp` | A 7px dot in `--li-k` with its glow. |
 | `.li-eyebrow` | A small grey line label with a leading rule. |
+| `.li-eyebrow--live` | The section eyebrow: its rule is a short line of aurora (work and AI sections). |
 | `.li-num` | Tabular numerals that never wrap ("15 من 15" stays on one line). |
 | `.li-aurora-text` | Text filled with the aurora gradient. Large type only. |
 
@@ -167,6 +177,21 @@ The stage mirrors the state on the section as `data-presence`, so the console's 
 ring while thinking). It plays the section's entrance (elements first, then the headline word by word) and a
 short hello (listening, speaking, idle) the first time the section is seen, both only with motion on. Press and
 hold the orb, then let go: that is the "gravity" secret.
+
+## One product
+
+The hero, the showcase and the AI section were rebuilt on this system. The older sections share their
+language through the "One product" block at the end of `app/living.css`:
+
+- Sections meet on plain black with a `--li-seam` hairline, never a hard full-width edge; no section adds grain
+  or a lighter ground. The work section's light fades back into the ground before the section ends.
+- Headlines: `--li-display` for the work and AI sections, `--li-h2` for the rest, all in ink at weight 600.
+  Word-by-word headings (`.split-heading`) and `Reveal variant="title"` arrive blur to sharp with a slight rise,
+  like the hero and the AI section, and are finished at rest.
+- One primary button everywhere, the assistant included: off-white with `--li-on-light` text. Ghosts are glass
+  with a hairline. Help cards are glass; contact links are glass pills.
+- Colour is living light: big signals are ink; the lead achievement and the band's accent words carry the aurora;
+  the journey's progress line is aurora like the scroll bar.
 
 ## The older tokens
 

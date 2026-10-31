@@ -10,7 +10,10 @@
 
 .portfolio-v3 .ai-section {
   overflow-x: clip;
-  border-top: 1px solid var(--li-line);
+  /* The page's shared rhythm and seam (app/living.css, "One product"). */
+  padding-block: var(--li-space-feature);
+  border-top: 1px solid transparent;
+  border-image: var(--li-seam) 1;
   background: var(--li-bg);
   color: var(--li-ink);
 }
@@ -29,14 +32,14 @@
 .ai-chat { grid-area: chat; min-width: 0; margin-top: clamp(28px, 3vw, 44px); }
 
 .ai-eyebrow { color: var(--li-ink-3); }
-.ai-eyebrow::before { width: 22px; background: var(--li-aurora); opacity: 1; }
 .ai-title {
   margin: 16px 0 0;
   color: var(--li-ink);
-  font-size: clamp(2.75rem, 5.4vw, 5.5rem);
+  /* The page's display scale, shared with the hero and the work section. */
+  font-size: var(--li-display);
   font-weight: 600;
-  line-height: 1.06;
-  letter-spacing: -0.035em;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 [lang="ar"] .ai-title { line-height: 1.2; letter-spacing: 0; }
@@ -312,7 +315,6 @@
 }
 @media (max-width: 760px) {
   .ai-grid { --ai-orb-size: min(290px, 74vw); }
-  .ai-title { font-size: clamp(2.5rem, 11vw, 3.25rem); }
   .ai-lede { font-size: 1.0625rem; }
   /* The orb and the whole console fit on one phone screen together, so the light stays in view while
      an answer types. */

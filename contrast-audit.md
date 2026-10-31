@@ -32,6 +32,8 @@ Thresholds:
 | AI section: the orb's state word (--li-ink-2) on its 80% ground pill, worst case over white light | `#B1AFAB` | `#353535` | 5.60:1 | 4.5:1 | Pass |
 | AI section: console warnings (apricot tint) on the raised console glass | `#FFD3A8` | `#0A0A0D` | 14.25:1 | 4.5:1 | Pass |
 | AI section: aurora principle numerals at their darkest stop (iris) on the ground | `#8F6BFF` | `#030304` | 5.61:1 | 4.5:1 | Pass |
+| Aurora display text (the lead achievement, the band's accent words) at its darkest stop (iris) on the ground | `#8F6BFF` | `#030304` | 5.61:1 | 3.0:1 | Pass |
+| Aurora display text at its darkest stop (iris) on the lead achievement's raised glass (--li-bg-3) | `#8F6BFF` | `#131318` | 5.04:1 | 3.0:1 | Pass |
 | Focus ring (--li-focus) on the ground | `#9CC9FF` | `#030304` | 11.99:1 | 3.0:1 | Pass |
 | Focus ring (--li-focus) on raised glass | `#9CC9FF` | `#131318` | 10.77:1 | 3.0:1 | Pass |
 | Checkpoint lamp: asks (apricot) on the ground | `#FFB46A` | `#030304` | 11.77:1 | 3.0:1 | Pass |
@@ -39,7 +41,7 @@ Thresholds:
 | Checkpoint lamp: holds (rose) on the ground | `#FF5C8D` | `#030304` | 7.04:1 | 3.0:1 | Pass |
 | Checkpoint line: bound (ink 85%) on the ground | `#D0CECA` | `#030304` | 13.12:1 | 3.0:1 | Pass |
 | Iris accents on the ground | `#8F6BFF` | `#030304` | 5.61:1 | 3.0:1 | Pass |
-| Showcase: the bottom of the numeral and headline gradient (#a3a19d) on the ground | `#A3A19D` | `#030304` | 7.99:1 | 3.0:1 | Pass |
+| Showcase: the bottom of the numeral gradient (#a3a19d) on the ground | `#A3A19D` | `#030304` | 7.99:1 | 3.0:1 | Pass |
 | Showcase: rose tint (rejected stamp, wrong day) on a rejected page (rose 10% over a raised card) | `#FFB3C8` | `#241419` | 10.54:1 | 4.5:1 | Pass |
 | Showcase: secondary text on a rejected page | `#B1AFAB` | `#241419` | 8.06:1 | 4.5:1 | Pass |
 | Showcase: apricot tint on the seeded-fault tag (apricot 7% over a raised card) | `#FFD3A8` | `#1D1814` | 12.69:1 | 4.5:1 | Pass |
@@ -64,4 +66,4 @@ Thresholds:
 - There are no disabled interactive controls in the initial portfolio.
 - Colour lives in light: accents are lamps, glows and tinted labels; fills in the living light carry dark text.
 
-Audit result: **PASS** (39/39 approved pairs pass).
+Audit result: **PASS** (41/41 approved pairs pass).

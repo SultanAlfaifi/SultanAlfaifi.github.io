@@ -39,7 +39,7 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
       <div className="page-shell">
         <header className="sc-head">
           <Reveal variant="title" className="sc-head__title">
-            <p className="li-eyebrow sc-head__eyebrow">{s.count(featured.length)}</p>
+            <p className="li-eyebrow li-eyebrow--live sc-head__eyebrow">{s.count(featured.length)}</p>
             <h2 id="work-title" className="sc-head__h2">{copy.title}</h2>
           </Reveal>
           <p className="sc-head__lede">{copy.description}</p>

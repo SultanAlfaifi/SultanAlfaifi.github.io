@@ -155,7 +155,7 @@
 }
 .terminal-placeholder button:hover { background: var(--mint); color: var(--ink); }
 
-/* The section isolates its noise layer; while the panel is open it must stack above the nav instead. */
+/* The section isolates the orb's light; while the panel is open it must stack above the nav instead. */
 html[data-assistant="open"] .portfolio-v3 .runtime-section { isolation: auto; }
 /* The content keeps a positioned box without a z-index, so the docked console still stacks above the nav. */
 html[data-assistant="open"] .runtime-section > .page-shell { position: relative; }
