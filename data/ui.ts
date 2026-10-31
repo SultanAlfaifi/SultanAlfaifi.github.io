@@ -99,7 +99,8 @@ const en = {
     figuresAria: (title: string) => `${title} key figures`,
     labTitle: "Smaller builds",
     labDescription: "Smaller or less finished work: a multi-agent idea engine, an Arabic Alexa skill, my graduation project, KAUST coursework, and an Agent Skills repo with one skill so far. Each card says how far it got.",
-    cursor: "Tilt",
+    // The cursor ring over a showcase tile, which opens its case.
+    cursor: "Open",
     visuals: {
       iconAlt: "Mustakshif application icon",
       previewAlt: (title: string) => `${title} application preview`,
@@ -139,6 +140,37 @@ const en = {
       waterReadingsAria: "Two readings pass and one fails",
       waterHeld: "Irrigation held",
       waterNote: "Each decision is logged with its reason."
+    },
+    // The showcase (components/showcase-*.tsx). Kinds and tags say what a stop or a number is, never more.
+    showcase: {
+      count: (count: number) => `Featured projects · ${String(count).padStart(2, "0")}`,
+      legend: "Where it stops to wait for a human",
+      legendAria: "What each checkpoint colour means",
+      kinds: { asks: "Asks you first", verifies: "Verifies before a result counts", holds: "Holds on its own when a check fails" },
+      boundary: "The line it keeps",
+      projects: (count: number) => (count === 1 ? "1 project" : `${count} projects`),
+      step: (step: number, total: number) => `Step ${step} of ${total}`,
+      tags: { "seeded-fault": "Seeded on purpose", "real-bug": "Real bug", trial: "Early trial", "public-count": "Public count", "own-count": "My own count", team: "Team", design: "Design target" },
+      asOf: (date: string) => `As of ${date}`,
+      verifyOn: "Check it on GitHub",
+      open: "Inside the build",
+      openAria: (title: string) => `Inside the build: ${title}`,
+      hide: "Hide the details",
+      close: "Close",
+      previous: "Previous project",
+      next: "Next project",
+      position: (index: number, total: number) => `${index} of ${total}`,
+      status: "Status",
+      role: "My role",
+      figures: "The numbers, with what they are",
+      more: "Worth knowing",
+      tech: "Built with",
+      caveat: "Not yet",
+      gate: "Its stop",
+      screenshotAlt: (title: string) => `${title}: the editor on the right, the live preview on the left`,
+      wall: { booked: "Booked", wrongDay: "Wrong day saved", rejected: "Rejected", verifier: "Verifier", page: (index: number) => `Page ${index}` },
+      masari: { browser: "Your browser", pdf: "PDF" },
+      mustakshif: { specs: ["CPU", "RAM", "GPU", "VRAM"] }
     }
   },
   band: {
@@ -630,7 +662,7 @@ const ar: UiStrings = {
     figuresAria: (title: string) => `أهم أرقام ${title}`,
     labTitle: "مشاريع أصغر",
     labDescription: "أعمال أصغر حجمًا أو لم تكتمل بعد: محرّك يوازن بين الأفكار بعدة وكلاء، ومهارة عربية على Alexa، ومشروع تخرّجي، ومشاريعي الدراسية في أكاديمية كاوست، ومستودع Agent Skills فيه مهارة واحدة حتى الآن. وفي كل بطاقة تجد أين وصل المشروع.",
-    cursor: "حرّك",
+    cursor: "افتح",
     visuals: {
       iconAlt: "أيقونة تطبيق مستكشف",
       previewAlt: (title: string) => `معاينة ${title}`,
@@ -670,6 +702,36 @@ const ar: UiStrings = {
       waterReadingsAria: "قراءتان سليمتان وقراءة فشلت",
       waterHeld: "الري متوقف",
       waterNote: "كل قرار يُسجَّل مع سببه."
+    },
+    showcase: {
+      count: (count: number) => `أبرز المشاريع · ${String(count).padStart(2, "0")}`,
+      legend: "أين يتوقف لينتظر إنسانًا",
+      legendAria: "ماذا يعني لون كل نقطة توقف",
+      kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" },
+      boundary: "الحد الذي يلتزم به",
+      projects: (count: number) => (count === 1 ? "مشروع واحد" : count === 2 ? "مشروعان" : count <= 10 ? `${count} مشاريع` : `${count} مشروعًا`),
+      step: (step: number, total: number) => `الخطوة ${step} من ${total}`,
+      tags: { "seeded-fault": "خلل زرعته عمدًا", "real-bug": "خلل حقيقي", trial: "تجربة أولى", "public-count": "عدّاد عام", "own-count": "من إحصاءاتي", team: "الفريق", design: "هدف تصميمي" },
+      asOf: (date: string) => `حتى ${date}`,
+      verifyOn: "تحقّق منه على GitHub",
+      open: "كيف بنيته",
+      openAria: (title: string) => `كيف بنيته: ${title}`,
+      hide: "أخفِ التفاصيل",
+      close: "إغلاق",
+      previous: "المشروع السابق",
+      next: "المشروع التالي",
+      position: (index: number, total: number) => `${index} من ${total}`,
+      status: "الحالة",
+      role: "دوري",
+      figures: "الأرقام، وماذا تعني",
+      more: "يهمك تعرفه",
+      tech: "التقنيات",
+      caveat: "ما لم يكتمل بعد",
+      gate: "نقطة توقفه",
+      screenshotAlt: (title: string) => `${title}: المحرّر على اليمين، والمعاينة الحيّة على اليسار`,
+      wall: { booked: "تم الحجز", wrongDay: "اليوم المحفوظ خاطئ", rejected: "مرفوضة", verifier: "المدقّق", page: (index: number) => `الصفحة ${index}` },
+      masari: { browser: "متصفحك", pdf: "PDF" },
+      mustakshif: { specs: ["المعالج", "الذاكرة", "كرت الشاشة", "VRAM"] }
     }
   },
   band: {

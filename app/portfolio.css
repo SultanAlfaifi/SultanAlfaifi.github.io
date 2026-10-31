@@ -27,90 +27,8 @@
 .portfolio-v3 .section-header__copy { display: flex; align-items: end; justify-content: space-between; gap: 32px; }
 .portfolio-v3 .section-header h2, .portfolio-v3 #recommendations .section-header h2 { max-width: 19ch; font-size: clamp(2.2rem, 4vw, 3.8rem); line-height: 1.08; letter-spacing: -.035em; }
 .portfolio-v3 .section-header__copy > p { max-width: 39ch; margin: 0; font-size: 1rem; line-height: 1.65; }
-.portfolio-v3 #work.work-section { width: 100%; margin: 0; padding: var(--section-space) 0 48px; border-radius: 0; box-shadow: none; background: var(--ink); color: var(--paper); overflow: visible; --focus-ring: var(--signal); }
-.portfolio-v3 #work > .page-shell { width: var(--shell); margin-inline: auto; }
-.portfolio-v3 #work .section-header { width: 100%; margin: 0 0 42px; padding: 0; }
-.work-section .section-header h2 { color: var(--paper); }
-.portfolio-v3 .work-section .section-header__copy > p { color: #cfcdc8; }
-.work-index { display: flex; gap: 28px; flex-wrap: wrap; border-bottom: 1px solid #56524c; padding: 0 0 24px; }
-.work-index a { display: inline-flex; align-items: center; gap: 10px; color: #cfcdc8; font-size: .85rem; }
-.work-index__arrow { transition: transform 220ms var(--ease-arrive); }
-.work-index a:hover, .work-index a:focus-visible { color: var(--signal); }
-.work-index a:hover .work-index__arrow { transform: translate(2px, 2px) rotate(90deg); }
-.work-story { display: grid; grid-template-columns: 1.13fr 1fr; gap: clamp(32px, 5vw, 76px); align-items: center; padding-block: clamp(40px, 6vw, 76px); border-bottom: 1px solid #4d4b45; scroll-margin-top: 100px; }
-.work-story:nth-child(even) .work-story__visual { order: 2; }
-.work-story__copy { min-width: 0; }
-.work-story__visual { min-width: 0; }
-.work-story h3 { margin: 17px 0; font-size: clamp(2.4rem, 4vw, 3.8rem); font-weight: 500; line-height: 1.06; }
-.work-status { display: flex; align-items: center; gap: 8px; margin: 0; color: #d2d0cd; font-size: .78rem; }
-.work-status > span[aria-hidden="true"] { width: 6px; height: 6px; border-radius: 50%; background: var(--signal); flex: none; }
-.work-description { color: #ebe8e1; font-size: 1.04rem; line-height: 1.7; margin: 0; max-width: 52ch; }
-.work-role { color: #c2c0ba; font-size: .79rem; margin: 16px 0; }
-.work-tech { list-style: none; padding: 0; margin: 18px 0 24px; display: flex; flex-wrap: wrap; gap: 7px 18px; color: #d2d0cd; font-size: .8rem; }
-.work-tech li { padding: 0; }
-.work-case { border-top: 1px solid #56524c; border-bottom: 1px solid #56524c; }
-.work-case summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 16px 0; cursor: pointer; list-style: none; font-size: .88rem; }
-.work-case summary::-webkit-details-marker, .additional-work summary::-webkit-details-marker, .deeper-journey summary::-webkit-details-marker { display: none; }
-.work-case summary > span { font-size: 1.3rem; transition: transform 220ms var(--ease-arrive); }
-.work-case[open] summary > span { transform: rotate(45deg); }
-.work-case__content { padding-bottom: 20px; }
-.work-case h4 { color: var(--signal); font-size: .82rem; font-weight: 600; margin: 18px 0 8px; }
-.work-case p, .work-case li { color: #cfcdc8; font-size: .88rem; line-height: 1.7; margin: 0; }
-.work-case ul { padding: 0 0 20px 20px; }
-.work-actions { display: flex; align-items: center; gap: 16px 26px; flex-wrap: wrap; margin-top: 23px; }
-.work-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: .86rem; color: var(--signal); text-underline-offset: 5px; }
-.work-actions a:hover { text-decoration: underline; }
-.work-actions a + a { color: #dddcd9; }
-.work-metrics { display: flex; flex-wrap: wrap; gap: 20px 34px; margin: 0 0 22px; }
-.work-metrics > div { display: flex; flex-direction: column-reverse; }
-.work-metrics dt { font-size: .75rem; color: #cfcdc8; }
-.work-metrics dd { margin: 0; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
-.work-visual { position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; width: 100%; min-width: 0; aspect-ratio: 1.15; margin: 0; overflow: hidden; border-radius: 16px; background: #efece7; color: #1b1b24; }
-.work-visual > figcaption { position: absolute; left: 25px; right: 25px; bottom: 20px; font-size: .73rem; color: #5c5851; border-top: 1px solid #afaba5; padding-top: 12px; }
-.work-visual--mustakshif { background: #cbe0e9; }
-.model-advisor { width: 100%; padding: 30px 26px 70px; text-align: center; }
-.model-advisor > img { margin: 0 auto 15px; width: clamp(85px, 10vw, 140px); height: auto; transition: transform 550ms var(--ease-arrive); }
-.model-advisor > p { font-size: clamp(1.8rem, 2.9vw, 2.6rem); line-height: 1.15; font-family: var(--font-display), sans-serif; letter-spacing: -.03em; margin: 12px 0 24px; }
-.model-advisor > p > span { color: #55524c; }
-.model-advisor__path { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 24px; }
-.model-advisor__path li { display: grid; justify-items: center; gap: 9px; font-size: .74rem; }
-.model-advisor__path svg { width: 21px; height: 21px; }
-.work-visual--rajih-engine { background: #f1eeea; }
-.agent-blueprint { width: 100%; padding: 32px 34px 72px; }
-.agent-blueprint__title { display: flex; align-items: start; gap: 14px; font-family: var(--font-display), sans-serif; font-size: clamp(1.3rem, 2vw, 1.9rem); line-height: 1.25; margin-bottom: 32px; }
-.agent-blueprint__title svg { margin-top: 4px; }
-.agent-blueprint__branches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-.agent-blueprint__branches > span { border: 1px solid #ada9a3; padding: 11px 3px; border-radius: 7px; font-size: .66rem; }
-.agent-blueprint__connector { display: flex; justify-content: space-around; height: 24px; margin-inline: 16%; border-bottom: 1px solid #868176; }
-.agent-blueprint__connector i { height: 24px; border-left: 1px solid #868176; }
-.agent-blueprint ol { list-style: none; margin: 0 16%; padding: 0; }
-.agent-blueprint li { position: relative; display: flex; align-items: center; gap: 12px; padding-top: 22px; font-size: .85rem; }
-.agent-blueprint li::before { content: ""; position: absolute; top: 0; left: 4px; height: 22px; width: 1px; background: #868176; transform-origin: top; }
 .flow-dot { width: 9px; height: 9px; border-radius: 50%; background: #31647b; flex: none; transition: transform 250ms var(--ease-arrive); }
-.diagram-note { margin: 24px 0 0; font-size: .66rem; color: #55514b; text-align: center; }
-.work-visual--autoflow { background: #e9dfd0; color: #3c3528; }
-.work-visual--autoflow > figcaption { color: #5b503e; border-color: #b9aa95; }
-.automation-blueprint { width: 100%; max-width: 430px; padding: 28px 35px 68px; }
-.automation-blueprint__input { display: flex; justify-content: center; gap: 50px; }
-.automation-blueprint__input > span { display: flex; align-items: center; gap: 9px; font-size: .83rem; }
-.automation-blueprint__bridge { height: 25px; width: 47%; border: 1px solid #95856e; border-top: 0; margin: 12px auto 0; }
-.automation-blueprint__draft { position: relative; border: 1px solid #b4a58f; border-radius: 12px; padding: 20px 24px; margin-top: 18px; }
-.automation-blueprint__draft::before { content: ""; position: absolute; width: 1px; height: 18px; left: 50%; top: -19px; background: #95856e; }
-.automation-blueprint__draft > span:first-child { font-size: .7rem; color: #64563e; }
-.automation-blueprint__draft > p { font-family: var(--font-display), sans-serif; font-size: clamp(1.4rem, 2.1vw, 2rem); line-height: 1.2; margin: 10px 0 18px; }
 .draft-state { display: inline-block; color: #514328; background: #d5c9b3; padding: 4px 10px; border-radius: 5px; font-size: .7rem; }
-.automation-blueprint__review { display: flex; align-items: center; gap: 16px; margin: 20px 0 0; padding: 16px 0 0; border-top: 1px solid #b4a58f; font-size: .8rem; }
-.automation-blueprint__review > svg:last-child { margin-left: auto; transition: transform 300ms var(--ease-arrive); }
-.automation-blueprint .diagram-note { color: #665740; font-size: .65rem; }
-.work-visual--masari { background: #ded9ee; }
-.work-visual__image { object-fit: contain; padding: 30px 18px 55px; transition: transform 650ms var(--ease-arrive); }
-.work-visual--masari > figcaption { color: #514668; border-color: #ada2c7; }
-.additional-work > summary { display: flex; justify-content: space-between; gap: 20px; padding-block: 28px; cursor: pointer; list-style: none; font-size: 1.25rem; }
-.additional-work > summary > span { color: #c6c4bf; font-size: .85rem; display: flex; align-items: center; gap: 20px; }
-.additional-work__list > article { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; padding-block: 30px; border-top: 1px solid #4d4b45; }
-.additional-work h3 { font-size: 1.7rem; margin: 0; }
-.additional-work p { font-size: .95rem; max-width: 60ch; color: #cfcdc8; }
-.additional-work__status { font-size: .75rem !important; color: #acc3ce !important; }
 .portfolio-v3 #about { padding-block: var(--section-space); }
 .portfolio-v3 #about .section-header { margin-bottom: 44px; }
 .portfolio-v3 .about-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: center; }
@@ -198,27 +116,9 @@
 .portfolio-v3 .footer__wordmark { font-size: clamp(3rem, 13vw, 11rem); line-height: 1.15; padding-block: 35px 20px; margin: 0; animation: none; letter-spacing: -.04em; }
 .portfolio-v3 .footer__inner p, .portfolio-v3 .footer__inner a { font-size: .75rem; }
 
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .work-story:hover .model-advisor > img { transform: translateY(-6px) rotate(-5deg); }
-  .work-story:hover .work-visual__image { transform: scale(1.035); }
-  .work-story:hover .flow-dot { transform: scale(1.4); }
-  .work-story:hover .agent-blueprint li::before { animation: connection-draw 650ms var(--ease-arrive) both; }
-  .work-story:hover .agent-blueprint li:nth-child(2)::before { animation-delay: 100ms; }
-  .work-story:hover .agent-blueprint li:nth-child(3)::before { animation-delay: 200ms; }
-  .work-story:hover .automation-blueprint__review > svg:last-child { transform: translateX(6px); }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .work-case[open] .work-case__content { animation: detail-arrive 260ms var(--ease-arrive); }
-}
-@keyframes connection-draw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-@keyframes detail-arrive { from { opacity: .4; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1100px) {
   .portfolio-v3 { --shell: calc(100% - 56px); }
-  .model-advisor__path { gap: 16px; }
-  .agent-blueprint { padding-inline: 22px; }
-  .agent-blueprint__branches { gap: 5px; }
-  .agent-blueprint__branches > span { font-size: .59rem; }
 }
 @media (max-width: 840px) {
   .portfolio-v3 { --shell: calc(100% - 40px); --section-space: 56px; }
@@ -226,28 +126,6 @@
   .portfolio-v3 .section-header__copy { display: block; }
   .portfolio-v3 .section-header__copy > p { margin-top: 16px; }
   .portfolio-v3 .section-header { margin-bottom: 30px; }
-  .work-index { gap: 18px 24px; }
-  .work-story { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-block: 36px; }
-  .work-story:nth-child(even) .work-story__visual { order: 0; }
-  .work-story h3 { font-size: 2.6rem; }
-  .work-visual { aspect-ratio: 1.2; }
-  .work-visual--autoflow { min-height: 410px; aspect-ratio: auto; }
-  .work-visual--rajih-engine { min-height: 370px; aspect-ratio: auto; }
-  .model-advisor { padding-top: 22px; }
-  .model-advisor > img { width: 90px; }
-  .model-advisor > p { font-size: 2rem; margin: 10px 0 18px; }
-  .agent-blueprint__title { font-size: 1.5rem; margin-bottom: 22px; }
-  .agent-blueprint__branches > span { font-size: .65rem; }
-  .agent-blueprint li { padding-top: 16px; font-size: .78rem; }
-  .agent-blueprint li::before { height: 16px; }
-  .diagram-note { margin-top: 16px; }
-  .automation-blueprint { padding: 28px 24px 90px; }
-  .automation-blueprint__draft { padding: 15px 18px; }
-  .automation-blueprint__draft > p { font-size: 1.7rem; margin-bottom: 12px; }
-  .automation-blueprint__review { margin-top: 14px; padding-top: 12px; }
-  .additional-work > summary { display: block; }
-  .additional-work > summary > span { margin-top: 8px; }
-  .additional-work__list > article { grid-template-columns: 1fr; gap: 10px; }
   .portfolio-v3 .about-layout { grid-template-columns: 1fr; gap: 32px; }
   .portfolio-v3 .about-portrait { max-width: min(290px, 76vw); }
   .portfolio-v3 .about-layout__copy > p { font-size: 1.02rem; }
@@ -267,37 +145,10 @@
   .portfolio-v3 .contact-section__meta { flex-wrap: wrap; gap: 18px; }
 }
 @media (max-width: 390px) {
-  .work-visual { aspect-ratio: 1.04; }
-  .work-visual--autoflow, .work-visual--rajih-engine { aspect-ratio: auto; }
-  .agent-blueprint { padding-inline: 18px; }
-  .agent-blueprint__branches > span { font-size: .58rem; }
-  .model-advisor__path { gap: 18px; }
-  .model-advisor__path li { font-size: .67rem; }
   .portfolio-v3 .about-metadata { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   .portfolio-v3 *, .portfolio-v3 *::before, .portfolio-v3 *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-}
-
-/* Masari uses the same explanatory visual language as the agent workflows. */
-.resume-blueprint { width: 100%; max-width: 470px; padding: 32px 32px 80px; color: #3e3457; }
-.resume-blueprint__title { display: flex; align-items: start; gap: 13px; font-family: var(--font-display), sans-serif; font-size: clamp(1.4rem, 2.1vw, 1.9rem); line-height: 1.25; margin-bottom: 25px; }
-.resume-blueprint__title > svg { flex: none; margin-top: 4px; }
-.resume-blueprint__workspace { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr); gap: 14px; align-items: center; }
-.resume-blueprint__inputs > span { font-size: .72rem; }
-.resume-blueprint__inputs > div { display: grid; gap: 7px; margin: 10px 0 17px; }
-.resume-blueprint__inputs i { height: 9px; border: 1px solid #aea2c4; border-radius: 3px; }
-.resume-blueprint__document { border: 1px solid #a599bc; border-radius: 8px; background: #f5f1fb; padding: 16px; }
-.resume-blueprint__document > span { display: block; margin-top: 8px; font-size: .72rem; }
-.resume-blueprint__document > div { display: grid; gap: 8px; margin-top: 20px; }
-.resume-blueprint__document i { height: 3px; background: #c0b6d2; }
-.resume-blueprint__document i:nth-child(2n) { width: 70%; }
-.resume-blueprint__export { display: flex; align-items: center; gap: 12px; border-top: 1px solid #ada2c7; padding-top: 16px; margin-top: 20px; font-size: .87rem; }
-.resume-blueprint__export svg:last-child { margin-left: auto; }
-.resume-blueprint .diagram-note { color: #514668; }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .resume-blueprint__arrow { transition: transform 250ms var(--ease-arrive); }
-  .work-story:hover .resume-blueprint__arrow { transform: translateX(4px); }
 }
 
 /* Mobile layouts include expanded sections, not only the initial page. */
@@ -308,16 +159,6 @@
   .portfolio-v3 .nav__drawer nav { width: 100%; margin: 0; padding: 0; }
   .portfolio-v3 .nav__drawer a { min-height: 56px; font-size: clamp(1.65rem, 7vw, 2.5rem); }
   .identity-hero__foot .social-links a { width: auto; min-width: 44px; height: 44px; }
-  .work-index a { min-height: 44px; }
-  .work-visual--masari { aspect-ratio: auto; min-height: 410px; }
-  .resume-blueprint { padding: 26px 22px 84px; }
-  .resume-blueprint__title { font-size: 1.5rem; }
-  .resume-blueprint__workspace { gap: 10px; }
-  .resume-blueprint__document { padding: 12px; }
-  .work-status { line-height: 1.5; }
-  .work-description { font-size: 1rem; }
-  .work-role, .work-tech { font-size: .83rem; }
-  .work-visual > figcaption { left: 20px; right: 20px; line-height: 1.5; }
   .portfolio-v3 .about-portrait { justify-self: center; margin-inline: auto; }
   .portfolio-v3 .about-metadata > div { min-height: 0; padding: 14px 0; }
   .portfolio-v3 .salla-story__responsibilities { grid-template-columns: minmax(0, 1fr); }
@@ -373,12 +214,6 @@
   .portfolio-v3 .about-portrait { max-width: min(290px, 82vw); }
 }
 
-/* Let diagrams and captions determine the card height at every viewport. */
-.portfolio-v3 .work-visual { flex-direction: column; aspect-ratio: auto; height: auto; min-height: 0; align-self: center; }
-.portfolio-v3 .work-visual > :is(.agent-blueprint, .automation-blueprint, .resume-blueprint, .model-advisor) { flex: none; padding-bottom: 28px; }
-.portfolio-v3 .work-visual > figcaption { position: static; flex: none; width: calc(100% - 48px); margin: 0 24px 20px; padding-top: 14px; line-height: 1.5; }
-.portfolio-v3 .work-visual .diagram-note { line-height: 1.6; }
-.portfolio-v3 .agent-blueprint__title > svg { flex: none; }
 .portfolio-v3 .organization-showcase { padding-block: clamp(48px, 7vw, 96px); border-top: 1px solid var(--li-line); border-bottom: 1px solid var(--li-line); background: transparent; }
 .portfolio-v3 .organization-showcase__header h2 { max-width: 800px; font-size: clamp(2rem, 4.6vw, 4rem); line-height: 1.05; }
 .portfolio-v3 .organization-showcase__intro { max-width: 600px; }
@@ -397,8 +232,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .journey-motion-toggle { display: none; }
-}
-@media (max-width: 480px) {
-  .portfolio-v3 .agent-blueprint__branches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .portfolio-v3 .agent-blueprint__branches > span { overflow-wrap: anywhere; }
 }

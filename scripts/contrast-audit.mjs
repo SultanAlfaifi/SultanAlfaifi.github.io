@@ -184,6 +184,76 @@ const pairs = [
     background: "#030304",
     minimum: 3,
     category: "Borders and controls"
+  },
+  {
+    usage: "Showcase: the bottom of the numeral and headline gradient (#a3a19d) on the ground",
+    foreground: "#A3A19D",
+    background: "#030304",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
+    usage: "Showcase: rose tint (rejected stamp, wrong day) on a rejected page (rose 10% over a raised card)",
+    foreground: "#FFB3C8",
+    background: "#241419",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: secondary text on a rejected page",
+    foreground: "#B1AFAB",
+    background: "#241419",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: apricot tint on the seeded-fault tag (apricot 7% over a raised card)",
+    foreground: "#FFD3A8",
+    background: "#1D1814",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: frost tile number (WAREVA) on the ground",
+    foreground: "#E8F6FF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: glacier label for a verifying stop on the case sheet",
+    foreground: "#47C8F5",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: rose label for a holding stop on the case sheet",
+    foreground: "#FF5C8D",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: apricot label for an asking stop on the case sheet",
+    foreground: "#FFB46A",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: quiet captions (--li-ink-3) on a figure cell (#0b0b0e)",
+    foreground: "#8C8A87",
+    background: "#0B0B0E",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: dark text on the off-white PDF chip and primary links",
+    foreground: "#050507",
+    background: "#F4F2EE",
+    minimum: 4.5,
+    category: "Normal text"
   }
 ];
 
