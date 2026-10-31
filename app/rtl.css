@@ -4,26 +4,13 @@
   --font-display: var(--font-arabic), system-ui, sans-serif;
   --font-mono: var(--font-arabic), system-ui, sans-serif;
 }
-:where(time, .live-clock, .work-story__index, .proof-metric strong, .intro-curtain__count, .work-metrics dd) { font-variant-numeric: tabular-nums; }
+:where(time, .live-clock, .work-story__index, .proof-metric strong, .work-metrics dd) { font-variant-numeric: tabular-nums; }
 
 /* Arabic is cursive: tracking breaks letter joins, and its marks need taller lines. */
 [dir="rtl"] :is(h1, h2, h3, h4, h5, p, li, a, span, strong, small, em, dt, dd, button, summary, label, blockquote, figcaption, time, kbd, input):not([dir="ltr"], [dir="ltr"] *) {
   letter-spacing: 0 !important;
 }
 [dir="rtl"] :is(h1, h2, h3):not([dir="ltr"] *) { line-height: 1.32; }
-/* The Arabic headline gets weight instead of tracking. Its gate line sits about 0.28em under the baseline:
-   below the descenders of و and ي in يستأذنونك, and above the hamzas of the next line at this line height.
-   It is set as an offset from the box's bottom, never with padding, which would push it into that line. */
-[dir="rtl"] .identity-hero h1 { max-width: 15ch; font-size: clamp(2.75rem, 5vw, 5rem); font-weight: 600; line-height: 1.25; }
-[dir="rtl"] .gate-phrase { background-position: right bottom 0.12em, right bottom 0.12em; }
-[dir="rtl"] .hero-run { --run-from: inset(0 0 0 100%); }
-/* Arabic dots and marks run smaller than Latin at the same size, so the card's smallest text gets bigger. */
-[dir="rtl"] .hero-run__chip { font-size: 0.76rem; }
-[dir="rtl"] .run-step__label { font-size: 0.8rem; }
-[dir="rtl"] .identity-hero::before {
-  -webkit-mask-image: radial-gradient(ellipse 46% 58% at 26% 50%, #000 20%, transparent 78%);
-  mask-image: radial-gradient(ellipse 46% 58% at 26% 50%, #000 20%, transparent 78%);
-}
 [dir="rtl"] .split-word { padding-block: 0.14em 0.34em; margin-block: -0.14em -0.34em; }
 /* The recommendations heading has its own tighter rule; Arabic needs the same room as the rest. */
 [dir="rtl"] #recommendations .section-header h2 { line-height: 1.32; }
@@ -87,7 +74,4 @@
   [dir="rtl"] .nav__tools { margin-right: auto; margin-left: 8px; }
   [dir="rtl"] .contact-orb { margin: 0 0 18px; }
   [dir="rtl"] .secrets { right: 12px; }
-}
-@media (max-width: 759px) {
-  [dir="rtl"] .identity-hero h1 { max-width: none; font-size: clamp(2.3rem, 9.4vw, 2.9rem); line-height: 1.3; }
 }

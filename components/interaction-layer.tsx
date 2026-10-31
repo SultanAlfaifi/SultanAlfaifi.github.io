@@ -81,20 +81,6 @@ export function InteractionLayer() {
       }
     }
 
-    // The intro curtain ends by itself in CSS; any key or click skips it.
-    let introTimer = 0;
-    function endIntro() {
-      if (root.dataset.intro !== "play") return;
-      root.dataset.intro = "done";
-      window.removeEventListener("pointerdown", endIntro);
-      window.removeEventListener("keydown", endIntro);
-    }
-    if (root.dataset.intro === "play") {
-      introTimer = window.setTimeout(endIntro, 2600);
-      window.addEventListener("pointerdown", endIntro, { once: true });
-      window.addEventListener("keydown", endIntro, { once: true });
-    }
-
     function handlePointerLeave() {
       release(magnetic, "translate");
       release(tilted, "transform");
@@ -193,9 +179,6 @@ export function InteractionLayer() {
 
     return () => {
       cancelAnimationFrame(frame);
-      window.clearTimeout(introTimer);
-      window.removeEventListener("pointerdown", endIntro);
-      window.removeEventListener("keydown", endIntro);
       counters.disconnect();
       window.clearTimeout(toastTimer);
       document.removeEventListener("pointermove", handlePointerMove);

@@ -12,8 +12,9 @@ const en = {
   },
   motion: { pause: "Pause page motion", resume: "Resume page motion", pauseTitle: "Pause motion", resumeTitle: "Resume motion" },
   hero: {
-    // The words in the headline that carry the approval gate's underline.
-    highlight: "check with you",
+    // The word in the headline that carries the approval gate's underline, and where its second line starts.
+    highlight: "ask",
+    lineTwo: "that ask",
     explore: "See the work",
     getCv: "Get my CV",
     ask: "Ask my agent",
@@ -547,6 +548,7 @@ const ar: UiStrings = {
   motion: { pause: "أوقف حركة الصفحة", resume: "شغّل حركة الصفحة", pauseTitle: "إيقاف الحركة", resumeTitle: "تشغيل الحركة" },
   hero: {
     highlight: "يستأذنونك",
+    lineTwo: "يستأذنونك",
     explore: "شوف أعمالي",
     getCv: "خذ سيرتي",
     ask: "اسأل وكيلي",

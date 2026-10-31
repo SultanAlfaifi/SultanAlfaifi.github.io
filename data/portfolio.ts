@@ -629,7 +629,7 @@ export const identity = {
   eyebrow: "Sultan Alfaifi / Full-Stack Software Engineer",
   role: "Full-Stack Software Engineer specializing in AI Agents",
   headline:
-    "I build AI agents that check with you before they act.",
+    "I build AI agents that ask before they act.",
   summary:
     "I study software engineering at Umm Al-Qura in Makkah, graduating in 2027, and I’m a COOP intern at Salla. Masari, my CV builder, has about 1,600 active users. You can try most of what’s below today.",
   currently: "COOP intern at Salla",
