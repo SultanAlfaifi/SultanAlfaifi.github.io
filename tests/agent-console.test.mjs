@@ -133,3 +133,116 @@ test("the Pages build passes the public agent settings from repository variables
   assert.match(workflow, /NEXT_PUBLIC_AGENT_URL: \$\{\{ vars\.AGENT_URL \}\}/);
   assert.match(workflow, /NEXT_PUBLIC_TURNSTILE_SITE_KEY: \$\{\{ vars\.TURNSTILE_SITE_KEY \}\}/);
 });
+
+// ---------- The AI section: the living orb beside the console ----------
+
+const presenceModule = await import("../components/assistant-presence.ts");
+const stageSource = read("../components/assistant-stage.tsx");
+const runtimeSource = read("../components/runtime-section.tsx");
+const aiCss = read("../app/ai.css");
+
+test("the orb follows the real console: thinking until the first words, speaking while they stream, listening at the input", () => {
+  const ask = terminal.slice(terminal.indexOf("async function askAgent"), terminal.indexOf("function submit("));
+  assert.ok(ask.indexOf('setActivity("agent", "thinking")') < ask.indexOf("withSession("), "thinking starts when the question goes out");
+  assert.match(ask, /pulseVoice\(event\.data\.text\.length\);\s*if \(event\.data\.text\.trim\(\)\) setActivity\("agent", "speaking"\);/, "each streamed piece feeds the voice");
+  assert.match(ask, /if \(THINKING_STEPS\.has\(event\.data\.step\)\) setActivity\("agent", "thinking"\);/, "planning or preparing a tool is thinking again");
+  assert.match(terminal, /const THINKING_STEPS = new Set\(\["plan", "prep", "tool", "result"\]\);/);
+  assert.match(ask, /\} finally \{\s*setActivity\("agent", "idle"\);/, "a finished, failed or aborted answer always lets the orb rest");
+  assert.match(terminal, /if \(outputs\.length\) speakFor\(delay \* outputs\.length \+ 520\);/, "scripted lines are spoken too");
+  assert.match(terminal, /pulseVoice\(output\.text\.length\);/);
+  assert.match(terminal, /input\.addEventListener\("focus", listen\);\s*input\.addEventListener\("blur", leave\);/);
+  // Hooks only: the chat itself is unchanged.
+  assert.match(terminal, /onFocus=\{warmUp\}/);
+  assert.match(terminal, /else scripted\(scriptedIntent\(trimmed\)\)/);
+});
+
+test("the orb blooms only when the visitor says yes to a draft, after the address checks out", () => {
+  const send = cards.slice(cards.indexOf("async function send"), cards.indexOf("return (", cards.indexOf("async function send")));
+  assert.ok(send.indexOf("setError(copy.invalidEmail)") < send.indexOf("markApproved()"), "an invalid address is not a yes");
+  assert.ok(send.indexOf("markApproved()") < send.indexOf("sendEmailToSultan("), "the yes shows when the visitor presses send");
+  assert.equal(terminal.includes("markApproved"), false, "the agent can never approve for the visitor");
+  assert.match(stageSource, /orbRef\.current\?\.bloom\(\);\s*bloomBrandOrb\(\);/, "every yes blooms the orb and the logo");
+});
+
+test("presence: one orb state from what the console reports, with the visitor's yes first", () => {
+  const { setActivity, setAttention, markApproved, approvalCount, presenceState, pulseVoice, voiceLevel, subscribePresence, resetPresence } = presenceModule;
+  resetPresence();
+  let calls = 0;
+  const stop = subscribePresence(() => calls++);
+  try {
+    assert.equal(presenceState(), "idle");
+    assert.equal(voiceLevel(), 0, "silent with nothing arriving");
+    setAttention(true);
+    assert.equal(presenceState(), "listening");
+    setActivity("agent", "thinking");
+    assert.equal(presenceState(), "thinking", "a question in flight outranks the input's focus");
+    setActivity("script", "speaking");
+    assert.equal(presenceState(), "thinking", "the agent's thinking outranks the console's own lines");
+    setActivity("agent", "speaking");
+    pulseVoice(60);
+    assert.equal(presenceState(), "speaking");
+    assert.ok(voiceLevel() > 0.5, "a burst of text is a loud voice");
+    setActivity("agent", "idle");
+    setActivity("script", "idle");
+    assert.equal(presenceState(), "listening", "back to listening while the input still has focus");
+    const before = calls;
+    setAttention(true);
+    assert.equal(calls, before, "repeating a fact is free");
+    markApproved();
+    assert.equal(presenceState(), "approved");
+    markApproved();
+    assert.equal(approvalCount(), 2, "a second yes is counted, so it blooms again");
+    setAttention(false);
+  } finally {
+    stop();
+    resetPresence();
+  }
+  assert.equal(presenceState(), "idle");
+});
+
+test("the AI section: huge headline, the real console, and the orb between them on a phone", async () => {
+  const { createElement } = await import("react");
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const { JSDOM } = await import("jsdom");
+  const { RuntimeSection } = await import("../components/runtime-section.tsx");
+  const { getContent } = await import("../data/i18n.ts");
+  for (const locale of ["en", "ar"]) {
+    const { ui, principles } = getContent(locale);
+    const document = new JSDOM(renderToStaticMarkup(createElement(RuntimeSection, { locale }))).window.document;
+    const section = document.getElementById("runtime");
+    assert.ok(section, `${locale}: the anchor the assistant and the nav use is kept`);
+    assert.equal(section.getAttribute("aria-labelledby"), "runtime-title");
+    assert.equal(document.getElementById("runtime-title").textContent, ui.runtime.title);
+    const order = [".ai-head", ".ai-stage", ".ai-chat"].map((selector) => [...section.querySelectorAll("*")].indexOf(section.querySelector(selector)));
+    assert.deepEqual([...order].sort((a, b) => a - b), order, `${locale}: intro, then the orb, then the console`);
+    assert.ok(section.querySelector(".ai-chat .terminal"), `${locale}: the real console`);
+    assert.equal(section.querySelector(".ai-state__word").textContent, ui.runtime.states.idle, `${locale}: the orb's word is there without JavaScript`);
+    assert.equal(section.querySelector(".ai-orb").getAttribute("aria-label"), ui.runtime.orb);
+    // The tour quotes visible text, so every principle stays on the page word for word.
+    const items = [...section.querySelectorAll(".ai-principles__list li p")].map((item) => item.textContent);
+    assert.deepEqual(items, principles, `${locale}: principles unchanged`);
+    assert.equal(section.querySelector(".ai-principles__title").textContent, ui.runtime.principles, "the section's citation label");
+    for (const word of ["idle", "greeting", "listening", "thinking", "speaking", "approved", "gravity"]) assert.ok(ui.runtime.states[word], `${locale}: a word for ${word}`);
+  }
+  const layout = read("../app/layout.tsx");
+  assert.ok(layout.includes('import "./ai.css";'), "the section's styles are loaded");
+  assert.ok(layout.indexOf('import "./living.css";') < layout.indexOf('import "./ai.css";'), "the section's styles load after the design system");
+});
+
+test("the AI section is complete at rest: its entrance only hides what JavaScript will reveal, with motion on", () => {
+  const motion = aiCss.indexOf("@media (prefers-reduced-motion: no-preference)");
+  assert.ok(motion > 0);
+  for (const match of aiCss.matchAll(/data-arrive="(wait|play)"/g)) {
+    assert.ok(match.index > motion, "every entrance rule sits in the motion block");
+    assert.match(aiCss.slice(aiCss.lastIndexOf("\n", match.index), match.index), /html:not\(\[data-motion="off"\]\)/, "and respects the site's Motion switch");
+  }
+  // The docked panel is position: fixed inside the section, so no ancestor of it may be transformed or hidden.
+  assert.match(aiCss, /\[data-arrive="wait"\] \.terminal-shell:not\(\.terminal-shell--docked\) > \.terminal/);
+  assert.doesNotMatch(aiCss, /\.ai-chat \{[^}]*(transform|opacity|filter)/);
+  assert.match(stageSource, /subscribeMotion\(\(\) => \{\s*if \(motionAllowed\(\)\) return;\s*delete section\.dataset\.arrive;/, "turning motion off mid-wait shows everything");
+  // Small text stays readable, and phone taps are full size.
+  for (const [, size] of aiCss.matchAll(/font-size: ([\d.]+)rem/g)) assert.ok(+size >= 0.78125, `${size}rem is under 12.5px`);
+  const phone = aiCss.slice(aiCss.indexOf("@media (max-width: 760px)"), aiCss.indexOf("@media (pointer: coarse)"));
+  for (const part of [".terminal__bar button { min-height: 44px; }", ".terminal__chips button { min-height: 44px; }", ".terminal__send { width: 44px; height: 44px; }"]) assert.ok(phone.includes(part), part);
+  assert.match(runtimeSource, /aria-labelledby="runtime-title"/);
+});

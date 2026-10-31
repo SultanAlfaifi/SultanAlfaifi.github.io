@@ -1,0 +1,376 @@
+/* ==========================================================================================
+   The AI section (#runtime, components/runtime-section.tsx): a huge headline, the real assistant console
+   in raised glass, and the big living orb beside it that shows what the assistant is doing.
+   The orb follows the console through components/assistant-presence.ts; the stage mirrors its state on
+   the section as data-presence, so the console's edge can answer it. Loaded after app/living.css.
+   The rest state is the finished state: everything that moves is inside the motion blocks.
+   ========================================================================================== */
+
+@property --ai-glow { syntax: "<color>"; inherits: true; initial-value: rgb(143 107 255 / 22%); }
+
+.portfolio-v3 .ai-section {
+  overflow-x: clip;
+  border-top: 1px solid var(--li-line);
+  background: var(--li-bg);
+  color: var(--li-ink);
+}
+
+/* Desktop: the orb on the reading side, the headline and the console beside it. The orb stays in view
+   (sticky) while the console scrolls past, so it is beside every answer as it types. */
+.ai-grid {
+  --ai-orb-size: min(620px, 46vw);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  grid-template-areas: "stage head" "stage chat";
+  column-gap: clamp(32px, 5vw, 88px);
+  align-items: start;
+}
+.ai-head { grid-area: head; min-width: 0; padding-top: clamp(8px, 2vw, 32px); }
+.ai-chat { grid-area: chat; min-width: 0; margin-top: clamp(28px, 3vw, 44px); }
+
+.ai-eyebrow { color: var(--li-ink-3); }
+.ai-eyebrow::before { width: 22px; background: var(--li-aurora); opacity: 1; }
+.ai-title {
+  margin: 16px 0 0;
+  color: var(--li-ink);
+  font-size: clamp(2.75rem, 5.4vw, 5.5rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+[lang="ar"] .ai-title { line-height: 1.2; letter-spacing: 0; }
+.ai-title__word { display: inline-block; }
+.ai-lede {
+  max-width: 46ch;
+  margin: 22px 0 0;
+  color: var(--li-ink-2);
+  font-size: clamp(1.0625rem, 1.2vw, 1.1875rem);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+[lang="ar"] .ai-lede { line-height: 1.85; }
+
+/* ---------- The stage: the living orb, a pool of its light, and the word for what it is doing ---------- */
+.ai-stage {
+  grid-area: stage;
+  position: sticky;
+  top: max(88px, calc(50svh - var(--ai-orb-size) * 0.52));
+  z-index: 0;
+  display: grid;
+  justify-items: center;
+  align-self: start;
+  margin-inline: calc(var(--ai-orb-size) * -0.05);
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ai-stage[data-gravity] { cursor: grabbing; }
+.ai-stage .ai-orb { --li-orb-size: var(--ai-orb-size); z-index: 1; }
+
+/* The colour of the light the orb throws around it, one per state. Crossfades as the state changes. */
+.ai-stage { --ai-glow: rgb(var(--li-iris-rgb) / 22%); transition: --ai-glow 1.2s ease; }
+.ai-stage[data-state="listening"] { --ai-glow: rgb(var(--li-glacier-rgb) / 26%); }
+.ai-stage[data-state="thinking"] { --ai-glow: rgb(var(--li-iris-rgb) / 32%); }
+.ai-stage[data-state="speaking"] { --ai-glow: rgb(var(--li-rose-rgb) / 24%); }
+.ai-stage[data-state="approved"] { --ai-glow: rgb(var(--li-apricot-rgb) / 34%); }
+
+/* Ambient light spilling past the canvas onto the black, so the section is lit by the orb. */
+.ai-stage::before {
+  content: "";
+  position: absolute;
+  inset: -22% -30%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--ai-glow), transparent 72%);
+  opacity: 0.55;
+}
+/* A pool of light on the floor under the sphere, like a product on a stage. */
+.ai-stage__floor {
+  position: absolute;
+  top: calc(var(--ai-orb-size) * 0.8);
+  left: 50%;
+  width: calc(var(--ai-orb-size) * 0.62);
+  height: calc(var(--ai-orb-size) * 0.09);
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ai-glow), transparent);
+  opacity: 0.9;
+  pointer-events: none;
+}
+/* One hairline orbit round the sphere. A comet of light runs on it while the assistant thinks. */
+.ai-stage__ring {
+  position: absolute;
+  top: calc(var(--ai-orb-size) * 0.14);
+  left: 50%;
+  width: calc(var(--ai-orb-size) * 0.72);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  border: 1px solid rgb(var(--li-ink-rgb) / 7%);
+  pointer-events: none;
+}
+.ai-stage__ring::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(from var(--li-angle), transparent 0deg 250deg, transparent 250deg, color-mix(in srgb, var(--li-tint-iris) 85%, transparent) 352deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.ai-stage[data-state="thinking"] .ai-stage__ring::after { opacity: 1; }
+.ai-stage[data-state="listening"] .ai-stage__ring { border-color: rgb(var(--li-glacier-rgb) / 18%); }
+
+/* The word under the orb: a lamp in the state's colour and what the assistant is doing, in the page's language. */
+.ai-state {
+  position: relative;
+  z-index: 2;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  margin: calc(var(--ai-orb-size) * -0.12) 0 0;
+  padding: 0 14px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  /* 80% ground: the word keeps AA contrast even over the brightest light the orb throws (contrast-audit). */
+  background: rgb(var(--li-bg-rgb) / 80%);
+  box-shadow: var(--li-highlight);
+  color: var(--li-ink-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ai-state__lamp {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ai-lamp, var(--li-ink-3));
+  box-shadow: 0 0 10px 1px var(--ai-lamp, transparent);
+  transition: background-color 0.5s ease, box-shadow 0.5s ease;
+}
+.ai-stage[data-state="listening"] { --ai-lamp: var(--li-glacier); }
+.ai-stage[data-state="thinking"] { --ai-lamp: var(--li-iris); }
+.ai-stage[data-state="speaking"] { --ai-lamp: var(--li-rose); }
+.ai-stage[data-state="approved"] { --ai-lamp: var(--li-apricot); }
+
+/* ---------- The console, in raised glass (the open side panel keeps its own look in app/agent.css) ---------- */
+.ai-chat .terminal-shell:not(.terminal-shell--docked) .terminal {
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r);
+  background: var(--li-glass-raised);
+  box-shadow: var(--li-shadow), 0 0 0 1px rgb(0 0 0 / 60%), var(--li-highlight);
+}
+.runtime-section .terminal::before {
+  background: radial-gradient(520px circle at var(--gx, -600px) var(--gy, -600px), rgb(255 255 255 / 5%), transparent 60%);
+}
+/* The edge answers the orb: an aurora ring while the assistant thinks, a quiet one while it answers,
+   apricot when the visitor said yes. It replaces the pointer-following edge of .glow-card here. */
+.runtime-section .terminal::after {
+  inset: 0;
+  z-index: 3;
+  padding: 1px;
+  background: var(--li-aurora-ring);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.runtime-section[data-presence="thinking"] .terminal::after { opacity: 0.95; }
+.runtime-section[data-presence="speaking"] .terminal::after { opacity: 0.45; }
+.runtime-section[data-presence="approved"] .terminal::after { background: var(--li-apricot); opacity: 0.8; }
+
+.runtime-section .terminal__bar {
+  gap: 12px;
+  padding: 10px 12px;
+  padding-inline-start: 18px;
+  border-bottom: 1px solid var(--li-line);
+  background: rgb(255 255 255 / 2.5%);
+}
+.runtime-section .terminal__bar p { color: var(--li-ink-3); font-size: 0.8125rem; }
+.runtime-section .terminal__dots i,
+.runtime-section .terminal__dots i:first-child,
+.runtime-section .terminal__dots i:nth-child(2),
+.runtime-section .terminal__dots i:nth-child(3) { width: 9px; height: 9px; background: rgb(var(--li-ink-rgb) / 16%); }
+.runtime-section .terminal__bar button {
+  min-height: 36px;
+  border-color: var(--li-line-2);
+  background: var(--li-glass);
+  color: var(--li-ink);
+  font-size: 0.8125rem;
+}
+.runtime-section .terminal__bar .terminal__dock { width: 36px; }
+.runtime-section .terminal__bar button:hover { border-color: transparent; background: var(--li-ink); color: var(--li-on-light); }
+.runtime-section .terminal__live { color: var(--li-tint-glacier); font-size: 0.8125rem; }
+.runtime-section .terminal__live::before { background: var(--li-glacier); box-shadow: 0 0 10px 1px rgb(var(--li-glacier-rgb) / 70%); }
+.runtime-section .terminal__prompt { color: var(--li-tint-iris); }
+.runtime-section .terminal__line--ok { color: var(--li-tint-glacier); }
+.runtime-section .terminal__line--warn { color: var(--li-tint-apricot); }
+.runtime-section .terminal__line--accent { color: var(--li-tint-iris); }
+.runtime-section .agent-sources { font-size: 0.8125rem; }
+
+.ai-chat .terminal-shell:not(.terminal-shell--docked) .terminal__input {
+  margin: 4px 12px 0;
+  padding-block: 6px;
+  padding-inline: 16px 6px;
+  border: 1px solid var(--li-line-2);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 3%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ai-chat .terminal-shell:not(.terminal-shell--docked) .terminal__input:focus-within {
+  border-color: rgb(var(--li-glacier-rgb) / 60%);
+  box-shadow: 0 0 0 3px rgb(var(--li-glacier-rgb) / 14%);
+}
+.runtime-section .terminal__input textarea { caret-color: var(--li-glacier); }
+.runtime-section .terminal__input textarea::placeholder { color: var(--li-ink-3); }
+.runtime-section .terminal__send { background: var(--li-ink); color: var(--li-on-light); }
+.runtime-section .terminal__send:disabled { background: rgb(255 255 255 / 8%); color: var(--li-ink-3); }
+.runtime-section .terminal__chips { gap: 8px; padding: 14px 12px 16px; }
+.runtime-section .terminal__chips--agent { padding-top: 0; }
+.runtime-section .terminal__chips button {
+  min-height: 38px;
+  border-color: var(--li-line-2);
+  background: var(--li-glass);
+  color: var(--li-ink-2);
+  font-size: 0.8125rem;
+}
+.runtime-section .terminal__chips button:hover { border-color: transparent; background: var(--li-ink); color: var(--li-on-light); }
+.runtime-section .terminal__chips--agent button { border-color: rgb(var(--li-glacier-rgb) / 32%); color: var(--li-ink); }
+.ai-chat .terminal__privacy { padding-inline: 4px; color: var(--li-ink-3); font-size: 0.8125rem; }
+.ai-chat .terminal__privacy a { color: var(--li-tint-glacier); }
+.ai-chat .terminal-placeholder { border-color: rgb(var(--li-glacier-rgb) / 35%); border-radius: var(--li-r); background: var(--li-glass); color: var(--li-ink-2); }
+.ai-chat .terminal-placeholder button { border-color: var(--li-line-3); color: var(--li-ink); }
+.ai-chat .terminal-placeholder button:hover { border-color: transparent; background: var(--li-ink); color: var(--li-on-light); }
+.runtime-section :is(.terminal__bar button, .terminal__chips button, .terminal__send, .terminal-placeholder button):focus-visible {
+  outline: 2px solid var(--li-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- How I build agents: quiet glass rows, the rule set bold, the evidence after it ---------- */
+.ai-principles {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+  gap: 24px clamp(32px, 5vw, 88px);
+  margin-top: clamp(72px, 9vw, 128px);
+}
+.ai-principles__title {
+  margin: 0;
+  color: var(--li-ink);
+  font-size: clamp(1.625rem, 2.4vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+[lang="ar"] .ai-principles__title { letter-spacing: 0; }
+.ai-principles__list { display: grid; margin: 0; padding: 0; list-style: none; }
+.ai-principles__list li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  padding: 22px 0;
+  border-top: 1px solid var(--li-line-2);
+}
+.ai-principles__list li:last-child { border-bottom: 1px solid var(--li-line-2); }
+.ai-principles__number {
+  padding-top: 3px;
+  background: var(--li-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font: 600 0.875rem/1.7 var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  /* Each numeral takes the next slice of the aurora, apricot at the first to glacier at the last. */
+  background-size: 500% 100%;
+}
+.ai-principles__list li:nth-child(2) .ai-principles__number { background-position: 25% 0; }
+.ai-principles__list li:nth-child(3) .ai-principles__number { background-position: 50% 0; }
+.ai-principles__list li:nth-child(4) .ai-principles__number { background-position: 75% 0; }
+.ai-principles__list li:nth-child(5) .ai-principles__number { background-position: 100% 0; }
+.ai-principles__list p { margin: 0; color: var(--li-ink-2); font-size: 1.0625rem; line-height: 1.7; }
+.ai-principles__list strong { color: var(--li-ink); font-weight: 600; }
+
+/* ---------- Tablets and phones: intro, then the orb, then the console ---------- */
+@media (max-width: 960px) {
+  .ai-grid {
+    --ai-orb-size: min(340px, 78vw);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "stage" "chat";
+  }
+  .ai-head { padding-top: 0; }
+  .ai-stage { position: relative; top: auto; margin: -8px auto calc(var(--ai-orb-size) * -0.04); }
+  .ai-stage::before { inset: -10% -18%; }
+  .ai-chat { margin-top: 18px; }
+  .ai-principles { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .ai-grid { --ai-orb-size: min(290px, 74vw); }
+  .ai-title { font-size: clamp(2.5rem, 11vw, 3.25rem); }
+  .ai-lede { font-size: 1.0625rem; }
+  /* The orb and the whole console fit on one phone screen together, so the light stays in view while
+     an answer types. */
+  .ai-chat .terminal-shell:not(.terminal-shell--docked) .terminal__log { height: clamp(250px, 38svh, 360px); }
+  .runtime-section .terminal__bar button { min-height: 44px; }
+  .runtime-section .terminal__bar .terminal__dock { width: 44px; }
+  .runtime-section .terminal__chips button { min-height: 44px; }
+  .runtime-section .terminal__send { width: 44px; height: 44px; }
+  .ai-principles__list li { grid-template-columns: 40px minmax(0, 1fr); padding: 18px 0; }
+  .ai-principles__list p { font-size: 1rem; }
+}
+@media (pointer: coarse) {
+  .runtime-section .terminal__chips button,
+  .runtime-section .terminal__bar button { min-height: 44px; }
+  .runtime-section .terminal__bar .terminal__dock { width: 44px; }
+}
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .ai-state__word { animation: ai-word-in 0.5s var(--li-ease) both; }
+  html:not([data-motion="off"]) .ai-stage__ring::after { animation: li-spin 2.2s linear infinite; }
+  html:not([data-motion="off"]) .ai-stage:not([data-state="thinking"]) .ai-stage__ring::after { animation-play-state: paused; }
+  html:not([data-motion="off"]) .runtime-section[data-presence="thinking"] .terminal::after { animation: li-spin 2.6s linear infinite; }
+  html:not([data-motion="off"]) .ai-stage .ai-orb { transition: scale 0.7s var(--li-ease-spring), filter 0.7s ease; }
+  html:not([data-motion="off"]) .ai-stage[data-gravity] .ai-orb { scale: 0.9; filter: brightness(1.25) saturate(1.2); }
+
+  /* The entrance. The section waits (its data-arrive is "wait") only when the page wakes up with it below the
+     fold and motion on; it plays once the headline comes into view. Elements first, then the text:
+     the orb emerges, the headline arrives word by word, blur to sharp, a light passing through it,
+     then the copy and the console rise. Readable by ~1.6 s, settled by ~2.4 s. */
+  html:not([data-motion="off"]) .ai-section[data-arrive="wait"] :is(.ai-stage, .ai-eyebrow, .ai-title__word, .ai-lede),
+  html:not([data-motion="off"]) .ai-section[data-arrive="wait"] .terminal-shell:not(.terminal-shell--docked) > .terminal { opacity: 0; }
+  html:not([data-motion="off"]) .ai-section[data-arrive="play"] .ai-stage { animation: ai-emerge 1.05s var(--li-ease-spring) both; }
+  html:not([data-motion="off"]) .ai-section[data-arrive="play"] .ai-eyebrow { animation: ai-rise 0.7s var(--li-ease) 0.2s both; }
+  html:not([data-motion="off"]) .ai-section[data-arrive="play"] .ai-title__word {
+    animation: ai-title-word 0.95s var(--li-ease-spring) both;
+    animation-delay: calc(0.32s + var(--i, 0) * 0.09s);
+  }
+  html:not([data-motion="off"]) .ai-section[data-arrive="play"] .ai-lede { animation: ai-rise-soft 0.8s var(--li-ease) 0.78s both; }
+  html:not([data-motion="off"]) .ai-section[data-arrive="play"] .terminal-shell:not(.terminal-shell--docked) > .terminal { animation: ai-card 0.9s var(--li-ease-spring) 0.92s both; }
+}
+@keyframes ai-emerge {
+  from { opacity: 0; transform: scale(0.86); filter: blur(18px); }
+  60% { filter: blur(0); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes ai-rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes ai-rise-soft { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+/* Blur to sharp with a slight rise; a light passes through each word as it lands, then it settles to ink. */
+@keyframes ai-title-word {
+  0% { opacity: 0; transform: translateY(0.32em); filter: blur(12px); color: var(--li-ink-3); text-shadow: none; }
+  55% { opacity: 1; filter: blur(0); color: #ffffff; text-shadow: 0 0 28px rgb(255 255 255 / 55%), 0 0 60px rgb(var(--li-iris-rgb) / 45%); }
+  100% { opacity: 1; transform: none; filter: none; color: var(--li-ink); text-shadow: none; }
+}
+@keyframes ai-card { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes ai-word-in { from { opacity: 0; filter: blur(4px); } to { opacity: 1; filter: none; } }
+
+@media print {
+  .ai-section * { opacity: 1 !important; animation: none !important; }
+  .ai-stage { position: static; }
+}

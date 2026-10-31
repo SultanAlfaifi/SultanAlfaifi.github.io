@@ -258,16 +258,18 @@ test("responsive and reduced-motion safeguards are present", () => {
 const readComponent = (name) => readFileSync(new URL(`../components/${name}`, import.meta.url), "utf8");
 
 test("signature interactions stay decorative and respect motion preferences", () => {
-  const field = readComponent("agent-field.tsx");
+  const stage = readComponent("assistant-stage.tsx");
   const layer = readComponent("interaction-layer.tsx");
   const terminal = readComponent("agent-terminal.tsx");
   const palette = readComponent("command-palette.tsx");
   const signatureCss = readFileSync(new URL("../app/signature.css", import.meta.url), "utf8");
 
-  assert.match(field, /className="agent-field" aria-hidden="true"/);
-  assert.match(field, /IntersectionObserver/);
-  assert.match(field, /visibilitychange/);
-  assert.match(field, /motionAllowed\(\)/);
+  // The AI section's orb is the shared living orb (it pauses off screen and in hidden tabs itself); the
+  // stage's word is decoration, and its entrance and hello only run while motion is allowed.
+  assert.match(stage, /<LivingOrb ref=\{orbRef\} className="ai-orb"/);
+  assert.match(stage, /<p className="ai-state" aria-hidden="true">/);
+  assert.match(stage, /if \(motionAllowed\(\) && below && "IntersectionObserver" in window\) section\.dataset\.arrive = "wait";/);
+  assert.match(stage, /if \(greeted \|\| !motionAllowed\(\)\) return;/);
   assert.match(layer, /\(hover: hover\) and \(pointer: fine\)/);
   assert.match(layer, /nodeValue/);
   assert.match(terminal, /role="log"/);
@@ -311,26 +313,27 @@ test("the hero sheds its loops: no network canvas, scramble, shine, or ticker, a
   assert.doesNotMatch(heroCss.slice(0, motion), /animation:(?! none)|transition:/, "the rest state is the default style");
 });
 
-test("the agent network moved behind the console, so the gravity secret keeps a trigger", async () => {
+test("the starfield is gone and the gravity secret lives on the AI section's living orb", async () => {
   const runtime = readComponent("runtime-section.tsx");
-  const field = readComponent("agent-field.tsx");
+  const stage = readComponent("assistant-stage.tsx");
   const { SECRET_IDS } = await import("../components/secrets.ts");
   const { getContent } = await import("../data/i18n.ts");
+  assert.throws(() => readComponent("agent-field.tsx"), /ENOENT/, "the AgentField starfield was replaced by the living orb");
   assert.ok(SECRET_IDS.includes("gravity"));
-  assert.match(runtime, /<AgentField labels=\{fieldLabels\} \/>/);
-  assert.ok(runtime.indexOf("<AgentField") < runtime.indexOf("<AgentTerminal"), "the canvas is painted behind the console");
-  assert.match(runtime, /\.\.\.ui\.runtime\.concepts/);
-  assert.match(runtime, /data-cursor=\{ui\.runtime\.cursor\}/);
-  assert.match(field, /unlockSecret\("gravity"\)/);
-  assert.match(field, /closest\("a, button, input, textarea, video, \.terminal-slot"\)/, "typing in the console never starts a well");
-  assert.match(readFileSync(new URL("../app/experience.css", import.meta.url), "utf8"), /\.runtime-section\[data-gravity\] \{ cursor: grabbing;/);
+  assert.ok(runtime.indexOf("<AssistantStage") < runtime.indexOf("<AgentTerminal"), "on a phone the orb comes before the console");
+  assert.match(stage, /data-cursor=\{copy\.cursor\}/, "the cursor ring says press and hold over the orb");
+  // Only a press that lasted, then a release, finds it; a scroll that starts on the orb cancels the press.
+  assert.match(stage, /if \(gravityRef\.current !== "held"\) return;[\s\S]*?unlockSecret\("gravity"\)/);
+  assert.match(stage, /window\.addEventListener\("pointercancel", cancel\)/);
+  assert.doesNotMatch(stage.slice(stage.indexOf("const cancel"), stage.indexOf('window.addEventListener("pointerup"')), /unlockSecret/);
+  assert.match(readFileSync(new URL("../app/ai.css", import.meta.url), "utf8"), /\.ai-stage\[data-gravity\] \{ cursor: grabbing; \}/);
   for (const locale of ["en", "ar"]) {
     const { ui } = getContent(locale);
-    assert.equal(ui.runtime.concepts.length, 4);
+    assert.equal("concepts" in ui.runtime, false, `${locale}: no labels left for the removed network`);
     assert.equal("concepts" in ui.hero || "ticker" in ui.hero || "cursor" in ui.hero, false, `${locale}: the hero keeps no copy for the moved parts`);
   }
-  assert.match(getContent("en").ui.secrets.items.gravity.hint, /behind the AI console/);
-  assert.match(getContent("ar").ui.secrets.items.gravity.hint, /خلف طرفية المساعد/);
+  assert.match(getContent("en").ui.secrets.items.gravity.hint, /living light beside the AI assistant/);
+  assert.match(getContent("ar").ui.secrets.items.gravity.hint, /الضوء الحيّ بجانب المساعد الذكي/);
 });
 
 test("profile updates from X, LinkedIn, and GitHub keep their sources", () => {

@@ -13,6 +13,7 @@ import "./rtl.css";
 import "./living.css";
 import "./hero.css";
 import "./showcase.css";
+import "./ai.css";
 
 // One family for the whole site, in both languages: IBM Plex Sans Arabic carries Arabic and Latin glyphs.
 const plexArabic = IBM_Plex_Sans_Arabic({

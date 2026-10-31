@@ -150,6 +150,24 @@ orb.setState("speaking"); orb.setAmplitude(0.6); orb.bloom(); orb.setFps(8); orb
 
 The engine does not read the motion preference itself; pass `still` and call `setStill`.
 
+### The AI section's orb follows the real console
+
+`components/assistant-stage.tsx` (styles in `app/ai.css`) is the big orb beside the assistant console in
+`#runtime`. It reads `components/assistant-presence.ts`, a tiny store the console reports plain facts to:
+
+| The console reports | Orb state |
+|---|---|
+| `markApproved()`: the visitor pressed send on a draft the agent wrote | `approved` (blooms, and the logo blooms) |
+| `setActivity("agent", "thinking")`: from the question to the first words, and on plan / prep / tool / result steps | `thinking` |
+| `setActivity("agent" or "script", "speaking")` with `pulseVoice(characters)` per piece | `speaking`, its voice from the stream rate (`voiceLevel()`) |
+| `setAttention(true)`: the input has focus (keystrokes pulse the voice too) | `listening` |
+| nothing | `idle` |
+
+The stage mirrors the state on the section as `data-presence`, so the console's edge answers it (an aurora
+ring while thinking). It plays the section's entrance (elements first, then the headline word by word) and a
+short hello (listening, speaking, idle) the first time the section is seen, both only with motion on. Press and
+hold the orb, then let go: that is the "gravity" secret.
+
 ## The older tokens
 
 The older stylesheets were written for light "paper" sections with a few dark "ink" bands. On the black

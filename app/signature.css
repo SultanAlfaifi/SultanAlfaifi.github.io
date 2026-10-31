@@ -176,9 +176,6 @@ html[data-motion="off"] .glow-card::after { display: none; }
 
 /* ---------- Runtime console ---------- */
 .portfolio-v3 .runtime-section { position: relative; isolation: isolate; background: var(--ink); color: var(--paper); --focus-ring: var(--mint); }
-.runtime-section .section-header h2 { color: var(--paper); }
-.portfolio-v3 .runtime-section .section-header__copy > p { color: #cfcdc8; }
-.runtime-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
 .terminal {
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 12%);
@@ -216,10 +213,6 @@ html[data-motion="off"] .glow-card::after { display: none; }
 .terminal__chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 18px; }
 .terminal__chips button { min-height: 36px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 999px; background: rgb(255 255 255 / 3%); color: #e5e1d8; font: inherit; font-size: 0.8rem; cursor: pointer; transition: background-color 200ms ease, color 200ms ease; }
 .terminal__chips button:hover { background: var(--mint); color: var(--ink); }
-.runtime-principles h3 { margin: 6px 0 22px; color: var(--paper); font-size: clamp(1.5rem, 2.4vw, 2rem); }
-.runtime-principles ol { margin: 0; padding: 0; list-style: none; }
-.runtime-principles li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; padding: 16px 0; border-top: 1px solid var(--hairline-dark); color: #ebe8e1; font-size: 1.02rem; line-height: 1.5; }
-.runtime-principles li > span { color: var(--mint); font: 500 0.74rem/1.9 var(--font-mono), monospace; }
 
 /* ---------- Certifications ---------- */
 .certifications { margin-top: 36px; }
@@ -319,7 +312,6 @@ html[data-agent-mode="on"] body { cursor: crosshair; }
   .proof-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proof-card--lead { grid-column: 1 / -1; grid-row: auto; }
-  .runtime-layout { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 840px) {
   .nav__tools { margin-left: auto; margin-right: 8px; }
