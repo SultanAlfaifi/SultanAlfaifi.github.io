@@ -169,7 +169,7 @@ test("corrected community brands and achievement mappings stay explicit", () => 
 test("hero thesis remains concise and direct", () => {
   assert.match(
     dataSource,
-    /"I build AI agents that check with you before they act\."/
+    /"I build AI agents that ask before they act\."/
   );
 });
 
@@ -278,30 +278,35 @@ test("signature interactions stay decorative and respect motion preferences", ()
   assert.match(signatureCss, /html\[data-motion="off"\] \.portfolio-v3 \*/);
 });
 
-test("the hero sheds its loops: no network canvas, scramble, aurora, shine, or ticker", () => {
+test("the hero sheds its loops: no network canvas, scramble, shine, or ticker, and its motion ends", () => {
   const hero = readComponent("hero.tsx");
   const signatureCss = readFileSync(new URL("../app/signature.css", import.meta.url), "utf8");
   const experienceCss = readFileSync(new URL("../app/experience.css", import.meta.url), "utf8");
+  const heroCss = readFileSync(new URL("../app/hero.css", import.meta.url), "utf8");
   assert.throws(() => readComponent("decode-text.tsx"), /ENOENT/, "the per-letter scramble is gone; it broke Arabic letter joins");
   assert.doesNotMatch(hero, /AgentField|DecodeText|aurora|hero-ticker|PaletteTrigger|<video/);
   for (const rule of [/\.hero-ticker/, /\.decode/, /text-shine/, /ticker-run/]) assert.doesNotMatch(signatureCss, rule);
-  assert.doesNotMatch(experienceCss, /\.signature-hero|\.intro-film/);
-  // Everything that still moves in the hero sits in one motion block, and none of it repeats forever.
-  const heroCss = signatureCss.slice(signatureCss.indexOf("/* ---------- Hero:"), signatureCss.indexOf("/* ---------- Work ---------- */"));
+  assert.doesNotMatch(experienceCss, /\.signature-hero|\.intro-film|\.intro-curtain/, "the intro curtain is gone; the hero's own entrance replaced it");
+  assert.throws(() => readComponent("intro-curtain.tsx"), /ENOENT/);
+  assert.doesNotMatch(signatureCss, /\.identity-hero__layout|\.hero-run \{|\.gate-phrase/, "the hero's rules live in hero.css");
+  // Everything that moves in the hero sits in one motion block, and none of it repeats forever.
   const motion = heroCss.indexOf("@media (prefers-reduced-motion: no-preference)");
   assert.ok(motion > 0);
   assert.doesNotMatch(heroCss, /infinite/);
-  assert.match(heroCss.slice(motion), /^@media \(prefers-reduced-motion: no-preference\) \{\s*html:not\(\[data-motion="off"\]\)/);
-  assert.match(heroCss, /animation: hero-pulse 1\.5s ease-out 3;/, "the status dot pulses three times, then stops");
+  for (const rule of heroCss.slice(motion).split("\n").filter((line) => /^\s+html[^{]*\{ animation:/.test(line))) {
+    assert.match(rule, /:not\(\[data-motion="off"\]\)/, `every moving rule follows the Motion switch: ${rule.trim().slice(0, 80)}`);
+  }
+  assert.match(heroCss, /animation: hero-ping 1\.5s ease-out 3;/, "the status dot pings three times, then stops");
   assert.doesNotMatch(heroCss, /@keyframes status-pulse/, "the console's live dot keeps its own keyframes");
   // WCAG 2.2.2: every movement ends within 5 s, so nothing needs a pause control.
   const seconds = (time) => (time.endsWith("ms") ? Number.parseFloat(time) / 1000 : Number.parseFloat(time));
   for (const [, name, duration, count] of heroCss.slice(motion).matchAll(/animation: ([\w-]+) ([\d.]+m?s)\b[^;]*?(?: (\d+))?;/g)) {
     assert.ok(seconds(duration) * Number(count ?? 1) <= 5, `${name} runs ${duration} × ${count ?? 1}, longer than 5 s`);
   }
-  // Only transform, opacity, and clip-path move.
+  // Mostly transform and opacity. The entrance alone also eases a blur to sharp (filter) and passes one
+  // sweep of light along the headline (background-position); the asking card turns its edge (--li-angle).
   for (const [, body] of heroCss.matchAll(/@keyframes [\w-]+ \{([\s\S]*?\})\s*\}/g)) {
-    for (const [, property] of body.matchAll(/([\w-]+):/g)) assert.ok(["transform", "opacity", "clip-path", "stroke-dashoffset"].includes(property), `a hero keyframe animates ${property}`);
+    for (const [, property] of body.matchAll(/([\w-]+):/g)) assert.ok(["transform", "opacity", "filter", "background-position", "--li-angle"].includes(property), `a hero keyframe animates ${property}`);
   }
   assert.doesNotMatch(heroCss.slice(0, motion), /animation:(?! none)|transition:/, "the rest state is the default style");
 });

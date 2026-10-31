@@ -14,7 +14,6 @@ import { HelpSection } from "./help-section";
 import { Hero } from "./hero";
 import { IdeasSection } from "./ideas-section";
 import { InteractionLayer } from "./interaction-layer";
-import { IntroCurtain } from "./intro-curtain";
 import { JourneyTimeline } from "./journey-timeline";
 import { KineticBand } from "./kinetic-band";
 import { Navbar } from "./navbar";
@@ -32,7 +31,6 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
   const { dir, ui } = getContent(locale);
   return (
     <div className="locale-root" lang={locale} dir={dir}>
-      <IntroCurtain />
       <div className="scroll-progress" aria-hidden="true" />
       <a className="skip-link" href="#main-content">
         {ui.skip}

@@ -52,17 +52,29 @@ test("English devices and crawlers stay on /, and crawlers never see the welcome
   assert.equal(boot({ webdriver: true }).welcome, undefined);
 });
 
-test("the welcome screen shows once, on either home page, and replaces the intro curtain", () => {
+test("the welcome screen shows once, on either home page, and the hero's entrance waits behind it", () => {
   const first = boot();
   assert.equal(first.welcome, "show");
-  assert.equal(first.intro, undefined);
+  assert.equal(first.intro, "play", "set before paint, so the hero is ready to arrive as the screen closes");
   const arabic = boot({ path: "/ar/" });
   assert.equal(arabic.welcome, "show");
   assert.deepEqual([arabic.lang, arabic.dir], ["ar", "rtl"]);
   const returning = boot({ stored: { "portfolio-visitor": "hiring" } });
   assert.equal(returning.welcome, undefined);
   assert.equal(returning.visitor, "hiring", "the page is arranged before first paint");
-  assert.equal(returning.intro, "play");
+  assert.equal(returning.intro, "play", "the entrance plays on every visit to the top of a home page");
+  assert.equal(boot({ path: "/ar/", stored: { "portfolio-visitor": "browse" } }).intro, "play");
+});
+
+test("the hero's entrance never hides a page that should be there at once", () => {
+  const visitor = { "portfolio-visitor": "browse" };
+  assert.equal(boot({ stored: visitor, hash: "#work" }).intro, undefined, "a link to a place lands on it, finished");
+  assert.equal(boot({ stored: visitor, search: "?cv=general~x" }).intro, undefined);
+  assert.equal(boot({ stored: visitor, reduced: true }).intro, undefined, "reduced motion gets the finished page");
+  assert.equal(boot({ stored: { ...visitor, "portfolio-motion": "off" } }).intro, undefined, "so does the site's Motion switch");
+  assert.equal(boot({ stored: visitor, userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1)" }).intro, undefined, "crawlers read the finished page");
+  assert.equal(boot({ stored: visitor, path: "/agent-evals/" }).intro, undefined, "only the home pages have the hero");
+  assert.equal(boot({ languages: ["ar-SA"] }).intro, undefined, "a page that is about to redirect plays nothing");
 });
 
 test("links to a specific place skip the welcome screen; ?welcome always shows it", () => {

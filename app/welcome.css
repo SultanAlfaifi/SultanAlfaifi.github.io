@@ -72,12 +72,7 @@ html[data-welcome="show"] .welcome,
 .welcome__enter { min-height: 54px; padding-inline: 30px; border: 0; background: var(--li-ink); color: var(--li-on-light); font-size: 1rem; font-weight: 700; }
 .welcome__enter:hover { background: #fff; }
 
-/* The hero's run and its status pulses wait behind the welcome screen and play as it fades. It needs
-   !important: the motion rules set the animation shorthand, which resets play-state to running, and they
-   carry more specificity than this rule could reliably match. */
-html[data-welcome="show"] .identity-hero .hero-run *,
-html[data-welcome="show"] .identity-hero .hero-run__gate::before,
-html[data-welcome="show"] .identity-hero :is(.hero-status__pulse, .live-clock__dot)::after { animation-play-state: paused !important; }
+/* The hero's entrance waits behind the welcome screen, paused, and plays as it fades (hero.css). */
 
 /* Hero: the visitor's choice swaps a call to action and the run card's proposal without a flash, because
    it's set before paint. Only hiding is needed, so whatever shows keeps its own display. */
