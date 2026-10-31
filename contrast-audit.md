@@ -36,6 +36,16 @@ Thresholds:
 | Checkpoint lamp: holds (rose) on the ground | `#FF5C8D` | `#030304` | 7.04:1 | 3.0:1 | Pass |
 | Checkpoint line: bound (ink 85%) on the ground | `#D0CECA` | `#030304` | 13.12:1 | 3.0:1 | Pass |
 | Iris accents on the ground | `#8F6BFF` | `#030304` | 5.61:1 | 3.0:1 | Pass |
+| Showcase: the bottom of the numeral and headline gradient (#a3a19d) on the ground | `#A3A19D` | `#030304` | 7.99:1 | 3.0:1 | Pass |
+| Showcase: rose tint (rejected stamp, wrong day) on a rejected page (rose 10% over a raised card) | `#FFB3C8` | `#241419` | 10.54:1 | 4.5:1 | Pass |
+| Showcase: secondary text on a rejected page | `#B1AFAB` | `#241419` | 8.06:1 | 4.5:1 | Pass |
+| Showcase: apricot tint on the seeded-fault tag (apricot 7% over a raised card) | `#FFD3A8` | `#1D1814` | 12.69:1 | 4.5:1 | Pass |
+| Showcase: frost tile number (WAREVA) on the ground | `#E8F6FF` | `#030304` | 18.71:1 | 4.5:1 | Pass |
+| Showcase: glacier label for a verifying stop on the case sheet | `#47C8F5` | `#121217` | 9.65:1 | 4.5:1 | Pass |
+| Showcase: rose label for a holding stop on the case sheet | `#FF5C8D` | `#121217` | 6.37:1 | 4.5:1 | Pass |
+| Showcase: apricot label for an asking stop on the case sheet | `#FFB46A` | `#121217` | 10.66:1 | 4.5:1 | Pass |
+| Showcase: quiet captions (--li-ink-3) on a figure cell (#0b0b0e) | `#8C8A87` | `#0B0B0E` | 5.71:1 | 4.5:1 | Pass |
+| Showcase: dark text on the off-white PDF chip and primary links | `#050507` | `#F4F2EE` | 18.21:1 | 4.5:1 | Pass |
 
 ## Deliberately excluded combinations
 
@@ -51,4 +61,4 @@ Thresholds:
 - There are no disabled interactive controls in the initial portfolio.
 - Colour lives in light: accents are lamps, glows and tinted labels; fills in the living light carry dark text.
 
-Audit result: **PASS** (26/26 approved pairs pass).
+Audit result: **PASS** (36/36 approved pairs pass).
