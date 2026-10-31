@@ -12,6 +12,7 @@ import { clearSpotlight, revealAnchor, showOnPage } from "@/lib/agent/reveal";
 import { useVisitor } from "./use-visitor";
 import { ActivityLine, AgentText, DraftCard, FitCard, ProjectCard, TourCard, type AgentStep, type Draft } from "./agent-cards";
 import { Companion, type CompanionView } from "./agent-companion";
+import { pulseVoice, setActivity, setAttention } from "./assistant-presence";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
 import { foundSecrets, SECRET_IDS, secretCopy, unlockSecret } from "./secrets";
 
@@ -35,6 +36,8 @@ const COMMANDS = ["help", "whoami", "projects", "open", "achievements", "stack",
 const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements", "stack", "socials", "contact", "email", "secrets", "time", "date", "clear", "exit", "عربي", "ar", "motion", "run", "open", "cd"]);
 const BOOT_KINDS: LineKind[] = ["muted", "muted", "muted", "accent", "ok"];
 const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "warn", "muted"];
+// Trace steps where the agent is working out what to do (planning, preparing or running a tool), not talking.
+const THINKING_STEPS = new Set(["plan", "prep", "tool", "result"]);
 
 function bootLines({ projects, achievements, ui }: PortfolioContent): Output[] {
   const count = projects.filter((project) => project.enabled).length;
@@ -206,6 +209,22 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
   // The boot runs once: either when the console scrolls into view, or right away if the visitor
   // types or clicks before that. Without this, the scroll-in boot replays after the visitor's question.
   const bootStarted = useRef(false);
+  // The living orb beside the console speaks while scripted lines arrive, and goes quiet a moment after
+  // the last one. One timer for every stream, outside `timers`, so skipping the boot can't leave it talking.
+  const quietAt = useRef(0);
+  const quietTimer = useRef(0);
+
+  const speakFor = useCallback((ms: number) => {
+    quietAt.current = Math.max(quietAt.current, Date.now() + ms);
+    setActivity("script", "speaking");
+    window.clearTimeout(quietTimer.current);
+    const check = () => {
+      const left = quietAt.current - Date.now();
+      if (left > 0) quietTimer.current = window.setTimeout(check, left);
+      else setActivity("script", "idle");
+    };
+    quietTimer.current = window.setTimeout(check, ms);
+  }, []);
 
   const append = useCallback((outputs: Output[]) => {
     const created = outputs.map((output) => ({ ...output, id: nextId.current++ }));
@@ -215,15 +234,17 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
 
   const stream = useCallback((outputs: Output[], gap: number, onDone?: () => void) => {
     const delay = motionAllowed() ? gap : 0;
+    if (outputs.length) speakFor(delay * outputs.length + 520);
     outputs.forEach((output, index) => {
       const timer = window.setTimeout(() => {
         setLines((current) => [...current, { ...output, id: nextId.current++ }].slice(-80));
+        pulseVoice(output.text.length);
         if (index === outputs.length - 1) onDone?.();
       }, delay * (index + 1));
       timers.current.push(timer);
     });
     if (!outputs.length) onDone?.();
-  }, []);
+  }, [speakFor]);
 
   const announceAgent = useCallback(async () => {
     if (!health.current) return;
@@ -270,6 +291,30 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     input.style.height = "auto";
     input.style.height = `${Math.min(input.scrollHeight, 168)}px`;
   }, [value]);
+
+  // The orb listens while the visitor is at the input, and each keystroke is a small sound to it.
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+    const listen = () => setAttention(true);
+    const leave = () => setAttention(false);
+    const keystroke = () => pulseVoice(6);
+    input.addEventListener("focus", listen);
+    input.addEventListener("blur", leave);
+    input.addEventListener("input", keystroke);
+    return () => {
+      input.removeEventListener("focus", listen);
+      input.removeEventListener("blur", leave);
+      input.removeEventListener("input", keystroke);
+      leave();
+    };
+  }, []);
+
+  useEffect(() => () => {
+    window.clearTimeout(quietTimer.current);
+    setActivity("script", "idle");
+    setActivity("agent", "idle");
+  }, []);
 
   useEffect(() => {
     if (!docked) return;
@@ -437,6 +482,9 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
 
   async function askAgent(question: string) {
     setBusy(true);
+    // Thinking from the question until the first words; speaking while they stream; thinking again
+    // whenever the agent stops to plan or prepare and run a tool.
+    setActivity("agent", "thinking");
     const controller = new AbortController();
     abortRef.current = controller;
     const history: ChatTurn[] = [...turns.current, { role: "user", content: question }];
@@ -456,6 +504,8 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     try {
       await withSession(slotRef.current!, locale, (token) => streamChat(token, history, locale, (event) => {
         if (event.event === "delta") {
+          pulseVoice(event.data.text.length);
+          if (event.data.text.trim()) setActivity("agent", "speaking");
           answer += event.data.text;
           setLiveAnswer({ text: answer.trimStart(), streaming: true });
           if (!open) {
@@ -471,6 +521,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
         }
         open = null;
         if (event.event === "trace") {
+          if (THINKING_STEPS.has(event.data.step)) setActivity("agent", "thinking");
           steps.push(event.data);
           showSteps("running");
           if (event.data.step === "result" || event.data.step === "prep") setLiveStatus(event.data.text);
@@ -491,6 +542,7 @@ export function AgentTerminal({ locale = "en" }: { locale?: Locale }) {
     } catch (error) {
       if ((error as Error).name !== "AbortError") failure = error instanceof AgentError ? error.code : "offline";
     } finally {
+      setActivity("agent", "idle");
       setLiveStatus(null);
       if (steps.some((step) => step.step === "tool")) showSteps("done");
       else setLines((current) => current.filter((line) => line.id !== activity));

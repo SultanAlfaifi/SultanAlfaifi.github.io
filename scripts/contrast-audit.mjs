@@ -137,6 +137,27 @@ const pairs = [
     category: "Normal text"
   },
   {
+    usage: "AI section: the orb's state word (--li-ink-2) on its 80% ground pill, worst case over white light",
+    foreground: "#B1AFAB",
+    background: "#353535",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "AI section: console warnings (apricot tint) on the raised console glass",
+    foreground: "#FFD3A8",
+    background: "#0A0A0D",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "AI section: aurora principle numerals at their darkest stop (iris) on the ground",
+    foreground: "#8F6BFF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
     usage: "Focus ring (--li-focus) on the ground",
     foreground: "#9CC9FF",
     background: "#030304",

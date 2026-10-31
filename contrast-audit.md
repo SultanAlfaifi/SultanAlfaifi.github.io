@@ -29,6 +29,9 @@ Thresholds:
 | Iris tint data labels on raised glass | `#C9BEFF` | `#131318` | 10.84:1 | 4.5:1 | Pass |
 | Rose tint labels on the ground | `#FFB3C8` | `#030304` | 12.30:1 | 4.5:1 | Pass |
 | Apricot warnings on the ground | `#FFB46A` | `#030304` | 11.77:1 | 4.5:1 | Pass |
+| AI section: the orb's state word (--li-ink-2) on its 80% ground pill, worst case over white light | `#B1AFAB` | `#353535` | 5.60:1 | 4.5:1 | Pass |
+| AI section: console warnings (apricot tint) on the raised console glass | `#FFD3A8` | `#0A0A0D` | 14.25:1 | 4.5:1 | Pass |
+| AI section: aurora principle numerals at their darkest stop (iris) on the ground | `#8F6BFF` | `#030304` | 5.61:1 | 4.5:1 | Pass |
 | Focus ring (--li-focus) on the ground | `#9CC9FF` | `#030304` | 11.99:1 | 3.0:1 | Pass |
 | Focus ring (--li-focus) on raised glass | `#9CC9FF` | `#131318` | 10.77:1 | 3.0:1 | Pass |
 | Checkpoint lamp: asks (apricot) on the ground | `#FFB46A` | `#030304` | 11.77:1 | 3.0:1 | Pass |
@@ -51,4 +54,4 @@ Thresholds:
 - There are no disabled interactive controls in the initial portfolio.
 - Colour lives in light: accents are lamps, glows and tinted labels; fills in the living light carry dark text.
 
-Audit result: **PASS** (26/26 approved pairs pass).
+Audit result: **PASS** (29/29 approved pairs pass).

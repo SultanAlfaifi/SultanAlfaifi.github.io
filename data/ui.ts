@@ -191,13 +191,14 @@ const en = {
     bringBack: "Bring it back here"
   },
   runtime: {
-    aria: "AI assistant console",
     title: "Ask my AI assistant",
     description: "An AI assistant that answers only from this site’s verified data. It can open a project for you, check how my work fits a role, or draft an email to me. Console commands like “run” and “help” still work.",
+    eyebrow: "AI assistant",
     principles: "How I build agents",
     cursor: "Press & hold",
-    // Labels for the agent network behind the console, after the featured projects' names.
-    concepts: ["planner", "memory", "tools", "human ✓"]
+    // The living orb beside the console, and the small word under it that says what the assistant is doing.
+    orb: "Sultan's AI assistant as a living light. It listens, thinks, and answers along with the console.",
+    states: { idle: "Ready", greeting: "Saying hello", listening: "Listening", thinking: "Thinking", speaking: "Answering", approved: "Got your yes", gravity: "Gravity" }
   },
   experience: { title: "What I do at Salla", description: "Salla is the platform many Saudi merchants run their online stores on. I’m there for my COOP training." },
   organizations: {
@@ -324,7 +325,7 @@ const en = {
     complete: "All 6 found. You poke at things like an engineer. Email me, I’d like to meet you.",
     items: {
       palette: { title: "Command line", hint: "Some people never touch the mouse. Try ⌘K, Ctrl+K, or /." },
-      gravity: { title: "Gravity well", hint: "Press and hold on the network behind the AI console." },
+      gravity: { title: "Gravity well", hint: "Press and hold the living light beside the AI assistant, then let go." },
       sudo: { title: "Root access", hint: "The console takes orders. Try hiring someone." },
       policy: { title: "Policy enforcer", hint: "Tell the console to rm -rf something." },
       arabic: { title: "Bilingual", hint: "The console knows one Arabic word. It’s listed in help." },
@@ -722,12 +723,13 @@ const ar: UiStrings = {
     bringBack: "رجّعه هنا"
   },
   runtime: {
-    aria: "طرفية المساعد الذكي",
     title: "اسأل مساعدي الذكي",
     description: "مساعد ذكاء اصطناعي يجيب من بيانات هذا الموقع الموثّقة فقط. يفتح لك أي مشروع، ويقارن أعمالي بالوظيفة التي تهمّك، ويكتب لك مسودة رسالة إليّ. وأوامر الطرفية مثل run و help ما زالت تعمل.",
+    eyebrow: "المساعد الذكي",
     principles: "كيف أبني الوكلاء",
     cursor: "اضغط مطوّلًا",
-    concepts: ["مخطِّط", "ذاكرة", "أدوات", "إنسان ✓"]
+    orb: "مساعد سلطان الذكي في صورة ضوء حيّ، يسمع ويفكّر ويجاوب مع الطرفية.",
+    states: { idle: "جاهز", greeting: "يرحّب بك", listening: "يسمعك", thinking: "يفكّر", speaking: "يجاوب", approved: "أخذ موافقتك", gravity: "جاذبية" }
   },
   experience: { title: "تدريبي في سلة", description: "سلة منصة يدير عليها كثير من التجار في السعودية متاجرهم الإلكترونية، وفيها أقضي تدريبي التعاوني." },
   organizations: {
@@ -854,7 +856,7 @@ const ar: UiStrings = {
     complete: "لقيت الأسرار الستة كلها. فضولك فضول مهندس. راسلني، ودّي أتعرّف عليك.",
     items: {
       palette: { title: "قائمة الأوامر", hint: "بعض الناس ما يلمسون الماوس أبدًا. جرّب ⌘K أو Ctrl+K أو /." },
-      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الشبكة خلف طرفية المساعد." },
+      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الضوء الحيّ بجانب المساعد الذكي، ثم أفلته." },
       sudo: { title: "صلاحيات root", hint: "الطرفية تسمع الكلام. جرّب أن توظّف أحدًا." },
       policy: { title: "حارس السياسات", hint: "جرّب الأمر rm -rf في الطرفية." },
       arabic: { title: "ثنائي اللغة", hint: "الطرفية تعرف كلمة عربية واحدة. اكتب help وتلقاها." },

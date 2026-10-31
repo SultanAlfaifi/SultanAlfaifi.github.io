@@ -7,6 +7,7 @@ import { getContent } from "@/data/i18n";
 import { AgentError, sendEmailToSultan, turnstileToken, type FitReport, type TourStop } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
 import type { AnchorInfo } from "@/lib/agent/types";
+import { markApproved } from "./assistant-presence";
 
 const LINK = /\[([^\]\n]{1,120})\]\(([^)\s]{1,400})\)/g;
 
@@ -141,6 +142,8 @@ export function DraftCard({ draft, locale, onClose }: { draft: Draft; locale: Lo
     }
     setError("");
     setState("sending");
+    // The visitor said yes to what the agent drafted: the living orb beside the console blooms.
+    markApproved();
     try {
       const token = await turnstileToken(slotRef.current!, locale, "email");
       const result = await sendEmailToSultan(token, { name: name.trim(), email: email.trim(), subject: subject.trim(), message: body.trim(), topic: draft.topic });
