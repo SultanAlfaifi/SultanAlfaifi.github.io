@@ -983,12 +983,12 @@ export const projects: Project[] = [
     // The real-bug result comes second, so a view that shows only the first three figures (the agent's
     // project card) still shows it next to the seeded fault. Arabic merges by position: keep both in step.
     metrics: [
-      { value: "7 / 7", label: "Fixes verified on a fault I seeded", kind: "seeded-fault", asOf: "24 Oct 2026" },
+      { value: "7 of 7", label: "Fixes verified on a fault I seeded", kind: "seeded-fault", asOf: "24 Oct 2026" },
       { value: "0 of 7", label: "Runs fixed on a real upstream bug, across 43 attempts", kind: "real-bug", asOf: "24 Oct 2026" },
-      { value: "15 / 15", label: "“Booked” pages with the wrong day saved, rejected by the verifier", kind: "real-bug", asOf: "24 Oct 2026" },
-      { value: "2 / 5", label: "Early trials that passed in full", kind: "trial" }
+      { value: "15 of 15", label: "“Booked” pages with the wrong day saved, rejected by the verifier", kind: "real-bug", asOf: "24 Oct 2026" },
+      { value: "2 of 5", label: "Early trials that passed in full", kind: "trial" }
     ],
-    checkpoint: { step: 4, kind: "verifies", text: "A fix counts only when the saved booking is right." },
+    checkpoint: { step: 4, kind: "verifies", text: "A fix counts only when the saved booking is right" },
     caveat: "0 of 7 on a real upstream bug across 43 attempts",
     showcase: 1,
     outcome: "A repair loop that accepts a fix only once the booking is saved correctly.",

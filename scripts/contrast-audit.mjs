@@ -289,10 +289,23 @@ const pairs = [
     background: "#F4F2EE",
     minimum: 4.5,
     category: "Normal text"
+  },
+  {
+    usage: "Showcase: secondary text (--li-ink-2) on a tile’s tinted glass, the worst case measured from pixels (the tile’s accent light and the section’s colour behind the glass, about #2D302E)",
+    foreground: "#B1AFAB",
+    background: "#2D302E",
+    minimum: 4.5,
+    category: "Normal text"
   }
 ];
 
 const excludedPairs = [
+  {
+    usage: "Quiet captions (--li-ink-3) on a tile’s tinted glass (about #2D302E)",
+    foreground: "#8C8A87",
+    background: "#2D302E",
+    reason: "Insufficient contrast. Text on the showcase tiles (category lines, demo briefs, page numbers, the held end of a flow) uses --li-ink-2."
+  },
   {
     usage: "Off-white text on a glacier fill",
     foreground: "#F4F2EE",

@@ -14,6 +14,7 @@ import {
   type WheelEvent as ReactWheelEvent
 } from "react";
 import { getContent, type Locale } from "@/data/i18n";
+import { motionAllowed, subscribeMotion } from "./motion-preference";
 import {
   getPortfolioAsset,
   type Organization
@@ -369,10 +370,9 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
     const firstGroup = track?.querySelector<HTMLElement>(".journey-marquee__group");
     if (!rail || !track || !firstGroup) return;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let isVisible = false;
     let frame = 0;
-    let velocity = reducedMotion.matches ? 0 : AUTO_SCROLL_SPEED;
+    let velocity = motionAllowed() ? AUTO_SCROLL_SPEED : 0;
     let previousTime = performance.now();
     let scrollPosition = rail.scrollLeft;
     let groupWidth = 0;
@@ -392,13 +392,25 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
       scrollPosition = rail.scrollLeft;
     };
 
+    // The loop runs only while the rail can move at all: on screen, in a visible tab, with motion on.
+    // Otherwise it stops asking for frames, and the observers below start it again.
+    const canMove = () => isVisible && !document.hidden && motionAllowed();
+    const start = () => {
+      if (frame || !canMove()) return;
+      previousTime = performance.now();
+      scrollPosition = rail.scrollLeft;
+      frame = window.requestAnimationFrame(tick);
+    };
+
     const tick = (now: number) => {
+      frame = 0;
       const elapsed = Math.min(48, now - previousTime);
       previousTime = now;
+      if (!canMove()) {
+        velocity = 0;
+        return;
+      }
       const shouldMove =
-        isVisible &&
-        !document.hidden &&
-        !reducedMotion.matches &&
         !railPausedRef.current &&
         !railInteractingRef.current &&
         !panelOpenRef.current;
@@ -423,20 +435,25 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
+        start();
       },
       { threshold: 0.05 }
     );
     const resizeObserver = new ResizeObserver(centerRail);
+    const unsubscribeMotion = subscribeMotion(start);
+    document.addEventListener("visibilitychange", start);
 
     centerRail();
     visibilityObserver.observe(rail);
     resizeObserver.observe(firstGroup);
-    frame = window.requestAnimationFrame(tick);
+    start();
 
     return () => {
       window.cancelAnimationFrame(frame);
       visibilityObserver.disconnect();
       resizeObserver.disconnect();
+      unsubscribeMotion();
+      document.removeEventListener("visibilitychange", start);
     };
   }, []);
 

@@ -451,3 +451,147 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .portfolio-v3 .assistant-launcher { box-shadow: var(--li-highlight), 0 18px 50px rgb(0 0 0 / 55%), 0 0 40px -12px rgb(var(--li-iris-rgb) / 55%); }
 .portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover { border-color: var(--li-line-3); background: var(--li-bg-3); color: var(--li-ink); }
 .portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover svg { color: var(--li-tint-glacier); }
+
+/* Small type and chips. Every label below the AI section reads at the rebuilt sections' size (13 px,
+   never under 12.5) and every tag is the same glass pill as the showcase's: a hairline, a faint fill,
+   fully round. Latin labels keep their eyebrow spacing; Arabic never gets tracking (rtl.css). */
+.portfolio-v3 :is(.tag-list li, .tag-list--dark li, .timeline__kind, .ideas-footer li, .workshop__diagram span) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 2px 11px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  background: var(--li-glass);
+  color: var(--li-ink-2);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.portfolio-v3 .workshop__diagram { display: flex; flex-wrap: wrap; gap: 8px; }
+.portfolio-v3 .workshop__diagram span { padding-top: 2px; text-align: start; }
+.portfolio-v3 .workshop__diagram span::before,
+.portfolio-v3 .workshop__diagram span::after { display: none; }
+/* The timeline's kinds keep their colours, in the living palette. */
+.portfolio-v3 .timeline__kind { align-self: flex-start; }
+.portfolio-v3 .timeline__stop--recognition .timeline__kind { border-color: rgb(var(--li-glacier-rgb) / 45%); color: var(--li-tint-glacier); }
+.portfolio-v3 .timeline__stop--product .timeline__kind { border-color: rgb(var(--li-apricot-rgb) / 45%); color: var(--li-tint-apricot); }
+.portfolio-v3 .timeline__stop--open-source .timeline__kind { border-color: var(--li-line-3); color: var(--li-ink); }
+.portfolio-v3 .timeline__stop--career .timeline__kind { border-color: rgb(var(--li-iris-rgb) / 55%); color: var(--li-tint-iris); }
+.portfolio-v3 .timeline__stop--hackathon .timeline__kind { border-color: rgb(var(--li-rose-rgb) / 45%); color: var(--li-tint-rose); }
+
+.portfolio-v3 :is(
+  .nav__brand small,
+  .proof-card__issuer, .about-metadata dt, .salla-story__playback span,
+  .organization-showcase__header > p:first-child, .organization-detail-stage__hint,
+  .program-card__issuer, .program-card__story > div > span, .program-card > a,
+  .community-metric span, .workshop .workshop__meta, .workshop > a, .volunteer-note > span,
+  .ideas-metric span, .ideas-pillar > span, .ideas-footer a,
+  .recommendation-card > a, .recommendation-card__note, .recommendation-card__translated, .recommendation-card .tag-list,
+  .contact-section__meta, .contact-section__meta > p, .contact-section__status, .contact-section .social-links a,
+  .footer__inner p, .footer__inner a,
+  .proof-metric dd small, .timeline__stop time, .salla-story__meta p, .salla-story__note, .recommendation-card__person p, .help-card__proof
+) { font-size: 0.8125rem; }
+.portfolio-v3 .nav__brand small { font-size: 0.78125rem; }
+.portfolio-v3 .footer .footer__arabic { color: var(--li-ink-3); font-size: 0.875rem; }
+.portfolio-v3 :is(.about-layout__copy .text-link) { font-size: 0.875rem; }
+/* Parts inside a label take the label's size: the program's focus line is body text, not a label. */
+.portfolio-v3 .program-card__story p span,
+.portfolio-v3 :is(.proof-card__issuer, .contact-section .social-links a) span { font: inherit; color: inherit; letter-spacing: inherit; text-transform: none; }
+.portfolio-v3 .organization-showcase__intro { color: var(--li-ink-2); font-family: inherit; font-size: 0.9375rem; line-height: 1.65; letter-spacing: 0; text-transform: none; }
+
+/* The older panels (community, ideas) as glass: rounded, a hairline, no cyan rules or grid paper. */
+.portfolio-v3 :is(.workshop, .workshop--primary, .volunteer-note) {
+  border: 1px solid var(--li-line);
+  border-radius: var(--li-r);
+  background: var(--li-glass-fill);
+  box-shadow: var(--li-highlight);
+}
+.portfolio-v3 .community-metrics { gap: 1px; overflow: hidden; border: 1px solid var(--li-line); border-radius: var(--li-r); background: var(--li-line); }
+.portfolio-v3 .community-metric { border: 0; background: var(--li-bg-1); }
+.portfolio-v3 .ideas-metric { border-color: var(--li-line-2); }
+@media (max-width: 840px) {
+  .portfolio-v3 :is(.workshop, .workshop--primary, .volunteer-note) { padding: 22px 18px; }
+  .portfolio-v3 .community-metric { padding: 16px 14px; background: var(--li-bg-1); }
+}
+
+/* The organizations rail: dark glass tiles with the logos in off-white. A brand's colour shows only as a
+   faint glow on the tile that is on air (hovered, focused or open), never as a fill. */
+.portfolio-v3 .organization-showcase__rail {
+  height: 112px;
+  border-block: 0;
+  background: none;
+  clip-path: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.portfolio-v3 .journey-marquee__group { gap: 10px; padding-inline-end: 10px; }
+.portfolio-v3 .journey-tile {
+  height: calc(100% - 16px);
+  margin-block: 8px;
+  border: 1px solid var(--li-line);
+  border-radius: var(--li-r);
+  background: radial-gradient(120% 140% at 50% 120%, color-mix(in srgb, var(--brand-a) 0%, transparent), transparent 70%), var(--li-bg-1);
+  box-shadow: var(--li-highlight);
+  animation: none;
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.4s ease;
+}
+.portfolio-v3 .journey-tile::after { border-radius: inherit; border-width: 1px; }
+.portfolio-v3 .journey-tile.is-active::after { border-color: color-mix(in srgb, var(--brand-a) 55%, var(--li-ink) 20%); }
+.portfolio-v3 .journey-tile__trigger { border-radius: inherit; background: none; }
+.portfolio-v3 .journey-tile__trigger:focus-visible { outline: 2px solid var(--li-focus); outline-offset: -5px; }
+.portfolio-v3 .journey-tile .journey-logo { opacity: 0.66; transition: opacity 0.3s ease, transform 360ms var(--li-ease-spring); }
+.portfolio-v3 :is(.journey-tile.is-active, .journey-tile:hover, .journey-tile:focus-within) {
+  border-color: var(--li-line-2);
+  background: radial-gradient(120% 140% at 50% 120%, color-mix(in srgb, var(--brand-a) 30%, transparent), transparent 70%), var(--li-bg-1);
+  box-shadow: var(--li-highlight), 0 18px 50px -24px color-mix(in srgb, var(--brand-a) 70%, transparent);
+}
+.portfolio-v3 :is(.journey-tile.is-active, .journey-tile:hover, .journey-tile:focus-within) .journey-logo { opacity: 1; }
+/* The open panel: the same dark glass, its brand a soft light in one corner, its logo in off-white. */
+.portfolio-v3 .organization-detail-panel {
+  border-color: var(--li-line-2);
+  border-radius: var(--li-r);
+  background:
+    radial-gradient(70% 120% at 0% 0%, color-mix(in srgb, var(--brand-a) 22%, transparent), transparent 62%),
+    radial-gradient(60% 100% at 100% 100%, color-mix(in srgb, var(--brand-b) 12%, transparent), transparent 60%),
+    var(--li-bg-1);
+  background-size: auto;
+  box-shadow: var(--li-highlight), var(--li-shadow-soft);
+  color: var(--li-ink);
+}
+.portfolio-v3 .organization-detail-panel::before { display: none; }
+.portfolio-v3 .organization-detail-panel .journey-logo--color .journey-logo__image { filter: brightness(0) invert(1); opacity: 0.92; }
+.portfolio-v3 .organization-detail-panel__logo { border: 1px solid var(--li-line-2); border-radius: var(--li-r-s); background: var(--li-glass); box-shadow: var(--li-highlight); }
+.portfolio-v3 :is(.organization-detail-panel__copy > span, .organization-detail-panel__copy > strong, .organization-detail-panel__copy a) { font-family: inherit; font-size: 0.8125rem; }
+.portfolio-v3 .organization-detail-panel__copy > span { color: var(--li-ink-2); }
+.portfolio-v3 .organization-detail-panel__close { border-color: var(--li-line-3); border-radius: var(--li-r-pill); background: var(--li-glass); color: var(--li-ink); }
+.portfolio-v3 :is(.organization-detail-panel__close, .organization-detail-panel__copy a):focus-visible { outline: 2px solid var(--li-focus); }
+
+/* Achievements: the grid always ends flush. A card left alone on the last row becomes a strip across it
+   (signal, then title and issuer, then the story), instead of one card beside an empty block. */
+@media (min-width: 1101px) {
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n) {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.5fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 32px;
+    align-items: start;
+  }
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n) > .proof-card__top { grid-row: 1 / span 3; margin: 0; }
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n) > :is(h3, .proof-card__issuer) { grid-column: 2; }
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n) > p:not([class]) { grid-column: 3; grid-row: 1 / span 2; }
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n) > a { grid-column: 3; grid-row: 3; margin-top: 10px; }
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(3n + 1) { grid-column: span 2; }
+}
+@media (min-width: 561px) and (max-width: 1100px) {
+  .portfolio-v3 .proof-card:not(.proof-card--lead):last-child:nth-child(even) { grid-column: 1 / -1; }
+}
+
+/* Tap targets: the brand link is at least 44 px wide when its words are hidden on a phone, and the
+   console's input is never shorter than a finger. */
+.portfolio-v3 .nav__brand { min-width: 44px; }
+.portfolio-v3 .terminal__input textarea { min-height: 44px; }

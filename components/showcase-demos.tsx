@@ -41,12 +41,19 @@ function useFrames(phase: DemoPhase, schedule: number[], onDone?: () => void) {
 const pad = (value: number) => String(value).padStart(2, "0");
 
 /* ---------- AccessFinish: fifteen "booked" pages, each rejected by the verifier ---------- */
-// A little variety so the wall reads as fifteen pages, not fifteen boxes: line lengths and stamp angles.
+// Variety so the wall reads as fifteen pages, not fifteen boxes: every third page is a booking week with
+// the saved day marked, the rest a form, each with its own line lengths and stamp angle. The marks are
+// drawing, not data: no page claims which day it saved.
 const PAGE_LOOK = Array.from({ length: 15 }, (_, index) => ({
-  "--w1": `${58 + ((index * 37) % 34)}%`,
-  "--w2": `${34 + ((index * 23) % 40)}%`,
-  "--tilt": `${((index * 7) % 9) - 4}deg`
+  calendar: index % 3 === 0,
+  day: (index * 4 + 2) % 7,
+  style: {
+    "--w1": `${58 + ((index * 37) % 34)}%`,
+    "--w2": `${34 + ((index * 23) % 40)}%`,
+    "--tilt": `${((index * 7) % 9) - 4}deg`
+  }
 }));
+const WEEK = Array.from({ length: 7 }, (_, index) => index);
 
 export function WallDemo({ copy, phase, onDone }: DemoProps) {
   const visuals = copy.visuals;
@@ -62,10 +69,14 @@ export function WallDemo({ copy, phase, onDone }: DemoProps) {
         {PAGE_LOOK.map((look, index) => {
           const state = index < frame ? "rejected" : index === frame && phase === "playing" ? "scan" : "claimed";
           return (
-            <li key={index} className={`sc-page is-${state}`} style={look as CSSProperties}>
+            <li key={index} className={`sc-page is-${state}`} style={look.style as CSSProperties}>
               <span className="sc-page__top"><i /><i /><i /><b className="li-num">{pad(index + 1)}</b></span>
               <span className="sc-page__booked"><Check size={14} strokeWidth={2.4} /><span>{wall.booked}</span></span>
-              <span className="sc-page__lines"><i /><i /></span>
+              {look.calendar ? (
+                <span className="sc-page__cal">{WEEK.map((day) => <i key={day} className={day === look.day ? "is-saved" : undefined} />)}</span>
+              ) : (
+                <span className="sc-page__lines"><i /><i /></span>
+              )}
               <span className="sc-page__day">{wall.wrongDay}</span>
               <span className="sc-page__stamp"><X size={13} strokeWidth={2.6} /><span>{wall.rejected}</span></span>
             </li>
@@ -111,7 +122,7 @@ function MustakshifDemo({ project, copy, phase, onDone }: DemoProps) {
           ))}
         </ol>
       </div>
-      <p className="mk-gate"><span className="li-lamp" />{project.checkpoint?.text}</p>
+      <p className="mk-gate"><span className="li-lamp" /><span className="mk-gate__text">{project.checkpoint?.text}</span></p>
     </div>
   );
 }

@@ -425,3 +425,13 @@ test("the film dialog mounts the video only while open and gives focus back on c
     assert.equal(page.document.activeElement, frame);
   } finally { await page.cleanup(); }
 });
+
+test("the orb stays the centrepiece: the card covers only its lower edge, and the question waits for the last step", () => {
+  const css = read("../app/hero.css");
+  assert.match(css, /\.hero-stage \.hero-orb \{[^}]*top: calc\(100% - var\(--hero-orb\) \* 0\.32\);/, "the sphere hangs from the stage's lower edge, so the card covers its bottom 18%");
+  assert.match(css, /--hero-stage: clamp\(calc\(var\(--hero-orb\) \* 0\.3\), calc\(60svh - 300px\), calc\(var\(--hero-orb\) \* 0\.74\)\);/);
+  assert.match(css, /@media \(min-width: 960px\) \{\s*\.hero-run \{[^}]*grid-template-columns: minmax\(0, 1\.55fr\) minmax\(0, 1fr\);/, "wide screens set the steps and the question side by side");
+  assert.match(css, /@media \(max-width: 759px\) and \(max-height: 740px\)/, "a phone with its browser bars showing keeps Approve on the first screen");
+  assert.match(css, /\.hero-run__gate \{ --i: 3; \}/, "the question is the run's fourth beat");
+  assert.match(css, /:is\(\.hero-run__question, \.hero-run__actions\) \{ animation: run-text 0\.5s ease var\(--at\) both; \}/, "its words wait, dimmed, until the agent has read");
+});

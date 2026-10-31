@@ -51,9 +51,11 @@ Thresholds:
 | Showcase: apricot label for an asking stop on the case sheet | `#FFB46A` | `#121217` | 10.66:1 | 4.5:1 | Pass |
 | Showcase: quiet captions (--li-ink-3) on a figure cell (#0b0b0e) | `#8C8A87` | `#0B0B0E` | 5.71:1 | 4.5:1 | Pass |
 | Showcase: dark text on the off-white PDF chip and primary links | `#050507` | `#F4F2EE` | 18.21:1 | 4.5:1 | Pass |
+| Showcase: secondary text (--li-ink-2) on a tile’s tinted glass, the worst case measured from pixels (the tile’s accent light and the section’s colour behind the glass, about #2D302E) | `#B1AFAB` | `#2D302E` | 6.09:1 | 4.5:1 | Pass |
 
 ## Deliberately excluded combinations
 
+- **Quiet captions (--li-ink-3) on a tile’s tinted glass (about #2D302E):** `#8C8A87` on `#2D302E` is 3.88:1. Insufficient contrast. Text on the showcase tiles (category lines, demo briefs, page numbers, the held end of a flow) uses --li-ink-2.
 - **Off-white text on a glacier fill:** `#F4F2EE` on `#47C8F5` is 1.73:1. Insufficient contrast. Fills in the living light carry dark text (--li-on-light), never off-white.
 - **Off-white text on an apricot fill:** `#F4F2EE` on `#FFB46A` is 1.57:1. Insufficient contrast. The asks colour is a lamp or a fill behind dark text.
 - **Decorative ink (--li-ink-4) as text:** `#4C4B49` on `#030304` is 2.37:1. Insufficient contrast. --li-ink-4 is for hairlines and inactive dots only, never text.
@@ -66,4 +68,4 @@ Thresholds:
 - There are no disabled interactive controls in the initial portfolio.
 - Colour lives in light: accents are lamps, glows and tinted labels; fills in the living light carry dark text.
 
-Audit result: **PASS** (41/41 approved pairs pass).
+Audit result: **PASS** (42/42 approved pairs pass).

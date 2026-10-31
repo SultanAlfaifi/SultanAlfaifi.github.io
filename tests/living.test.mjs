@@ -191,3 +191,57 @@ test("the rebuilt sections and the older ones read as one product", () => {
   // Section titles everywhere arrive like the hero's: blur to sharp.
   assert.match(read("../components/reveal.tsx"), /variant === "title"\s*\? \[\{ transform: "translateY\(16px\)", opacity: 0, filter: "blur\(10px\)" \}/);
 });
+
+test("<LivingOrb> holds still behind the welcome screen and comes alive when it closes", async () => {
+  const env = setup();
+  const previous = globalThis.MutationObserver;
+  globalThis.MutationObserver = env.win.MutationObserver;
+  try {
+    const root = env.win.document.documentElement;
+    root.dataset.welcome = "show";
+    const host = createRoot(env.win.document.getElementById("root"));
+    await act(async () => host.render(createElement(LivingOrb, { size: 240 })));
+    const wrap = env.win.document.querySelector(".li-orb");
+    await act(async () => env.intersect(wrap));
+    await act(async () => env.intersect(wrap));
+    assert.ok(wrap.querySelector("canvas"), "it mounts, so it is ready when the screen closes");
+    assert.equal(env.frames.size, 0, "covered by the welcome screen: one still frame, no loop");
+    await act(async () => {
+      delete root.dataset.welcome;
+      await new Promise((resolve) => env.win.setTimeout(resolve, 0));
+    });
+    assert.equal(env.frames.size, 1, "the screen closes and the orb moves");
+    await act(async () => host.unmount());
+  } finally {
+    globalThis.MutationObserver = previous;
+    env.restore();
+  }
+});
+
+test("big orbs cap at 60 fps and size from layout; the welcome screen has its own orb and hands focus on", () => {
+  const orb = read("../components/living-orb.tsx");
+  assert.match(orb, /const STAGE_FPS = 60;/);
+  assert.match(orb, /fps: fpsRef\.current \?\? STAGE_FPS,/);
+  // An orb mounts mid-entrance (scaled): the backing store follows the layout size, not the painted one.
+  assert.match(read("../lib/living-orb.ts"), /const cssW = Math\.max\(1, canvas\.clientWidth \|\| rect\?\.width \|\| 1\);/);
+  const welcome = read("../components/welcome-screen.tsx");
+  assert.match(welcome, /\{showing \? <LivingOrb className="welcome__orb"[^>]*overWelcome \/> : null\}/, "only while the screen is up, so its context is free again");
+  assert.match(welcome, /title\.focus\(\{ preventScroll: true \}\);/, "closing hands focus to the headline, not to <body>");
+});
+
+test("the older sections share the rebuilt sections' chips, type and glass, and the logo rail is dark glass", () => {
+  const living = read("../app/living.css");
+  const chips = living.match(/\.portfolio-v3 :is\(\.tag-list li, \.tag-list--dark li, \.timeline__kind, \.ideas-footer li, \.workshop__diagram span\) \{[\s\S]*?\}/)[0];
+  assert.match(chips, /border-radius: var\(--li-r-pill\);/, "one glass pill");
+  assert.match(chips, /font-size: 0\.8125rem;/, "13 px, never under 12.5");
+  assert.match(living, /\.organization-detail-stage__hint,[\s\S]*?\) \{ font-size: 0\.8125rem; \}/, "the small labels read at 13 px");
+  const tile = living.match(/\.portfolio-v3 \.journey-tile \{[\s\S]*?\}/)[0];
+  assert.match(tile, /animation: none;/, "no flowing brand fill");
+  assert.match(tile, /var\(--li-bg-1\)/, "a dark tile");
+  assert.match(tile, /color-mix\(in srgb, var\(--brand-a\) 0%, transparent\)/, "the brand is dark at rest");
+  assert.match(living, /:is\(\.journey-tile\.is-active, \.journey-tile:hover, \.journey-tile:focus-within\) \{[\s\S]*?var\(--brand-a\) 30%/, "and a faint glow only on air");
+  assert.match(living, /\.portfolio-v3 \.organization-showcase__rail \{[\s\S]*?clip-path: none;/);
+  assert.match(living, /\.proof-card:not\(\.proof-card--lead\):last-child:nth-child\(3n\) \{\s*grid-column: 1 \/ -1;/, "the achievements grid ends flush");
+  assert.match(living, /\.portfolio-v3 \.terminal__input textarea \{ min-height: 44px; \}/);
+  assert.match(living, /\.portfolio-v3 \.nav__brand \{ min-width: 44px; \}/);
+});

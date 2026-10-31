@@ -108,23 +108,6 @@ html[data-motion="off"] .cursor-ring { display: none; }
 }
 @keyframes word-rise { from { transform: translateY(108%) rotate(4deg); } to { transform: none; } }
 
-/* ---------- Glare on tilting surfaces ---------- */
-.portfolio-v3 .work-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(circle at var(--tx, 50%) var(--ty, 50%), rgb(255 255 255 / 38%), transparent 52%);
-  mix-blend-mode: soft-light;
-  transition: opacity 400ms ease;
-}
-@media (hover: hover) and (pointer: fine) {
-  .portfolio-v3 .work-visual:hover::after { opacity: 1; }
-}
-
 /* ---------- Contact orb ---------- */
 .contact-orb { position: relative; display: grid; place-items: center; width: clamp(170px, 17vw, 214px); aspect-ratio: 1; margin: 0 0 20px auto; border-radius: 50%; color: var(--ink); text-decoration: none; }
 .contact-orb__ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: orb-spin 18s linear infinite; }

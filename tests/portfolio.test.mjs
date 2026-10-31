@@ -114,7 +114,11 @@ test("organization journey uses supplied brand palettes and interactive context"
   assert.match(organizationRailSource, /onPointerDown=\{handleRailPointerDown\}/);
   assert.match(organizationRailSource, /onPointerMove=\{handleRailPointerMove\}/);
   assert.match(organizationRailSource, /onPointerUp=\{finishRailPointer\}/);
-  assert.match(organizationRailSource, /prefers-reduced-motion: reduce/);
+  // The site’s one motion switch (the OS setting or the Motion toggle), and no frames asked for while the
+  // rail cannot move: off screen, in a hidden tab, or with motion off.
+  assert.match(organizationRailSource, /const canMove = \(\) => isVisible && !document\.hidden && motionAllowed\(\);/);
+  assert.match(organizationRailSource, /if \(!canMove\(\)\) \{\s*velocity = 0;\s*return;\s*\}/);
+  assert.match(organizationRailSource, /subscribeMotion\(start\)/);
   assert.doesNotMatch(organizationRailSource, /onMouseMove/);
   assert.match(cssSource, /\.organization-showcase__rail\s*\{[\s\S]*?height: 108px/);
   assert.match(cssSource, /\.journey-tile\s*\{[\s\S]*?width: clamp\(168px, 13vw, 216px\)/);
@@ -252,7 +256,7 @@ test("responsive and reduced-motion safeguards are present", () => {
   assert.match(navbarSource, /matchMedia\("\(min-width: 841px\)"\)/);
   assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(organizationRailSource, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+  assert.match(organizationRailSource, /motionAllowed\(\)/, "the rail follows the OS setting and the site’s Motion switch");
 });
 
 const readComponent = (name) => readFileSync(new URL(`../components/${name}`, import.meta.url), "utf8");

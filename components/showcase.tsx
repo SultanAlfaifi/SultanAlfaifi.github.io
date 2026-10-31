@@ -444,6 +444,8 @@ export function Showcase({ locale = "en" }: { locale?: Locale }) {
     };
     if (motionAllowed() && body?.animate) {
       body.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(8px)" }], { duration: 150, easing: "ease-in" }).onfinish = () => {
+        // Closed during the fade: the case is gone, so nothing may open it again.
+        if (openRef.current === null || !dialogRef.current?.open) return;
         swap();
         body.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: EASE });
       };

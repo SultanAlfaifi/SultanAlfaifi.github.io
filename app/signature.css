@@ -71,7 +71,7 @@ html[data-motion="off"] .spotlight { display: none; }
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 @media (hover: hover) and (pointer: fine) {
-  :is(.lab-grid, .proof-grid, .proof-metrics, .help-grid):hover .glow-card::after,
+  :is(.proof-grid, .proof-metrics, .help-grid):hover .glow-card::after,
   .glow-card:hover::before,
   .terminal:hover::after { opacity: 1; }
 }
@@ -129,6 +129,7 @@ html[data-motion="off"] .glow-card::after { display: none; }
 .proof-metric dd { display: contents; }
 .proof-metric strong { order: 1; font-family: var(--font-display), sans-serif; font-size: clamp(2.4rem, 4.2vw, 3.9rem); font-weight: 500; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
 .proof-metric strong > span[aria-hidden] { display: inline-block; }
+.proof-metric strong > .proof-metric__word { margin-inline-end: 0.28em; color: var(--li-ink-2); font-size: 0.42em; font-weight: 500; letter-spacing: 0; }
 .proof-metric small { order: 3; margin-top: 6px; color: var(--li-ink-3); font-size: 0.78rem; }
 .proof-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .proof-card {
@@ -289,7 +290,6 @@ html[data-agent-mode="on"] body { cursor: crosshair; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
-  .lab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proof-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proof-card--lead { grid-column: 1 / -1; grid-row: auto; }
@@ -299,9 +299,6 @@ html[data-agent-mode="on"] body { cursor: crosshair; }
   .nav__tools .motion-toggle { display: none; }
   .lab__header { display: block; }
   .lab__header p { margin-top: 10px; }
-  .lab-grid { grid-template-columns: minmax(0, 1fr); }
-  .repair-blueprint, .motion-blueprint { padding-inline: 22px; }
-  .repair-blueprint__pipeline li { font-size: 0.64rem; }
   .terminal__log { height: 340px; padding-inline: 16px; }
   .terminal__line { font-size: 0.9rem; }
   .terminal__input, .terminal__chips { padding-inline: 16px; }

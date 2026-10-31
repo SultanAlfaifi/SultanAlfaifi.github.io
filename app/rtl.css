@@ -4,7 +4,7 @@
   --font-display: var(--font-arabic), system-ui, sans-serif;
   --font-mono: var(--font-arabic), system-ui, sans-serif;
 }
-:where(time, .live-clock, .work-story__index, .proof-metric strong, .work-metrics dd) { font-variant-numeric: tabular-nums; }
+:where(time, .live-clock, .proof-metric strong) { font-variant-numeric: tabular-nums; }
 
 /* Arabic is cursive: tracking breaks letter joins, and its marks need taller lines. */
 [dir="rtl"] :is(h1, h2, h3, h4, h5, p, li, a, span, strong, small, em, dt, dd, button, summary, label, blockquote, figcaption, time, kbd, input):not([dir="ltr"], [dir="ltr"] *) {
@@ -16,7 +16,6 @@
 [dir="rtl"] #recommendations .section-header h2 { line-height: 1.32; }
 /* Parts of a "a · b · c" line read in written order, even when two neighbours are English (components/meta-parts.tsx). */
 .meta-part { unicode-bidi: isolate; }
-[dir="rtl"] .work-story h3,
 [dir="rtl"] .proof-card__signal,
 [dir="rtl"] .proof-card--lead .proof-card__signal { line-height: 1.25; }
 [dir="rtl"] .proof-card--lead .proof-card__signal { font-size: clamp(3rem, 6vw, 5.4rem); }
@@ -33,10 +32,6 @@
 [dir="rtl"] .palette__foot svg:first-child { margin-right: 0; }
 [dir="rtl"] .secrets { left: auto; right: 18px; align-items: flex-end; }
 [dir="rtl"] .contact-orb { margin: 0 auto 20px 0; }
-[dir="rtl"] .automation-blueprint__review > svg:last-child,
-[dir="rtl"] .resume-blueprint__export svg:last-child { margin-left: 0; margin-right: auto; }
-[dir="rtl"] .agent-blueprint li::before { left: auto; right: 4px; }
-[dir="rtl"] .work-case ul { padding: 0 20px 20px 0; }
 [dir="rtl"] .timeline__dot { left: auto; right: 22px; }
 [dir="rtl"] .timeline__index { right: auto; left: 16px; }
 [dir="rtl"] .timeline__progress span { transform-origin: right; }

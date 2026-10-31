@@ -45,7 +45,7 @@ export function showcaseOrder(projects: Project[]) {
 }
 
 // The figures a tile leads with. AccessFinish leads with its two real-bug results, the one its wall
-// shows first (the data lists "0 of 7" before "15 / 15"); every other project with its first figure.
+// shows first (the data lists "0 of 7" before "15 of 15"); every other project with its first figure.
 // Projects without figures show their status instead.
 export function leadFigures(project: Project): ProjectMetric[] {
   const metrics = project.metrics ?? [];
@@ -57,7 +57,7 @@ export function primaryLink(project: Project, copy: WorkCopy) {
   return project.primaryAction ?? (project.liveDemo ? { href: project.liveDemo, label: copy.tryApp } : null);
 }
 
-// "15 / 15", "0 من 7", "About 1,600", "1,000 L/h": numerals large, words and signs small, on one line.
+// "15 of 15", "0 من 7", "About 1,600", "1,000 L/h": numerals large, words and signs small, on one line.
 export function FigureValue({ value }: { value: string }) {
   const tokens = value.split(" ");
   return (

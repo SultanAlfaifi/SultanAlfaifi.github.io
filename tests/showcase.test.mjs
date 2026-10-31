@@ -56,7 +56,7 @@ test("every demo is built in its finished frame, so nothing waits on a script", 
 
 test("the lead numbers keep their kind, note and date, and never wrap", () => {
   const cases = {
-    en: { values: ["15 / 15", "0 of 7"], tag: "Real bug", asOf: "As of 24 Oct 2026", note: "My own count, not audited" },
+    en: { values: ["15 of 15", "0 of 7"], tag: "Real bug", asOf: "As of 24 Oct 2026", note: "My own count, not audited" },
     ar: { values: ["15 من 15", "0 من 7"], tag: "خلل حقيقي", asOf: "حتى 24 أكتوبر 2026", note: "حسب إحصاءاتي، غير مدقّقة" }
   };
   for (const [locale, expected] of Object.entries(cases)) {
@@ -70,7 +70,7 @@ test("the lead numbers keep their kind, note and date, and never wrap", () => {
     }
     assert.equal(document.querySelector("#project-masari > .sc-figs .sc-fig__note").textContent, expected.note, `${locale}: Masari's count says it isn't audited`);
     // The seeded fault only ever appears with its own label.
-    const seeded = [...document.querySelectorAll(".sc-fig")].filter((figure) => /^7 (\/|من) 7$/.test(figure.querySelector(".sc-value").textContent));
+    const seeded = [...document.querySelectorAll(".sc-fig")].filter((figure) => /^7 (of|من) 7$/.test(figure.querySelector(".sc-value").textContent));
     assert.ok(seeded.length > 0);
     for (const figure of seeded) assert.equal(figure.querySelector(".sc-tag").textContent, getContent(locale).ui.work.showcase.tags["seeded-fault"]);
     // Mashhad's star count stays out until Sultan confirms it.
@@ -182,4 +182,22 @@ test("text in the showcase and its demos is never smaller than 12.5px, and nothi
   assert.match(css, /\.sc-icon \{[^}]*width: 44px; height: 44px/);
   assert.match(css, /\.sc-open \{[^}]*min-height: 44px/);
   assert.match(css, /@media \(max-width: 720px\) \{[\s\S]*?\.sc-link \{ min-height: 44px; \}/);
+});
+
+test("text over a tile's accent light is never quiet ink, the wall ends on its last no, and source links say what they show", () => {
+  assert.match(css, /\.sc-tile__meta \{[^}]*color: var\(--li-ink-2\);/);
+  assert.match(css, /\.sc-page__top b \{[^}]*color: var\(--li-ink-2\);/);
+  assert.match(css, /\.sc-dm--wv\.is-held \.wv-node\.is-end \{ color: var\(--li-ink-2\); \}/);
+  assert.doesNotMatch(css, /\.mh-brief \{ color: var\(--li-ink-3\); \}/);
+  assert.match(css, /\.sc-page__day \{[^}]*white-space: nowrap;/, "the wrong-day line never leaves a word alone");
+  assert.match(css, /\.sc-page\.is-rejected:last-child \{/);
+  for (const locale of ["en", "ar"]) {
+    const document = page(locale);
+    assert.equal(document.querySelectorAll("#project-accessfinish .sc-page__cal").length, 5, `${locale}: every third page is a booking week`);
+    const { ui } = getContent(locale);
+    for (const link of document.querySelectorAll(".sc-link:not(.sc-link--primary), .sc-actions .li-btn--ghost")) {
+      const label = link.getAttribute("aria-label");
+      if (label) assert.ok(label.startsWith(ui.work.sourceCode), `${locale}: "${label}" starts with the visible words`);
+    }
+  }
 });

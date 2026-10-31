@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BriefcaseBusiness, Compass, Handshake, type LucideIcon } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { markWelcome, rememberLanguage, saveVisitor, WELCOME_EVENT, type Visitor, type VisitorDetail } from "@/lib/visitor";
+import { LivingOrb } from "./living-orb";
 import { motionAllowed } from "./motion-preference";
 
 const OPTIONS: { visitor: Exclude<Visitor, "skip">; Icon: LucideIcon }[] = [
@@ -24,21 +25,29 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
   const [step, setStep] = useState<"choose" | "company">("choose");
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
+  // The living orb lives only while the screen is up, so its WebGL context is free again for the page.
+  const [showing, setShowing] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     const open = () => {
       markWelcome(true);
+      setShowing(true);
       if (!dialog.open) dialog.showModal();
     };
+    const closed = () => setShowing(false);
+    dialog.addEventListener("close", closed);
     if (document.documentElement.dataset.welcome === "show") open();
     const reopen = () => {
       setStep("choose");
       open();
     };
     window.addEventListener(WELCOME_EVENT, reopen);
-    return () => window.removeEventListener(WELCOME_EVENT, reopen);
+    return () => {
+      window.removeEventListener(WELCOME_EVENT, reopen);
+      dialog.removeEventListener("close", closed);
+    };
   }, []);
 
   // The page is arranged and the hero starts arriving at once; the screen fades out over it.
@@ -47,7 +56,16 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     saveVisitor(detail);
     markWelcome(false);
     if (!dialog?.open) return;
-    const close = () => dialog.close();
+    // Closing hands focus back to <body>; it goes to the headline instead, so the next Tab is in the
+    // hero, not in the browser’s own toolbar.
+    const close = () => {
+      if (!dialog.open) return;
+      dialog.close();
+      const title = document.getElementById("hero-title");
+      if (!title) return;
+      if (!title.hasAttribute("tabindex")) title.tabIndex = -1;
+      title.focus({ preventScroll: true });
+    };
     if (!motionAllowed() || typeof dialog.animate !== "function") return close();
     dialog.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(1.03)" }], { duration: 420, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" }).finished.then(close, close);
     // A tab in the background may not run the animation; the screen still goes.
@@ -91,6 +109,10 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
 
       {step === "choose" ? (
         <div className="welcome__body" key="choose">
+          {/* The slot keeps its size before the script arrives, so nothing moves when the orb appears. */}
+          <span className="welcome__orb-slot" aria-hidden="true">
+            {showing ? <LivingOrb className="welcome__orb" size="100%" halo={1} fps={30} state="listening" overWelcome /> : null}
+          </span>
           <p className="welcome__hello">{copy.hello}</p>
           <h2 id={`${id}-title`}>{copy.title}</h2>
           <p id={`${id}-lead`} className="welcome__lead">{copy.lead}</p>

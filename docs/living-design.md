@@ -192,6 +192,21 @@ language through the "One product" block at the end of `app/living.css`:
   with a hairline. Help cards are glass; contact links are glass pills.
 - Colour is living light: big signals are ink; the lead achievement and the band's accent words carry the aurora;
   the journey's progress line is aurora like the scroll bar.
+- One chip: every tag (`.tag-list`, the timeline's kinds, the ideas and workshop chips) is the showcase's glass
+  pill at 13px. Labels below the AI section read at 13px too; nothing on the page is under 12.5px.
+- The organizations rail is dark glass with the logos in off-white. A brand's colour is a faint glow on the tile
+  that is on air (hovered, focused or open), never a fill.
+- Panels end flush: a card left alone on the last row of a grid becomes a strip across it.
+- Text on a showcase tile uses `--li-ink-2` at the quietest: over the tile's accent light `--li-ink-3` falls
+  under 4.5:1 (both pairs are in `scripts/contrast-audit.mjs`).
+
+## Orbs and the welcome screen
+
+- Every orb but the welcome screen's own holds one still frame while `html[data-welcome="show"]` is set, since
+  the screen covers the page. The welcome orb (`overWelcome`) is mounted only while the screen is open, so at
+  most three WebGL contexts are ever live.
+- The big orbs are capped at 60 fps; the brand mark at 30, and about 8 while a big orb is on screen.
+- The hero's sphere hangs from the stage's lower edge: the run card covers only its bottom 18%.
 
 ## The older tokens
 

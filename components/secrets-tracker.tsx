@@ -6,7 +6,8 @@ import { getContent, type Locale } from "@/data/i18n";
 import { motionAllowed } from "./motion-preference";
 import { SECRET_EVENT, SECRET_IDS, secretCopy, secretsSnapshot, subscribeSecrets } from "./secrets";
 
-const CONFETTI_COLORS = ["#7de2d1", "#fffafb", "#e7b46a", "#f08a6c", "#9bb0ff"];
+// The living palette (app/living.css): apricot, rose, iris, glacier and the off-white ink.
+const CONFETTI_COLORS = ["#ffb46a", "#ff5c8d", "#8f6bff", "#47c8f5", "#f4f2ee"];
 
 function celebrate() {
   if (!motionAllowed()) return;

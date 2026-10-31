@@ -28,13 +28,17 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
         <dl className="proof-metrics">
           {proofMetrics.map((metric, index) => {
             const formatted = metric.value.toLocaleString("en-US");
+            // A sign ("~", "+") stays with the number; a word ("نحو") reads in the page's own direction,
+            // small, before it, as the showcase's figures do.
+            const word = metric.prefix && /\p{L}/u.test(metric.prefix) ? metric.prefix.trim() : null;
             return (
               <Reveal key={metric.label} className="proof-metric glow-card" delay={index * 60}>
                 <dt>{metric.label}</dt>
                 <dd>
                   <strong data-count={metric.value}>
                     <span className="sr-only">{`${metric.prefix ?? ""}${formatted}${metric.suffix ?? ""}`}</span>
-                    <span aria-hidden="true" dir="ltr">{metric.prefix}<span data-count-value>{formatted}</span>{metric.suffix}</span>
+                    {word ? <span aria-hidden="true" className="proof-metric__word">{word}</span> : null}
+                    <span aria-hidden="true" dir="ltr">{word ? null : metric.prefix}<span data-count-value>{formatted}</span>{metric.suffix}</span>
                   </strong>
                   <small><MetaParts text={metric.source} /></small>
                 </dd>

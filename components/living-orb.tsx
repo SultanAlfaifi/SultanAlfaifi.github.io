@@ -36,7 +36,7 @@ export type LivingOrbProps = {
   halo?: number;
   /** "speaking" amplitude: a 0..1 number, a function polled each frame, or null for the built-in voice. */
   amplitude?: number | null | (() => number);
-  /** Frame cap. Leave unset for the big orbs; marks use about 30. */
+  /** Frame cap. The big orbs default to 60, so a 120 Hz phone does not draw them twice as often; marks use about 30. */
   fps?: number;
   /** An image shown until the first frame, and when JavaScript or canvas is unavailable. */
   poster?: string;
@@ -46,6 +46,9 @@ export type LivingOrbProps = {
   style?: CSSProperties;
   /** Internal: the navigation mark, which never counts as a stage orb. */
   brand?: boolean;
+  /** Keeps moving while the welcome screen is up (the orb on the welcome screen itself). Every other orb
+   *  holds still behind it: the screen covers the page, so their frames would be drawn for nobody. */
+  overWelcome?: boolean;
   ref?: Ref<LivingOrbControls>;
 };
 
@@ -76,6 +79,8 @@ export function bloomBrandOrb() {
 }
 
 const cssSize = (size: number | string | undefined) => (typeof size === "number" ? `${size}px` : size);
+// The big orbs’ frame cap: smooth on a 60 Hz screen, and no more than that on a 120 Hz one.
+const STAGE_FPS = 60;
 
 // The living orb as a component. It mounts its engine when it first comes near the viewport, pauses
 // off screen and in hidden tabs, paints one still frame while motion is off (the OS setting or the
@@ -94,6 +99,7 @@ export function LivingOrb({
   className,
   style,
   brand = false,
+  overWelcome = false,
   ref
 }: LivingOrbProps) {
   const wrapRef = useRef<HTMLSpanElement>(null);
@@ -128,7 +134,7 @@ export function LivingOrb({
 
   useEffect(() => {
     fpsRef.current = fps;
-    handleRef.current?.setFps(fps ?? 0);
+    handleRef.current?.setFps(fps ?? STAGE_FPS);
   }, [fps]);
 
   useEffect(() => {
@@ -144,6 +150,10 @@ export function LivingOrb({
     let handle: LivingOrbHandle | null = null;
     let canvas: HTMLCanvasElement | null = null;
     let unsubscribeMotion = () => {};
+    let welcomeWatch: MutationObserver | null = null;
+    const root = document.documentElement;
+    // Still with motion off, and behind the welcome screen (it covers the whole page).
+    const still = () => !motionAllowed() || (!overWelcome && root.dataset.welcome === "show");
 
     const mount = () => {
       if (handle) return;
@@ -155,8 +165,8 @@ export function LivingOrb({
         palette: paletteRef.current,
         interactive,
         halo,
-        fps: fpsRef.current,
-        still: !motionAllowed(),
+        fps: fpsRef.current ?? STAGE_FPS,
+        still: still(),
         // A number or a function from the prop; null lets the engine's own voice drive "speaking".
         amplitude: () => {
           const current = amplitudeRef.current;
@@ -167,7 +177,11 @@ export function LivingOrb({
       handleRef.current = handle;
       wrap.dataset.ready = "";
       wrap.dataset.renderer = handle.renderer;
-      unsubscribeMotion = subscribeMotion(() => handle?.setStill(!motionAllowed()));
+      unsubscribeMotion = subscribeMotion(() => handle?.setStill(still()));
+      if (!overWelcome && typeof MutationObserver !== "undefined") {
+        welcomeWatch = new MutationObserver(() => handle?.setStill(still()));
+        welcomeWatch.observe(root, { attributes: true, attributeFilter: ["data-welcome"] });
+      }
     };
 
     let observer: IntersectionObserver | null = null;
@@ -185,6 +199,7 @@ export function LivingOrb({
 
     return () => {
       observer?.disconnect();
+      welcomeWatch?.disconnect();
       unsubscribeMotion();
       reportStage(key, false);
       handle?.destroy();
@@ -195,7 +210,7 @@ export function LivingOrb({
     };
     // The engine is built once per mount; live props (state, palette, fps, amplitude) reach it through
     // the refs and effects above, so only the options it cannot change in place rebuild it.
-  }, [interactive, halo, brand]);
+  }, [interactive, halo, brand, overWelcome]);
 
   const classes = ["li-orb", poster ? "li-orb--poster" : "", interactive ? "li-orb--interactive" : "", className ?? ""].filter(Boolean).join(" ");
   const sizeStyle = size !== undefined ? ({ "--li-orb-size": cssSize(size) } as CSSProperties) : undefined;

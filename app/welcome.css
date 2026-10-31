@@ -33,6 +33,9 @@ html[data-welcome="show"] .welcome,
 .welcome__language:hover, .welcome__skip:hover, .welcome__back:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
 
 .welcome__body { align-self: center; justify-self: center; display: grid; justify-items: center; gap: 14px; width: min(1080px, 100%); text-align: center; }
+/* The assistant’s living orb, small, listening above the question (still with motion off). */
+.welcome__orb-slot { display: block; width: clamp(92px, 12vw, 128px); aspect-ratio: 1; margin-bottom: -10px; }
+.welcome__orb-slot .li-orb { display: block; }
 .welcome__hello { margin: 0; color: var(--li-tint-glacier); font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
 .welcome h2 { margin: 0; color: var(--li-ink); font-size: clamp(2.4rem, 6.4vw, 4.6rem); line-height: 1.1; letter-spacing: -0.01em; }
 .welcome__lead { max-width: 56ch; margin: 0; color: var(--li-ink-2); font-size: clamp(1rem, 1.6vw, 1.15rem); line-height: 1.7; }

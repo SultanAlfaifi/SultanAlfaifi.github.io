@@ -462,9 +462,11 @@ export function mountLivingOrb(canvasElement: HTMLCanvasElement, opts: LivingOrb
   const countedGL = renderer.kind === "webgl";
 
   function measure() {
-    const rect = canvas.getBoundingClientRect();
-    const cssW = Math.max(1, rect.width || canvas.clientWidth || 1);
-    const cssH = Math.max(1, rect.height || canvas.clientHeight || 1);
+    // The layout size, not the painted one: an orb usually mounts mid-entrance (scaled to 0.86), and a
+    // transform never fires the ResizeObserver, so a transformed size would stay too small all visit.
+    const rect = canvas.clientWidth && canvas.clientHeight ? null : canvas.getBoundingClientRect();
+    const cssW = Math.max(1, canvas.clientWidth || rect?.width || 1);
+    const cssH = Math.max(1, canvas.clientHeight || rect?.height || 1);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     // Cap the backing store (~0.9 MP) so a large hero orb stays smooth on phones.
     const scale = Math.min(dpr, Math.sqrt(900000 / (cssW * cssH)));

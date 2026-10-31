@@ -150,7 +150,9 @@ html[data-motion="off"] .sc-edge { display: none; }
 
 /* ---------- Tile parts ---------- */
 .sc-tile__head { display: grid; gap: 6px; }
-.sc-tile__meta { display: flex; align-items: baseline; gap: 12px; margin: 0; color: var(--li-ink-3); font-size: 0.8125rem; line-height: 1.55; }
+/* Secondary, never quiet: over the tile's accent light the glass is lighter than the ground (about #2D302E
+   at worst), where --li-ink-3 falls under 4.5:1 and --li-ink-2 keeps about 6:1 (scripts/contrast-audit.mjs). */
+.sc-tile__meta { display: flex; align-items: baseline; gap: 12px; margin: 0; color: var(--li-ink-2); font-size: 0.8125rem; line-height: 1.55; }
 .sc-tile__no { color: var(--sc-tint); font-weight: 600; }
 .portfolio-v3 .sc-tile__title { display: flex; align-items: center; gap: 14px; margin: 0; color: var(--li-ink); font-size: clamp(1.625rem, 2.1vw, 2.125rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; }
 .sc-tile__icon { flex: none; width: 46px; height: 46px; border-radius: var(--li-r-s); box-shadow: 0 0 0 1px var(--li-line-2), 0 12px 32px -12px var(--sc-accent); }
@@ -185,6 +187,8 @@ html[data-motion="off"] .sc-edge { display: none; }
 .sc-fig__label { color: var(--li-ink-2); font-size: 0.9375rem; line-height: 1.6; }
 .sc-fig__note { color: var(--li-ink-3); font-size: 0.8125rem; line-height: 1.5; }
 .sc-fig__check { display: inline-flex; align-items: center; min-height: 32px; color: var(--li-tint-glacier); font-size: 0.8125rem; text-underline-offset: 4px; }
+/* A finger needs the full 44 px. */
+@media (pointer: coarse) { .sc-fig__check { min-height: 44px; } }
 .sc-tag { display: inline-flex; align-items: center; min-height: 24px; margin-bottom: 6px; padding: 1px 10px; border: 1px solid var(--li-line-2); border-radius: var(--li-r-pill); color: var(--li-ink-2); font-size: 0.78125rem; font-weight: 500; line-height: 1.5; }
 .sc-tag--real-bug { border-color: rgb(var(--li-rose-rgb) / 50%); background: rgb(var(--li-rose-rgb) / 8%); color: var(--li-tint-rose); }
 .sc-tag--seeded-fault { border-color: rgb(var(--li-apricot-rgb) / 45%); background: rgb(var(--li-apricot-rgb) / 7%); color: var(--li-tint-apricot); }
@@ -206,6 +210,9 @@ html[data-motion="off"] .sc-edge { display: none; }
 .sc-cp__kind { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--li-ink); font-size: 0.875rem; font-weight: 500; line-height: 1.5; }
 .sc-cp__step { margin-inline-start: auto; color: var(--li-ink-3); font-size: 0.8125rem; font-weight: 400; }
 .sc-cp__text { margin: 0; color: var(--li-ink-2); font-size: 0.875rem; line-height: 1.65; }
+/* Checkpoints are quoted word for word from each project's own copy, so some start mid-sentence in lower
+   case; every stop line reads as a sentence of its own. (Arabic has no case.) */
+:is(.sc-cp__text, .mk-gate__text)::first-letter { text-transform: uppercase; }
 
 /* Actions: open the case, try it, read the code. */
 .sc-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding-top: 14px; border-top: 1px solid var(--li-line); }
@@ -309,7 +316,7 @@ html[data-motion="off"] .sc-edge { display: none; }
 }
 .sc-page__top { display: flex; align-items: center; gap: 0.3em; }
 .sc-page__top i { width: 0.42em; height: 0.42em; border-radius: 50%; background: var(--li-line-3); }
-.sc-page__top b { margin-inline-start: auto; color: var(--li-ink-3); font-weight: 500; }
+.sc-page__top b { margin-inline-start: auto; color: var(--li-ink-2); font-weight: 500; }
 .sc-page__booked { position: relative; display: inline-flex; align-items: center; gap: 0.35em; width: fit-content; max-width: 100%; color: var(--li-ink); font-weight: 500; white-space: nowrap; }
 .sc-page__booked svg { flex: none; color: var(--li-tint-glacier); }
 .sc-page__booked::after { content: ""; position: absolute; inset-inline: -0.15em; top: 55%; height: 1.5px; background: var(--li-rose); transform: scaleX(0); transform-origin: left center; transition: transform 0.35s var(--li-ease); }
@@ -317,7 +324,13 @@ html[data-motion="off"] .sc-edge { display: none; }
 .sc-page__lines { display: grid; gap: 0.4em; }
 .sc-page__lines i { display: block; width: var(--w1); height: 0.38em; border-radius: 1em; background: var(--li-line-2); }
 .sc-page__lines i + i { width: var(--w2); }
-.sc-page__day { color: var(--li-ink-3); line-height: 1.35; }
+.sc-page__day { color: var(--li-ink-2); line-height: 1.35; white-space: nowrap; }
+/* A booking week, the saved day marked: in the agent's light while the page claims success, in rose once
+   the verifier rejects it. */
+.sc-page__cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.2em; }
+.sc-page__cal i { height: 0.55em; border-radius: 0.15em; background: var(--li-line-2); }
+.sc-page__cal i.is-saved { background: var(--li-tint-glacier); box-shadow: 0 0 0.5em rgb(var(--li-glacier-rgb) / 60%); }
+.sc-page.is-rejected .sc-page__cal i.is-saved { background: var(--li-rose); box-shadow: 0 0 0.5em rgb(var(--li-rose-rgb) / 60%); }
 .sc-page__stamp {
   display: inline-flex;
   align-items: center;
@@ -339,6 +352,8 @@ html[data-motion="off"] .sc-edge { display: none; }
 .sc-page.is-rejected .sc-page__booked::after { transform: scaleX(1); }
 .sc-page.is-rejected .sc-page__day { color: var(--li-tint-rose); }
 .sc-page:not(.is-rejected) .sc-page__stamp { opacity: 0; transform: rotate(var(--tilt)) scale(1.7); }
+/* The last one caught carries the light: the wall ends on the verifier's fifteenth no. */
+.sc-page.is-rejected:last-child { border-color: rgb(var(--li-rose-rgb) / 80%); box-shadow: 0 0 1.6em -0.2em rgb(var(--li-rose-rgb) / 45%), inset 0 0 1.4em rgb(var(--li-rose-rgb) / 16%); }
 .sc-page.is-scan { border-color: var(--li-glacier); box-shadow: 0 0 1.2em rgb(var(--li-glacier-rgb) / 55%), inset 0 0 1em rgb(var(--li-glacier-rgb) / 18%); }
 .sc-page.is-scan::before { content: ""; position: absolute; inset-inline: 0; top: -40%; height: 40%; background: linear-gradient(180deg, transparent, rgb(var(--li-glacier-rgb) / 32%), transparent); animation: sc-scan 0.3s linear 1 forwards; }
 @keyframes sc-scan { to { transform: translateY(350%); } }
@@ -350,6 +365,7 @@ html[data-motion="off"] .sc-edge { display: none; }
 }
 @container (max-width: 540px) {
   .sc-page__lines,
+  .sc-page__cal,
   .sc-page__day { display: none; }
   .sc-page { padding: 0.55em 0.6em; }
 }
@@ -391,23 +407,27 @@ html[data-motion="off"] .sc-edge { display: none; }
 
 /* Masari: the real app, inside a dashed edge that is your browser. The crop shows the editor, the
    live preview and the export button; the overlays sit on those parts of the real screenshot. */
-.sc-dm--ms { gap: 0.9em; justify-content: center; }
-.ms-device { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; container-type: size; }
-.ms-shot { position: relative; width: min(100cqw - 22px, (100cqh - 22px) * 2.2554); aspect-ratio: 1253 / 556; overflow: hidden; border-radius: var(--li-r-s); outline: 1px dashed rgb(var(--li-ink-rgb) / 38%); outline-offset: 9px; box-shadow: 0 1.4em 3em -1.2em #000000, 0 0 3.2em -1em rgb(var(--li-iris-rgb) / 50%); }
-.ms-shot__img { position: absolute; top: -14.29%; left: -24.05%; width: 126.58%; max-width: none; height: 178.57%; object-fit: fill; filter: brightness(0.95); }
+/* The screenshot fills the demo width and the demo is as tall as it needs, so there is no empty band
+   above or below it. The crop (x 301–1554, y 79–839 of the 1586 × 992 image) shows the export button,
+   the live preview and the form; the overlays are placed in that crop. */
+.sc-demo:has(> .sc-dm--ms) { height: auto; }
+.sc-dm.sc-dm--ms { position: relative; inset: auto; gap: 0.9em; justify-content: center; }
+.ms-device { position: relative; display: grid; place-items: center; container-type: inline-size; }
+.ms-shot { position: relative; width: calc(100cqw - 10px); aspect-ratio: 1253 / 760; overflow: hidden; border-radius: var(--li-r-s); outline: 1px dashed rgb(var(--li-ink-rgb) / 38%); outline-offset: 4px; box-shadow: 0 1.4em 3em -1.2em #000000, 0 0 3.2em -1em rgb(var(--li-iris-rgb) / 50%); }
+.ms-shot__img { position: absolute; top: -10.39%; left: -24.05%; width: 126.58%; max-width: none; height: 130.53%; object-fit: fill; filter: brightness(0.95); }
 .ms-focus,
 .ms-pulse { position: absolute; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
 .ms-focus { border: 2px solid var(--li-glacier); border-radius: 4px; box-shadow: 0 0 0 4px rgb(var(--li-glacier-rgb) / 25%), 0 0 18px rgb(var(--li-glacier-rgb) / 50%); }
-.ms-focus--name { left: 49.5%; top: 46.6%; width: 27.5%; height: 6.3%; }
-.ms-focus--mail { left: 62.4%; top: 74.5%; width: 14.6%; height: 6%; }
+.ms-focus--name { left: 49.5%; top: 34.09%; width: 27.5%; height: 4.61%; }
+.ms-focus--mail { left: 62.4%; top: 54.5%; width: 14.6%; height: 4.39%; }
 .ms-pulse { border-radius: 3px; background: rgb(var(--li-glacier-rgb) / 30%); box-shadow: 0 0 0 3px rgb(var(--li-glacier-rgb) / 30%); }
-.ms-pulse--name { left: 9.2%; top: 52.7%; width: 29.3%; height: 8%; }
-.ms-pulse--mail { left: 9.2%; top: 64.3%; width: 29.3%; height: 5.3%; }
+.ms-pulse--name { left: 9.2%; top: 38.55%; width: 29.3%; height: 5.85%; }
+.ms-pulse--mail { left: 9.2%; top: 47.04%; width: 29.3%; height: 3.88%; }
 .sc-dm--ms:is([data-frame="1"], [data-frame="2"]) .ms-focus--name,
 .sc-dm--ms[data-frame="2"] .ms-pulse--name,
 .sc-dm--ms:is([data-frame="3"], [data-frame="4"]) .ms-focus--mail,
 .sc-dm--ms[data-frame="4"] .ms-pulse--mail { opacity: 1; }
-.ms-pdf { position: absolute; top: 8.2%; left: 1.4%; padding: 0.1em 0.6em; border-radius: var(--li-r-s); background: var(--li-ink); color: var(--li-on-light); font-weight: 600; box-shadow: 0 0 1.4em rgb(255 255 255 / 40%), 0 0 0 4px rgb(var(--li-iris-rgb) / 35%); transition: opacity 0.3s ease, transform 0.5s var(--li-ease-spring); }
+.ms-pdf { position: absolute; top: 6%; left: 1.4%; padding: 0.1em 0.6em; border-radius: var(--li-r-s); background: var(--li-ink); color: var(--li-on-light); font-weight: 600; box-shadow: 0 0 1.4em rgb(255 255 255 / 40%), 0 0 0 4px rgb(var(--li-iris-rgb) / 35%); transition: opacity 0.3s ease, transform 0.5s var(--li-ease-spring); }
 .sc-dm--ms:not([data-frame="5"]) .ms-pdf { opacity: 0; transform: scale(0.6) translateY(0.4em); }
 .ms-bound { --li-k: var(--li-k-bound); display: flex; flex-wrap: wrap; align-items: center; gap: 0.3em 0.6em; color: var(--li-ink-2); }
 .ms-bound b { color: var(--li-ink); font-weight: 500; }
@@ -415,8 +435,7 @@ html[data-motion="off"] .sc-edge { display: none; }
 
 /* Mashhad: brief, scenes, sound, render, review. */
 .mh-screen { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--li-line-2); border-radius: var(--li-r-s); background: radial-gradient(70% 60% at 50% 46%, rgb(var(--li-apricot-rgb) / 13%), transparent 70%), linear-gradient(180deg, rgb(255 255 255 / 4%), rgb(0 0 0 / 40%)); }
-.mh-brief { position: absolute; top: 0.7em; inset-inline: 0.9em; color: var(--li-ink-2); line-height: 1.45; transition: color 0.4s ease; }
-.sc-dm--mh:not([data-step="1"]):not([data-step="2"]) .mh-brief { color: var(--li-ink-3); }
+.mh-brief { position: absolute; top: 0.7em; inset-inline: 0.9em; color: var(--li-ink-2); line-height: 1.45; }
 .sc-dm .mh-word { margin-top: 0.7em; color: #ffffff; font-size: 3.1em; font-weight: 600; line-height: 1.1; text-shadow: 0 0 0.6em rgb(var(--li-apricot-rgb) / 55%); transition: opacity 0.5s ease, transform 0.6s var(--li-ease); }
 .mh-wave { position: absolute; bottom: 2.1em; inset-inline: 1.2em; display: flex; align-items: center; gap: 0.22em; height: 1.5em; transition: opacity 0.4s ease; }
 .mh-wave i { flex: 1; height: calc(var(--h) * 100%); border-radius: 1em; background: rgb(var(--li-ink-rgb) / 55%); }
@@ -445,7 +464,10 @@ html[data-motion="off"] .sc-edge { display: none; }
 .mh-track li.is-gate.is-current { border-color: var(--li-glacier); box-shadow: 0 -0.4em 1em -0.5em var(--li-glacier); }
 
 /* AutoFlow: text or voice, one draft, nothing on until you approve. */
-.sc-dm--au { gap: 0.6em; justify-content: center; }
+/* Input at the top, the gate at the foot, the draft between them: the demo fills its panel instead of
+   floating in the middle of it. */
+.sc-dm--au { gap: 0.6em; justify-content: flex-start; }
+.sc-dm--au .au-draft { margin-block: auto; }
 .au-in { display: flex; align-items: center; gap: 0.7em; padding: 0.4em 0.7em; border: 1px solid var(--li-line); border-radius: var(--li-r-s); background: rgb(255 255 255 / 3%); }
 .au-tag { flex: none; padding: 0 0.65em; border: 1px solid var(--li-line-2); border-radius: var(--li-r-pill); color: var(--li-ink); }
 .au-type { flex: 1; min-width: 0; overflow: hidden; color: var(--li-ink); white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.9s var(--li-ease); }
@@ -482,7 +504,8 @@ html[data-motion="off"] .sc-edge { display: none; }
 [dir="rtl"] .sc-dm--wv .wv-pipe { animation-direction: reverse; }
 @keyframes sc-flow { to { background-position: 2.2em 0; } }
 .sc-dm--wv.is-held .wv-pipe--last { background: var(--li-line-2); }
-.sc-dm--wv.is-held .wv-node.is-end { color: var(--li-ink-3); }
+/* The held end of the line dims its icon only: its name stays readable (--li-ink-2). */
+.sc-dm--wv.is-held .wv-node.is-end { color: var(--li-ink-2); }
 .sc-dm .wv-label { margin-bottom: -0.3em; color: var(--li-ink-3); }
 .wv-sensors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6em; }
 .wv-sensor { display: grid; gap: 0.45em; min-width: 0; padding: 0.5em 0.7em; border: 1px solid var(--li-line); border-radius: var(--li-r-s); background: rgb(255 255 255 / 3%); transition: border-color 0.3s ease, background-color 0.3s ease; }
@@ -549,7 +572,8 @@ html.sc-locked { overflow: hidden; }
 .sc-case__visual { display: grid; gap: 22px; min-width: 0; }
 .sc-case__visual .sc-demo { height: clamp(300px, 34vw, 420px); }
 .sc-case__title .sc-tile__icon { width: 0.9em; height: 0.9em; }
-.sc-case__visual .sc-demo:has(> .sc-dm--wall) { height: auto; }
+.sc-case__visual .sc-demo:has(> .sc-dm--wall),
+.sc-case__visual .sc-demo:has(> .sc-dm--ms) { height: auto; }
 .sc-case__visual .sc-dm { font-size: 14px; }
 .sc-case__body h3 { margin: 0 0 14px; color: var(--li-ink-3); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0; }
 .sc-case__stop .sc-cp { margin-top: 18px; padding-top: 0; border-top: 0; }
@@ -669,11 +693,7 @@ html.sc-locked { overflow: hidden; }
   .sc-case__bar { padding-inline: 12px; }
   .sc-case { padding: 0; }
   .sc-case__sheet { max-height: none; border-radius: 0; border: 0; }
-  /* Masari's real screenshot gets the tile's full width on a phone. */
-  .sc-demo:has(> .sc-dm--ms) { height: auto; }
-  .sc-dm.sc-dm--ms { position: relative; inset: auto; padding-top: 1.5em; }
-  .ms-device { container-type: inline-size; }
-  .ms-shot { width: calc(100cqw - 22px); }
+  .sc-fig__check { min-height: 44px; }
 }
 
 /* A small lift under the pointer on desktop; none on touch, none with motion off. */

@@ -89,9 +89,10 @@ export function runScript(content: PortfolioContent) {
 }
 
 // The run's clock, in ms from the start of the hero's entrance. hero.css plays the same schedule: the
-// steps scan from RUN.scan, one every RUN.step, and the question is asked at RUN.ask. The entrance is
+// steps scan from RUN.scan, one every RUN.step, and the question lights and is asked at RUN.ask, once the
+// last step is done (until then its words wait dimmed, like a step not yet reached). The entrance is
 // over by RUN.settle, when data-intro turns "done" so nothing in it can play twice.
-export const RUN = { scan: 1900, step: 700, ask: 4000, settle: 4600, carry: 900, rest: 3000 } as const;
+export const RUN = { scan: 1700, step: 550, ask: 3350, settle: 3900, carry: 900, rest: 3000 } as const;
 
 const subscribeNothing = () => () => undefined;
 

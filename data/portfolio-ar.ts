@@ -118,7 +118,7 @@ export const projects: Record<string, ProjectCopy> = {
       { value: "15 من 15", label: "صفحات «تم الحجز» باليوم الخاطئ، رفضها المدقّق كلها", asOf: "24 أكتوبر 2026" },
       { value: "2 من 5", label: "تجارب أولى نجحت في الإجراء الكامل" }
     ],
-    checkpoint: { text: "لا يُحسب الإصلاح إلا إذا حُفظ الحجز صحيحًا." },
+    checkpoint: { text: "لا يُحسب الإصلاح إلا إذا حُفظ الحجز صحيحًا" },
     // The same fact as the English caveat, with both denominators: 0 of 7 runs, across 43 attempts.
     caveat: "على خلل حقيقي في المشروع الأصلي، فلم ينجح أيٌّ من 7 تشغيلات، بعد 43 محاولة إجمالًا",
     primaryAction: { label: "اقرأ الأدلة", href: "https://sultalfaifi.com/accessfinish/" }
@@ -348,7 +348,7 @@ export const achievements: Partial<Achievement>[] = [
 
 export const proofMetrics: Partial<ProofMetric>[] = [
   { label: "متابع على X ولينكدإن", source: "أكثر من 4.5 ألف على X · أكثر من ألفين على لينكدإن" },
-  { label: "مستخدم نشط في «مساري»", source: "حسب إحصاءاتي، غير مدقّقة" },
+  { prefix: "نحو ", label: "مستخدم نشط في «مساري»", source: "حسب إحصاءاتي، غير مدقّقة" },
   { label: "تنزيل لإصدارات «مستكشف»", source: "عدّاد تنزيلات GitHub" },
   { label: "ساعة تطوع", source: "في 11 مبادرة · حسب سجلي" }
 ];
