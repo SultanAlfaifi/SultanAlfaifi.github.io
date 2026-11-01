@@ -84,7 +84,9 @@ export function showOnPage(id: string, quote?: string | null) {
 
 // A shared link to a folded place (/ar/#skills, or #project-danna inside the smaller builds) opens its fold
 // and lands on it. Runs after hydration and on every hash change; any other hash is left to the browser.
-export function revealFoldedHash() {
+// On load (`settled`), a place that is not folded is landed on once more: the browser jumped before
+// hydration, and the page may have moved since (a visitor's own order, a card's «كيف بنيته» button).
+export function revealFoldedHash(settled = false) {
   let id = "";
   try {
     id = decodeURIComponent(window.location.hash.slice(1));
@@ -92,6 +94,9 @@ export function revealFoldedHash() {
     return false;
   }
   const target = id ? document.getElementById(id) : null;
-  if (!target || !inClosedFold(target)) return false;
-  return revealAnchor(id, false);
+  if (!target) return false;
+  if (inClosedFold(target)) return revealAnchor(id, false);
+  if (!settled) return false;
+  target.scrollIntoView({ behavior: "auto", block: "start" });
+  return true;
 }

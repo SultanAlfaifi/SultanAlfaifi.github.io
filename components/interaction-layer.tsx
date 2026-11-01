@@ -165,10 +165,18 @@ export function InteractionLayer() {
       document.querySelectorAll(SEAMS).forEach((element) => seeds?.observe(element));
     }
 
-    // A shared link to a folded row (/ar/#skills) opens it. After hydration, once the visitor's own order
-    // has settled, and on every later hash change.
-    const hashTimer = window.setTimeout(revealFoldedHash, 120);
+    // A shared link to a folded row (/ar/#skills) opens it, and any other shared place is landed on again.
+    // After hydration, once the visitor's own order has settled, and on every later hash change.
+    const hashTimer = window.setTimeout(() => revealFoldedHash(true), 120);
     const handleHash = () => revealFoldedHash();
+
+    // Smooth scrolling starts only once the page has loaded. A link that lands on a place (/ar/#cv) then
+    // jumps there instantly, and the browser keeps it in place while the late parts of the page settle; a
+    // smooth jump at load aims at where the place was before hydration and stops short or overshoots.
+    let smoothTimer = 0;
+    const smooth = () => { smoothTimer = window.setTimeout(() => { root.dataset.scroll = "smooth"; }, 400); };
+    if (document.readyState === "complete") smooth();
+    else window.addEventListener("load", smooth, { once: true });
 
     let konamiIndex = 0;
     function handleKeyDown(event: KeyboardEvent) {
@@ -211,6 +219,8 @@ export function InteractionLayer() {
       seeds?.disconnect();
       delete root.dataset.seeds;
       window.clearTimeout(hashTimer);
+      window.clearTimeout(smoothTimer);
+      window.removeEventListener("load", smooth);
       window.removeEventListener("hashchange", handleHash);
       window.clearTimeout(toastTimer);
       document.removeEventListener("pointermove", handlePointerMove);

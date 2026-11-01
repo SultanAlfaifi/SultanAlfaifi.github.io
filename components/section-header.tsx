@@ -7,7 +7,6 @@ type SectionHeaderProps = {
   numbered?: boolean;
   title: string;
   description?: string;
-  inverse?: boolean;
 };
 
 // Words sit in clipping wrappers so CSS can raise them one by one as the heading scrolls in.
@@ -37,12 +36,11 @@ export function SectionHeader({
   eyebrow,
   numbered = false,
   title,
-  description,
-  inverse = false
+  description
 }: SectionHeaderProps) {
   return (
     <Reveal variant="title">
-      <header className={`section-header ${inverse ? "section-header--inverse" : ""}`}>
+      <header className="section-header">
         {numbered ? <ChapterEyebrow text={eyebrow} /> : null}
         <div className="section-header__copy">
           <h2 className="split-heading"><SplitWords text={title} /></h2>

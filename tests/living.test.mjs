@@ -159,23 +159,38 @@ test("the rebuilt sections and the older ones read as one product", () => {
   const living = read("../app/living.css");
   const showcase = read("../app/showcase.css");
   const ai = read("../app/ai.css");
-  for (const token of ["--li-display", "--li-h2", "--li-space-feature", "--li-seam"]) assert.match(living, new RegExp(`${token}:`), `${token} is defined`);
-  // One display scale and one rhythm for the work and AI sections.
-  for (const [name, css, rule] of [["work", showcase, /\.portfolio-v3 \.sc-head__h2 \{[\s\S]*?\}/], ["AI", ai, /\.ai-title \{[\s\S]*?\}/]]) {
-    assert.match(css.match(rule)[0], /font-size: var\(--li-display\);/, `${name}: the shared display scale`);
-    assert.doesNotMatch(css.match(rule)[0], /background-clip: text/, `${name}: the headline is plain ink, like the hero's`);
+  for (const token of ["--li-display", "--li-space-feature", "--li-seam"]) assert.match(living, new RegExp(`${token}:`), `${token} is defined`);
+  assert.doesNotMatch(living, /--li-h2:/, "one headline scale: no second size beside t1");
+  // Every chapter headline is t1 at 600, 1.16 (1.2 in Arabic), plain ink: work and AI included.
+  const chapters = read("../app/chapters.css");
+  const cv = read("../app/cv.css");
+  for (const [name, css, rule] of [
+    ["work", showcase, /\.portfolio-v3 \.sc-head__h2 \{[\s\S]*?\}/],
+    ["AI", ai, /\.ai-title \{[\s\S]*?\}/],
+    ["about and recognition", chapters, /:is\(#about, #achievements\) \.section-header h2 \{[\s\S]*?\}/],
+    ["CV", cv, /\.cv-section \.cv-title \{[\s\S]*?\}/],
+    ["contact", chapters, /\.finale \.finale__title \{[\s\S]*?\}/]
+  ]) {
+    const body = css.match(rule)[0];
+    assert.match(body, /font-size: var\(--li-t1\);/, `${name}: t1`);
+    assert.match(body, /font-weight: 600;/, `${name}: 600`);
+    assert.match(body, /line-height: 1\.16;/, `${name}: 1.16`);
+    assert.doesNotMatch(body, /background-clip: text/, `${name}: the headline is plain ink, like the hero's`);
   }
+  assert.match(showcase, /\[dir="rtl"\] \.sc-head__h2 \{ line-height: 1\.2; letter-spacing: 0; \}/);
+  assert.match(ai, /\[dir="rtl"\] \.ai-title \{ line-height: 1\.2; letter-spacing: 0; \}/);
   assert.match(showcase, /#work\.sc-section \{[\s\S]*?padding: var\(--li-space-feature\) 0;[\s\S]*?border-image: var\(--li-seam\) 1;/);
   assert.match(ai, /\.ai-section \{[\s\S]*?padding-block: var\(--li-space-feature\);[\s\S]*?border-image: var\(--li-seam\) 1;/);
   assert.match(showcase, /#work\.sc-section::after \{[\s\S]*?linear-gradient\(180deg, transparent, var\(--li-bg\)\)/, "the work light fades out before the next section");
   // No grain or starfield left behind the AI section.
   const signature = read("../app/signature.css");
   assert.doesNotMatch(signature, /\.runtime-section::after|\.agent-field|--noise:/);
-  // The older sections: seams, headline scale, one primary button, glass, living light.
+  // The shared pieces: one primary button, living light. The seams belong to the chapter rhythm ("Calm"), so no
+  // block draws its own beside them.
   const block = living.slice(living.indexOf("One product."));
   assert.ok(block.length > 100, "the One product block exists");
-  assert.match(block, /:is\(\.kinetic-band, \.organization-rail, \.organization-showcase\) \{[\s\S]*?border-image: var\(--li-seam\) 1;/);
-  assert.match(block, /:is\(\.section-header h2, \.timeline__head h2\) \{[\s\S]*?font-size: var\(--li-h2\);/);
+  assert.match(living, /:is\(\.li-chapter, \.li-pause\) \+ :is\(\.li-chapter, \.li-pause\) \{\s*border-top: 1px solid transparent;\s*border-image: var\(--li-seam\) 1;/);
+  assert.doesNotMatch(block.slice(0, block.indexOf("Calm (docs")), /border-image: var\(--li-seam\)/, "one seam system");
   assert.match(block, /@keyframes word-rise \{[\s\S]*?filter: blur\(10px\)/, "split headings arrive blur to sharp");
   for (const selector of [".terminal__send", ".companion__primary"]) {
     const at = block.indexOf(selector);
@@ -238,11 +253,11 @@ test("big orbs cap at 60 fps and size from layout; the welcome screen has its ow
   assert.match(welcome, /title\.focus\(\{ preventScroll: true \}\);/, "closing hands focus to the headline, not to <body>");
 });
 
-test("the older sections share the rebuilt sections' chips, type and glass, and the lower chapters keep to the type scale", () => {
+test("the lower chapters are hairline rows in the eight type sizes, and small labels never fall under 13 px", () => {
   const living = read("../app/living.css");
-  const chips = living.match(/\.portfolio-v3 :is\(\.tag-list li, \.tag-list--dark li, \.timeline__kind, \.ideas-footer li, \.workshop__diagram span\) \{[\s\S]*?\}/)[0];
-  assert.match(chips, /border-radius: var\(--li-r-pill\);/, "one glass pill");
-  assert.match(chips, /font-size: 0\.8125rem;/, "13 px, never under 12.5");
+  // The brand's small label reads at 13 px (t7), never 12.5.
+  assert.match(living, /\.portfolio-v3 \.nav__brand small \{ font-size: 0\.8125rem; \}/);
+  assert.doesNotMatch(living, /font-size: 0\.78125rem/, "nothing at 12.5 px");
   // Recognition is hairline rows, never cards, so no grid of them can end on a hole.
   assert.match(read("../app/chapters.css"), /\.recognition__row \{[^}]*border-top: 1px solid var\(--li-line\);/, "the recognitions are hairline rows");
   // The appendix, Contact and the footer (app/chapters.css, owner rest) speak only in the eight type sizes, and

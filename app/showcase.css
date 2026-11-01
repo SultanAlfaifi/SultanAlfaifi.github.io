@@ -72,13 +72,14 @@
   margin: 0;
   max-width: none;
   padding-bottom: 0.06em;
-  /* The page's display scale, shared with the hero and the AI section. */
-  font-size: var(--li-display);
+  /* t1, the six chapter headlines: 600 · 1.16 (1.2 in Arabic). */
+  font-size: var(--li-t1);
   font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
   color: var(--li-ink);
 }
+.portfolio-v3 [dir="rtl"] .sc-head__h2 { line-height: 1.2; letter-spacing: 0; }
 .sc-head__lede { max-width: 30em; margin: 0; color: var(--li-ink-2); font-size: var(--li-t4); line-height: 1.75; text-wrap: pretty; }
 
 /* ---------- The grid: wide · pair · pair · wide, one card gap apart ---------- */
@@ -252,6 +253,10 @@ html[data-motion="off"] .sc-edge { display: none; }
 /* The case text inside each card: what shows without JavaScript, and what the assistant opens. */
 .sc-more { border-top: 1px solid var(--li-line); }
 .sc-tile.is-live .sc-more:not([open]) { display: none; }
+/* With JavaScript on, the closed fallback row never shows, not even before hydration: each card would
+   otherwise lose ~70px when the «كيف بنيته» button takes over, and a shared link (/ar/#cv) would land
+   that much too far down. Without JavaScript it stays, as the way into the case text. */
+@media (scripting: enabled) { .sc-tile .sc-more:not([open]) { display: none; } }
 .sc-more > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; color: var(--li-ink); font-size: var(--li-t6); font-weight: 500; list-style: none; cursor: pointer; }
 .sc-more > summary::-webkit-details-marker { display: none; }
 .sc-more > summary::after { content: "+"; color: var(--li-ink-3); font-size: 1.3rem; line-height: 1; }

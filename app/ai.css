@@ -35,14 +35,14 @@
 .ai-title {
   margin: 16px 0 0;
   color: var(--li-ink);
-  /* The page's display scale, shared with the hero and the work section. */
-  font-size: var(--li-display);
+  /* t1, the six chapter headlines: 600 · 1.16 (1.2 in Arabic). */
+  font-size: var(--li-t1);
   font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
-[lang="ar"] .ai-title { line-height: 1.2; letter-spacing: 0; }
+.portfolio-v3 [dir="rtl"] .ai-title { line-height: 1.2; letter-spacing: 0; }
 .ai-title__word { display: inline-block; }
 .ai-lede {
   max-width: 46ch;

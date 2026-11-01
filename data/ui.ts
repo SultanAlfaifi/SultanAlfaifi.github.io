@@ -83,7 +83,7 @@ const en = {
     loading: "Loading video…",
     failedStart: "Video couldn’t start. Press play to try again.",
     failedLoad: "Video couldn’t load. Press play to retry.",
-    salla: { runway: "Salla experience video", film: "Salla brand film", play: "Play Salla video", pause: "Pause Salla video", playShort: "Play", pauseShort: "Pause", tech: "Technologies in this role" }
+    salla: { film: "Salla brand film", play: "Play Salla video", pause: "Pause Salla video" }
   },
   work: {
     title: "Try these first",
@@ -129,7 +129,6 @@ const en = {
     showcase: {
       count: (count: number) => `Featured projects · ${String(count).padStart(2, "0")}`,
       legend: "Where it stops to wait for a human",
-      legendAria: "What each checkpoint colour means",
       kinds: { asks: "Asks you first", verifies: "Verifies before a result counts", holds: "Holds on its own when a check fails" },
       boundary: "The line it keeps",
       projects: (count: number) => (count === 1 ? "1 project" : `${count} projects`),
@@ -165,15 +164,12 @@ const en = {
   proof: {
     title: "Recognition",
     description: "Where I was selected or ranked.",
-    recognition: "Recognition",
     evidence: "See the source"
   },
-  about: { title: "Who you’d be working with", resume: "Download my CV", educationMark: "University" },
+  about: { title: "Who you’d be working with" },
   timeline: {
     title: "How I got here",
     description: "Dates come from my CV, LinkedIn, and GitHub releases. Anything without a documented date is listed under Recognition.",
-    aria: "Timeline since 2023, scroll sideways",
-    cursor: "Scroll",
     kinds: { Education: "Education", Recognition: "Recognition", Learning: "Course", Product: "Product", Career: "Work", "Open source": "Public repo", Hackathon: "Hackathon", Now: "Focus" } as Record<string, string>
   },
   welcome: {
@@ -219,17 +215,9 @@ const en = {
   },
   experience: { title: "What I do at Salla", description: "Salla is the platform many Saudi merchants run their online stores on. I’m there for my COOP training." },
   organizations: {
-    kicker: "Experience · Education · Programs · Certifications · Community",
     title: "Where I’ve learned and worked",
     intro: "Salla, Umm Al-Qura, KAUST Academy, IBM, and the groups I’ve run workshops for.",
-    pause: "Pause logo motion",
-    resume: "Resume logo motion",
-    rail: "Organizations",
-    hintPointer: "Drag the logos, or hover over one to see what I did there.",
-    hintTouch: "Swipe the moving logos, then tap one to see what I did there.",
-    visit: "Visit their site",
-    close: "Close organization details",
-    explore: (name: string) => `See what I did with ${name}`
+    rail: "Organizations"
   },
   deeper: {
     title: "Beyond the projects",
@@ -242,10 +230,6 @@ const en = {
   programs: {
     title: "Courses I’ve finished",
     description: "KAUST Academy, NVIDIA, IBM, McKinsey.org, DeepLearning.AI, and the University of Michigan.",
-    learned: "Topics",
-    applied: "What I did",
-    achieved: "Result",
-    completed: "Completed",
     verifyCredential: "Verify credential",
     alsoCertified: "Other certificates",
     verify: "Verify",
@@ -254,7 +238,6 @@ const en = {
   community: {
     title: "Teaching and volunteering",
     description: "I ran a three-day bootcamp on building AI agents for Artificial Intelligence Pioneers, and AI workshops for Fazzah in Madinah and for Riadiat. If you want one for your group, email me.",
-    impact: "Teaching and volunteering in numbers",
     visit: "Visit their site",
     diagram: ["Fundamentals", "Tools", "Memory", "Planning", "Build"],
     volunteerTitle: "Volunteering",
@@ -275,18 +258,12 @@ const en = {
   recommendations: {
     title: "In their words",
     description: "Dr. Ahmed Alharthi supervises my graduation project at Umm Al-Qura. Heyam AbuNaseer was my trainer at the IBM AI lab.",
-    context: "Recommendation context",
-    themes: "Recommendation themes",
     linkedin: "Read it on LinkedIn",
     translated: null as string | null
   },
   contact: {
     title: "Tell me what you’re working on",
     body: "Send two or three lines: what you need, who it’s for, and by when. Arabic or English, whichever is easier.",
-    orbAria: "Email me",
-    orbRing: "EMAIL ME ✦ ARABIC OR ENGLISH ✦ IN MAKKAH ✦ ",
-    orbWord: "حيّاك",
-    orbSmall: "Say hi",
     copy: "Copy email",
     copiedButton: "Email copied",
     copied: (email: string) => `${email} copied to clipboard.`,
@@ -296,10 +273,8 @@ const en = {
   footer: {
     designed: "I designed and built this site with Next.js and TypeScript.",
     rights: "© 2026 Sultan Alfaifi. All rights reserved.",
-    links: "Footer links",
     top: "Back to top ↑",
-    topAria: "Back to the top of the page",
-    cursor: "Move me"
+    topAria: "Back to the top of the page"
   },
   social: { visit: (platform: string) => `${platform}: Sultan Alfaifi` },
   palette: {
@@ -642,7 +617,7 @@ const ar: UiStrings = {
     loading: "جارٍ تحميل الفيديو…",
     failedStart: "تعذّر تشغيل الفيديو. اضغط زر التشغيل وجرّب مرة ثانية.",
     failedLoad: "تعذّر تحميل الفيديو. اضغط زر التشغيل لإعادة المحاولة.",
-    salla: { runway: "فيديو عن تدريبي في سلة", film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة", pause: "أوقف فيديو سلة", playShort: "تشغيل", pauseShort: "إيقاف", tech: "التقنيات في هذا التدريب" }
+    salla: { film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة", pause: "أوقف فيديو سلة" }
   },
   work: {
     title: "جرّبها بنفسك",
@@ -685,7 +660,6 @@ const ar: UiStrings = {
     showcase: {
       count: (count: number) => `أبرز المشاريع · ${String(count).padStart(2, "0")}`,
       legend: "أين يتوقف لينتظر إنسانًا",
-      legendAria: "ماذا يعني لون كل نقطة توقف",
       kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" },
       boundary: "الحد الذي يلتزم به",
       projects: (count: number) => (count === 1 ? "مشروع واحد" : count === 2 ? "مشروعان" : count <= 10 ? `${count} مشاريع` : `${count} مشروعًا`),
@@ -721,15 +695,12 @@ const ar: UiStrings = {
   proof: {
     title: "إنجازات",
     description: "برامج اختارتني، ومسابقات وصلت فيها للنهائي أو فزت بها.",
-    recognition: "الإنجازات",
     evidence: "شوف المصدر"
   },
-  about: { title: "حيّاك، أنا سلطان", resume: "حمّل سيرتي الذاتية", educationMark: "الجامعة" },
+  about: { title: "حيّاك، أنا سلطان" },
   timeline: {
     title: "محطاتي منذ 2023",
     description: "التواريخ هنا من سيرتي الذاتية ولينكدإن وإصدارات GitHub، وما ليس له تاريخ موثّق تجده في قسم الإنجازات.",
-    aria: "محطاتي منذ 2023، مرّر أفقيًا",
-    cursor: "مرّر",
     kinds: { Education: "دراسة", Recognition: "إنجاز", Learning: "دورة", Product: "منتج", Career: "عمل", "Open source": "مستودع عام", Hackathon: "هاكاثون", Now: "تركيزي" }
   },
   welcome: {
@@ -773,17 +744,9 @@ const ar: UiStrings = {
   },
   experience: { title: "تدريبي في سلة", description: "سلة منصة يدير عليها كثير من التجار في السعودية متاجرهم الإلكترونية، وفيها أقضي تدريبي التعاوني." },
   organizations: {
-    kicker: "الخبرة · التعليم · البرامج · الشهادات · المجتمع",
     title: "جهات تعلّمت فيها وعملت معها",
     intro: "سلة وجامعة أم القرى وأكاديمية كاوست وIBM، والجهات التي قدّمت لها ورشًا.",
-    pause: "أوقف حركة الشعارات",
-    resume: "شغّل حركة الشعارات",
-    rail: "الجهات",
-    hintPointer: "اسحب الشعارات، أو مرّر المؤشر على أحدها لترى دوري معها.",
-    hintTouch: "اسحب الشعارات المتحركة، ثم اضغط على أحدها لترى دوري معها.",
-    visit: "افتح موقعهم",
-    close: "أغلق تفاصيل الجهة",
-    explore: (name: string) => `اعرض دوري مع ${name}`
+    rail: "الجهات"
   },
   deeper: {
     title: "خارج المشاريع",
@@ -794,10 +757,6 @@ const ar: UiStrings = {
   programs: {
     title: "دورات وبرامج أكملتها",
     description: "أكاديمية كاوست وNVIDIA وIBM وMcKinsey.org وDeepLearning.AI وجامعة ميشيغان.",
-    learned: "المواضيع",
-    applied: "ماذا عملت فيه",
-    achieved: "النتيجة",
-    completed: "أكملت البرنامج",
     verifyCredential: "تحقّق من الشهادة",
     alsoCertified: "شهادات أخرى",
     verify: "تحقّق",
@@ -806,7 +765,6 @@ const ar: UiStrings = {
   community: {
     title: "أدرّب وأتطوّع",
     description: "قدّمت مع رواد الذكاء الاصطناعي معسكرًا لثلاثة أيام عن بناء الوكلاء، وورشًا لجمعية فزعة في المدينة المنورة ولرياديات. وإن أردت ورشة مثلها لجهتك، راسلني.",
-    impact: "التدريب والتطوع بالأرقام",
     visit: "افتح موقعهم",
     diagram: ["الأساسيات", "الأدوات", "الذاكرة", "التخطيط", "بناء وكيل"],
     volunteerTitle: "التطوع",
@@ -827,18 +785,12 @@ const ar: UiStrings = {
   recommendations: {
     title: "قالوا عنّي",
     description: "يشرف د. أحمد الحارثي على مشروع تخرّجي في جامعة أم القرى، وكانت هيام أبو نصير مدرّبتي في مختبر IBM للذكاء الاصطناعي.",
-    context: "سياق التوصية",
-    themes: "محاور التوصية",
     linkedin: "اقرأها على لينكدإن",
     translated: "مترجمة عن الإنجليزية"
   },
   contact: {
     title: "عندك فكرة أو فرصة؟ حدّثني عنها",
     body: "اكتب لي سطرين أو ثلاثة: ماذا تحتاج، ولمن، ومتى. بالعربي أو بالإنجليزي، كما يريحك.",
-    orbAria: "راسلني على البريد",
-    orbRing: "EMAIL ME ✦ ARABIC OR ENGLISH ✦ IN MAKKAH ✦ ",
-    orbWord: "حيّاك",
-    orbSmall: "راسلني",
     copy: "انسخ البريد",
     copiedButton: "نُسخ البريد",
     copied: (email: string) => `نسخت لك البريد: ${email}`,
@@ -848,10 +800,8 @@ const ar: UiStrings = {
   footer: {
     designed: "بنيت هذا الموقع بـ Next.js وTypeScript، وصمّمته بنفسي.",
     rights: "© 2026 سلطان الفيفي. جميع الحقوق محفوظة.",
-    links: "روابط أسفل الصفحة",
     top: "للأعلى ↑",
-    topAria: "العودة إلى أعلى الصفحة",
-    cursor: "حرّكني"
+    topAria: "العودة إلى أعلى الصفحة"
   },
   social: { visit: (platform: string) => `${platform}: سلطان الفيفي` },
   palette: {

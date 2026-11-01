@@ -15,16 +15,20 @@ export function Navbar({ locale = "en" }: { locale?: Locale }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const sections = navigation
-      .map((item) => document.querySelector(item.href))
-      .filter((section): section is Element => Boolean(section));
+    // Watch every block on the chapter rhythm, not only the five in the nav: reading Recognition, the band or
+    // the appendix lights nothing, instead of leaving the last chapter you passed lit.
+    const linked = new Set(navigation.map((item) => item.href.slice(1)));
+    const blocks = Array.from(document.querySelectorAll("#main-content .li-chapter, #main-content .li-pause"));
+    const sections = blocks.length
+      ? blocks
+      : navigation.map((item) => document.querySelector(item.href)).filter((section): section is Element => Boolean(section));
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target.id) setActive(visible.target.id);
+        if (visible) setActive(linked.has(visible.target.id) ? visible.target.id : "");
       },
       { rootMargin: "-18% 0px -72% 0px", threshold: 0 }
     );

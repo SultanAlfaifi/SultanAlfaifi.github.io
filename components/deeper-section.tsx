@@ -11,10 +11,11 @@ import { SkillsSection } from "./skills-section";
 // One row: a <details> that carries the section's own id, so the assistant, the palette and a shared link
 // (/ar/#skills) open exactly the row they point at (lib/agent/reveal.ts). The closed row still says something
 // true: its number, its title and one line from the data. The summary holds one heading and its line, which
-// is what a <summary> allows; the number and the «+» are decoration.
+// is what a <summary> allows; the number and the «+» are decoration. A shared link can open the row before
+// hydration (the browser does it for #skills); that open state is the visitor's, so React leaves it alone.
 function DeeperRow({ id, index, title, line, children }: { id: string; index: number; title: string; line: string; children: ReactNode }) {
   return (
-    <details id={id} className="deeper-row">
+    <details id={id} className="deeper-row" suppressHydrationWarning>
       <summary className="deeper-row__summary">
         <span className="deeper-row__num li-num" aria-hidden="true">{String(index).padStart(2, "0")}</span>
         <h3 className="deeper-row__title">{title}</h3>

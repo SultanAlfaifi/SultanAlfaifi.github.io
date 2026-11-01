@@ -349,7 +349,8 @@ html[data-motion="off"] :is(.cv-page, .cv-pool, .cv-chips, .cv-more__icon) { tra
   .cv-stage { height: 540px; }
   .cv-page { width: 62%; }
   .cv-text { padding-top: 16px; }
-  .portfolio-v3 #cv { scroll-margin-top: calc(16px - max(var(--li-chapter) / 2, var(--nav-height, 60px) + 32px)); }
+  /* 8 px, not 16: the English column is a line taller, and «More options» must still end inside 800 px. */
+  .portfolio-v3 #cv { scroll-margin-top: calc(8px - max(var(--li-chapter) / 2, var(--nav-height, 60px) + 32px)); }
 }
 
 /* ---------- Phone: heading, the page, the download right under it, then the optional line ---------- */
@@ -380,9 +381,6 @@ html[data-motion="off"] :is(.cv-page, .cv-pool, .cv-chips, .cv-more__icon) { tra
   .cv-capsule { grid-template-columns: minmax(0, 1fr); }
   .cv-field + .cv-field { border-inline-start: 0; border-top: 1px solid var(--li-line); }
 }
-
-/* The About section's "CV" link, until that chapter drops it (FINAL-SPEC 3, item 7). */
-.portfolio-v3 .text-link { color: var(--li-tint-glacier); }
 
 @media print {
   .cv-stage, .cv-section :is(.cv-get, .cv-case) { animation: none !important; --rise: 1 !important; opacity: 1 !important; }

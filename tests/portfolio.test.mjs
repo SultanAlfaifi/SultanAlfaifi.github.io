@@ -151,9 +151,11 @@ test("approved supplied assets keep explicit, editable mapping decisions", () =>
 
 test("flagship program uses the supplied monochrome logo without a backing tile", () => {
   assert.match(programsSource, /program\.flagship && asset\?\.derived\.monochrome/);
-  assert.match(cssSource, /\.program-card--flagship \.program-card__logo\s*\{[\s\S]*?background: transparent/);
-  assert.match(cssSource, /\.program-card--flagship \.program-card__logo img[\s\S]*?brightness\(0\) invert\(1\)/);
-  assert.match(cssSource, /\.program-card--flagship\s*\{[\s\S]*?box-shadow: none/);
+  // The programs row: the logo sits on the hairline with no tile behind it; a colour-only logo is inked off-white.
+  const chapters = readFileSync(new URL("../app/chapters.css", import.meta.url), "utf8");
+  const logo = chapters.match(/\.portfolio-v3 \.row-program__logo \{[^}]*\}/)[0];
+  assert.doesNotMatch(logo, /background|box-shadow|border:/, "no backing tile");
+  assert.match(chapters, /\.row-program__logo--inked img \{ filter: brightness\(0\) invert\(1\); \}/);
 });
 
 test("corrected community brands and achievement mappings stay explicit", () => {
@@ -319,9 +321,10 @@ test("the living palette meets its intended contrast roles on the black ground",
 test("responsive and reduced-motion safeguards are present", () => {
   assert.match(cssSource, /overflow-x:\s*hidden/);
   assert.match(cssSource, /@media \(max-width: 600px\)/);
+  // On a phone the two quotes stack into one column (Recognition, app/chapters.css).
   assert.match(
-    cssSource,
-    /#recommendations \.section-header h2[\s\S]*?10\.25vw/
+    readFileSync(new URL("../app/chapters.css", import.meta.url), "utf8"),
+    /@media \(max-width: 900px\) \{[^@]*?\.recognition__quote-grid \{ grid-template-columns: minmax\(0, 1fr\); \}/
   );
   assert.match(
     cssSource,

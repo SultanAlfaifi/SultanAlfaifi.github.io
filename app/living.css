@@ -79,9 +79,8 @@
   --li-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --li-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* one rhythm for the whole page (see "One product" at the end) */
-  --li-display: clamp(2.75rem, min(5.4vw, 8.5svh), 5.5rem); /* the work and AI headlines: the hero headline's size on desktop */
-  --li-h2: clamp(2.2rem, 4vw, 3.6rem);                      /* every other section's headline */
+  /* one rhythm for the whole page (see "Calm" at the end) */
+  --li-display: clamp(2.75rem, min(5.4vw, 8.5svh), 5.5rem); /* the hero headline's size on desktop; every chapter headline (--li-t1) */
   --li-space-feature: calc(var(--li-chapter) / 2);         /* above and below the work and AI sections: half a chapter gap ("Calm") */
   --li-seam: linear-gradient(90deg, transparent, var(--li-line-2) 22%, var(--li-line-2) 78%, transparent);
 }
@@ -95,12 +94,7 @@ body.portfolio-v3 { background: var(--li-bg); color: var(--text); }
    Dark bands. These sections were written as dark bands on a light page; inside them the older
    token names keep their first meanings (ink = ground, paper = type), now on the new black.
    ------------------------------------------------------------------------------------------ */
-:where(
-  .nav, .nav__drawer, .identity-hero, .work-section, .kinetic-band, .timeline, .runtime-section,
-  .help-section, .contact-section, .footer, .section--community, .section--ideas, .section--ink,
-  .terminal, .terminal-shell, .assistant-launcher, .companion, .palette, .toast, .toast-region,
-  .film-dialog, .welcome, .agent-card, .cursor-ring, .organization-rail
-) {
+:where(.nav, .nav__drawer, .identity-hero, .work-section, .kinetic-band, .runtime-section, .terminal, .terminal-shell, .assistant-launcher, .companion, .palette, .toast, .toast-region, .film-dialog, .welcome, .agent-card, .cursor-ring) {
   --ink: var(--li-bg);
   --ink-soft: var(--li-bg-3);
   --paper: var(--li-ink);
@@ -298,25 +292,6 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .li-brand-orb { --li-orb-size: 34px; margin: -3px; }
 .li-brand-orb::before { inset: 14%; filter: none; box-shadow: none; }
 
-/* ------------------------------------------------------------------------------------------
-   The older sections on the new ground: cards that were dark on a light page become glass.
-   ------------------------------------------------------------------------------------------ */
-:where(.program-card--flagship) {
-  --ink: var(--li-bg);
-  --paper: var(--li-ink);
-  --white: #ffffff;
-  --text: #d6d3ce;
-  --muted: var(--li-ink-2);
-  --focus-ring: var(--li-focus);
-}
-.portfolio-v3 .program-card--flagship {
-  border: 1px solid var(--li-line-2);
-  border-radius: var(--li-r);
-  background: radial-gradient(90% 120% at 0% 0%, rgb(var(--li-iris-rgb) / 14%), transparent 60%), var(--li-glass-raised);
-  box-shadow: var(--li-highlight);
-  color: var(--li-ink);
-}
-
 /* The poster: the static mark under the canvas until the first frame (and without JavaScript). */
 .li-orb__poster { position: absolute; inset: 0; display: block; width: 100%; height: 100%; transition: opacity 0.5s ease; }
 .li-orb[data-ready] .li-orb__poster { opacity: 0; }
@@ -343,35 +318,14 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .portfolio-v3 .nav__menu-button:hover { background: var(--li-ink); color: var(--li-on-light); }
 
 /* ==========================================================================================
-   One product. The hero, the showcase and the AI section were rebuilt on this system; the older
-   sections between and after them now share their rhythm: one headline scale, one primary button
-   (off-white, dark text), glass cards, colour only as living light, and seams that fade at both ends
-   instead of hard full-width edges. The rebuilt sections use the same tokens in their own files.
+   One product. Shared pieces every chapter uses: the live eyebrow rule, one primary button (off-white,
+   dark text), colour only as living light, and the assistant's controls. The headline scale, the
+   seams and the spacing between chapters live in "Calm" below; each chapter uses the same tokens in
+   its own file.
    ========================================================================================== */
 
 /* Section eyebrows: a short line in the living light, as in the work and AI sections. */
 .li-eyebrow--live::before { width: 22px; background: var(--li-aurora); opacity: 1; }
-
-/* Seams. Where one section meets the next on the black, a hairline that fades at both ends. */
-.portfolio-v3 :is(.kinetic-band, .organization-rail, .organization-showcase) {
-  border-top: 1px solid transparent;
-  border-bottom: 0;
-  border-image: var(--li-seam) 1;
-}
-
-/* Headlines. Every section below the hero speaks at one size and weight, in ink. The rebuilt sections
-   (work, AI) use --li-display; the rest use --li-h2. Contact keeps its larger closing size. */
-.portfolio-v3 :is(.section-header h2, .timeline__head h2) {
-  max-width: 19ch;
-  color: var(--li-ink);
-  font-size: var(--li-h2);
-  font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-}
-.portfolio-v3 :is(.organization-rail__header, .organization-showcase__header) h2 { font-size: var(--li-h2); font-weight: 600; line-height: 1.08; letter-spacing: -0.035em; }
-.portfolio-v3 .contact-section h2 { color: var(--li-ink); font-weight: 600; }
-.portfolio-v3 [dir="rtl"] :is(.section-header h2, .timeline__head h2, .organization-rail__header h2, .organization-showcase__header h2, .contact-section h2) { line-height: 1.25; letter-spacing: 0; }
 
 /* Word-by-word headings arrive like the hero's and the AI section's: blur to sharp with a slight rise,
    not a slide out of a clipping mask. Scroll-driven, so they are finished wherever the page rests. */
@@ -396,8 +350,6 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
   box-decoration-break: clone;
 }
 .kinetic-band__row i { color: var(--li-tint-iris); }
-.portfolio-v3 .timeline__track::before { background: linear-gradient(90deg, var(--li-apricot), var(--li-rose) 30%, var(--li-iris) 60%, rgb(var(--li-glacier-rgb) / 12%)); }
-.timeline__progress span { background: var(--li-aurora); }
 
 /* The assistant wherever it appears (console, cards, companion, launcher): the same off-white primary
    and the same glass ghost as the rest of the page. */
@@ -416,57 +368,8 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .portfolio-v3 .assistant-launcher { box-shadow: var(--li-highlight), 0 18px 50px rgb(0 0 0 / 55%), 0 0 40px -12px rgb(var(--li-iris-rgb) / 55%); }
 .portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover { border-color: var(--li-line-3); background: var(--li-bg-3); color: var(--li-ink); }
 .portfolio-v3 :is(.assistant-cta, .assistant-launcher):hover svg { color: var(--li-tint-glacier); }
-
-/* Small type and chips. Every label below the AI section reads at the rebuilt sections' size (13 px,
-   never under 12.5) and every tag is the same glass pill as the showcase's: a hairline, a faint fill,
-   fully round. Latin labels keep their eyebrow spacing; Arabic never gets tracking (rtl.css). */
-.portfolio-v3 :is(.tag-list li, .tag-list--dark li, .timeline__kind, .ideas-footer li, .workshop__diagram span) {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 2px 11px;
-  border: 1px solid var(--li-line-2);
-  border-radius: var(--li-r-pill);
-  background: var(--li-glass);
-  color: var(--li-ink-2);
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: 0;
-  text-transform: none;
-}
-.portfolio-v3 .workshop__diagram { display: flex; flex-wrap: wrap; gap: 8px; }
-.portfolio-v3 .workshop__diagram span { padding-top: 2px; text-align: start; }
-.portfolio-v3 .workshop__diagram span::before,
-.portfolio-v3 .workshop__diagram span::after { display: none; }
-/* The timeline's kinds keep their colours, in the living palette. */
-.portfolio-v3 .timeline__kind { align-self: flex-start; }
-.portfolio-v3 .timeline__stop--recognition .timeline__kind { border-color: rgb(var(--li-glacier-rgb) / 45%); color: var(--li-tint-glacier); }
-.portfolio-v3 .timeline__stop--product .timeline__kind { border-color: rgb(var(--li-apricot-rgb) / 45%); color: var(--li-tint-apricot); }
-.portfolio-v3 .timeline__stop--open-source .timeline__kind { border-color: var(--li-line-3); color: var(--li-ink); }
-.portfolio-v3 .timeline__stop--career .timeline__kind { border-color: rgb(var(--li-iris-rgb) / 55%); color: var(--li-tint-iris); }
-.portfolio-v3 .timeline__stop--hackathon .timeline__kind { border-color: rgb(var(--li-rose-rgb) / 45%); color: var(--li-tint-rose); }
-
-.portfolio-v3 :is(
-  .nav__brand small,
-  .proof-card__issuer, .about-metadata dt, .salla-story__playback span,
-  .organization-showcase__header > p:first-child, .organization-detail-stage__hint,
-  .program-card__issuer, .program-card__story > div > span, .program-card > a,
-  .community-metric span, .workshop .workshop__meta, .workshop > a, .volunteer-note > span,
-  .ideas-metric span, .ideas-pillar > span, .ideas-footer a,
-  .recommendation-card > a, .recommendation-card__note, .recommendation-card__translated, .recommendation-card .tag-list,
-  .contact-section__meta, .contact-section__meta > p, .contact-section__status, .contact-section .social-links a,
-  .footer__inner p, .footer__inner a,
-  .proof-metric dd small, .timeline__stop time, .salla-story__meta p, .salla-story__note, .recommendation-card__person p, .help-card__proof
-) { font-size: 0.8125rem; }
-.portfolio-v3 .nav__brand small { font-size: 0.78125rem; }
-.portfolio-v3 .footer .footer__arabic { color: var(--li-ink-3); font-size: 0.875rem; }
-.portfolio-v3 :is(.about-layout__copy .text-link) { font-size: 0.875rem; }
-/* Parts inside a label take the label's size: the program's focus line is body text, not a label. */
-.portfolio-v3 .program-card__story p span,
-.portfolio-v3 :is(.proof-card__issuer, .contact-section .social-links a) span { font: inherit; color: inherit; letter-spacing: inherit; text-transform: none; }
-.portfolio-v3 .organization-showcase__intro { color: var(--li-ink-2); font-family: inherit; font-size: 0.9375rem; line-height: 1.65; letter-spacing: 0; text-transform: none; }
+/* The brand's small label reads at 13 px (t7), never under. */
+.portfolio-v3 .nav__brand small { font-size: 0.8125rem; }
 
 /* Tap targets: the brand link is at least 44 px wide when its words are hidden on a phone, and the
    console's input is never shorter than a finger. */

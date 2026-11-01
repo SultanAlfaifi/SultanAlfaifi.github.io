@@ -4,7 +4,7 @@
   --font-display: var(--font-arabic), system-ui, sans-serif;
   --font-mono: var(--font-arabic), system-ui, sans-serif;
 }
-:where(time, .live-clock, .proof-metric strong) { font-variant-numeric: tabular-nums; }
+:where(time, .live-clock) { font-variant-numeric: tabular-nums; }
 
 /* Arabic is cursive: tracking breaks letter joins, and its marks need taller lines. */
 [dir="rtl"] :is(h1, h2, h3, h4, h5, p, li, a, span, strong, small, em, dt, dd, button, summary, label, blockquote, figcaption, time, kbd, input):not([dir="ltr"], [dir="ltr"] *) {
@@ -28,20 +28,9 @@
 [dir="rtl"] .palette__foot svg { margin-left: 0; margin-right: 8px; }
 [dir="rtl"] .palette__foot svg:first-child { margin-right: 0; }
 [dir="rtl"] .secrets { left: auto; right: 18px; align-items: flex-end; }
-[dir="rtl"] .contact-orb { margin: 0 auto 20px 0; }
-[dir="rtl"] .timeline__dot { left: auto; right: 22px; }
-[dir="rtl"] .timeline__index { right: auto; left: 16px; }
-[dir="rtl"] .timeline__progress span { transform-origin: right; }
-[dir="rtl"] .organization-detail-panel__close { right: auto; left: 18px; }
 
 /* Motion reads right-to-left on Arabic pages. */
 [dir="rtl"] .kinetic-band__row:not(.x) { animation-direction: reverse; }
-@supports (animation-timeline: view()) {
-  @media (min-width: 841px) and (prefers-reduced-motion: no-preference) {
-    html:not([data-motion="off"]) [dir="rtl"] .timeline__track { animation-name: timeline-slide-rtl; }
-  }
-}
-@keyframes timeline-slide-rtl { to { transform: translateX(calc(100% - 100vw + 40px)); } }
 
 /* Language switch in the navigation. */
 .language-switch {
@@ -62,6 +51,5 @@
 
 @media (max-width: 840px) {
   [dir="rtl"] .nav__tools { margin-right: auto; margin-left: 8px; }
-  [dir="rtl"] .contact-orb { margin: 0 0 18px; }
   [dir="rtl"] .secrets { right: 12px; }
 }

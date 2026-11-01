@@ -67,29 +67,31 @@ rules are managed from one typed configuration file.
   CV a company and a role. The `<head>` boot script applies a returning visitor's choice before
   first paint. Crawlers and links to a specific place never see the welcome; `/?welcome`
   always shows it.
-  - Cursor spotlight, glowing bento borders, magnetic buttons, tilt cards, and
-    a variable-weight footer wordmark that swells near the cursor.
+  - Cursor spotlight, glowing borders, magnetic buttons, and tilt cards.
   - A Konami-code easter egg, plus a Motion toggle that, like
     `prefers-reduced-motion`, stops every effect and persists per visitor.
-- "Proof, not adjectives" section with count-up metrics, each with its source.
+- A calm page: six numbered chapters with a quiet pause between each (a seam and a small seed
+  of the orb), one headline and one object per screen. The extras (timeline, organizations,
+  skills, courses, community, writing) fold into one appendix, one level deep, and every
+  shared link or assistant jump opens the fold it points into.
+- Every number sits in its card beside its source and date; the hero's spec strip is the
+  page's only number row.
 - Cinematic first-visit intro (the Arabic name written stroke by stroke), aurora, cursor ring,
-  scroll-linked bilingual type band, pinned horizontal journey timeline, word-by-word headings,
-  card glare, a circular contact orb, and a six-secret exploration game with confetti.
+  a bilingual type band that drifts on its own and speeds up while you scroll, word-by-word
+  headings, card glare, and a six-secret exploration game with confetti.
 - **Full Arabic edition** at [`/ar/`](https://sultalfaifi.com/ar/): right-to-left layout, mirrored
   motion and icons, translated content and interface, `hreflang` alternates, and a sitemap entry.
 - System-architecture hero connecting interfaces, backend logic, APIs, data,
   and AI agents.
 - Responsive editorial layout with independent, full-width sections.
-- Typed organization rail with explicit relationship labels and accessible
-  marquee behavior.
+- Organizations as a still grid with explicit relationship labels.
 - Real portrait and supplied official brand assets—no stock photography or
   generated replacements.
 - Non-destructive asset pipeline for trimming empty logo canvas, preserving
   aspect ratios, and generating optimized color and monochrome derivatives.
 - Per-asset optical controls including scale, position, safe padding,
   background, trim mode, and monochrome behavior.
-- Reduced-motion fallback, keyboard navigation, visible focus states, and
-  screen-reader-safe duplicated marquee content.
+- Reduced-motion fallback, keyboard navigation, and visible focus states.
 - Programmatic WCAG contrast audit and automated semantic accessibility audit.
 - Static export and automated GitHub Pages deployment.
 
@@ -258,8 +260,7 @@ The generated accessibility report is available in
 - Separate high-contrast focus colors for light and dark surfaces
 - Links distinguishable by structure, icons, or underline—not color alone
 - Keyboard-operable mobile navigation with focus restoration
-- Accessible organization names and hidden duplicate marquee items
-- Static wrapping organization grid for `prefers-reduced-motion`
+- Accessible organization names in a still grid
 - Intentional portrait cropping with preserved faces and aspect ratio
 
 ## AI agent and CV backend

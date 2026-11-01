@@ -242,6 +242,8 @@ test("the assistant, the palette and a shared link open every fold around what t
     assert.deepEqual(scrolled, ["skills", "skills"]);
     window.location.hash = "#cv";
     assert.equal(revealFoldedHash(), false, "any other hash is left to the browser");
+    assert.equal(revealFoldedHash(true), true, "on load, after hydration, a place that is not folded is landed on again");
+    assert.equal(scrolled.at(-1), "cv");
     window.location.hash = "#%E0%A4%A";
     assert.equal(revealFoldedHash(), false, "a broken hash is ignored");
   } finally {

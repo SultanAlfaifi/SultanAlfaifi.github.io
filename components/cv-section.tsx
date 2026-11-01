@@ -423,8 +423,12 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
             onKeyDown={(event) => {
               if (event.key !== "Escape" || !chipsOpen) return;
               setChipsOpen(false);
-              keepChipsClosed.current = true;
-              roleRef.current?.focus();
+              // Only a focus that this Escape causes is skipped; when the role field already has focus, the
+              // next time the visitor comes back to it the chips open as usual.
+              if (document.activeElement !== roleRef.current) {
+                keepChipsClosed.current = true;
+                roleRef.current?.focus();
+              }
             }}
           >
             <div className="cv-for__label">

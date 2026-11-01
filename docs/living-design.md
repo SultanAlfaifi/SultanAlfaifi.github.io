@@ -77,8 +77,7 @@ Classes `.li-k-asks`, `.li-k-verifies`, `.li-k-holds` and `.li-k-bound` set `--l
 
 | Token | Use |
 |---|---|
-| `--li-display` | The work and AI headlines: the hero headline's size on desktop (76.5px at 1440x900), 44px on phones. |
-| `--li-h2` | Every other section's headline (57.6px at 1440). Weight 600, in `--li-ink`. |
+| `--li-display` | The hero headline's size on desktop (76.5px at 1440x900), 44px on phones; every chapter headline uses it as `--li-t1` (see Calm). |
 | `--li-space-feature` | Padding above and below the work and AI sections. |
 | `--li-seam` | The hairline where one section meets the next: it fades out at both ends. Use as `border-image: var(--li-seam) 1` on a 1px top border. |
 
@@ -180,23 +179,19 @@ hold the orb, then let go: that is the "gravity" secret.
 
 ## One product
 
-The hero, the showcase and the AI section were rebuilt on this system. The older sections share their
-language through the "One product" block at the end of `app/living.css`:
+Every chapter is built on this system. The pieces they share sit in the "One product" block of
+`app/living.css`; the spacing, the headline scale and the seams are in "Calm" below it:
 
-- Sections meet on plain black with a `--li-seam` hairline, never a hard full-width edge; no section adds grain
-  or a lighter ground. The work section's light fades back into the ground before the section ends.
-- Headlines: `--li-display` for the work and AI sections, `--li-h2` for the rest, all in ink at weight 600.
+- Chapters meet on plain black with a `--li-seam` hairline and a seed, never a hard full-width edge; no chapter
+  adds grain or a lighter ground. The work section's light fades back into the ground before the section ends.
+- Headlines: all six chapter headlines are `--li-t1` in ink at weight 600 (line height 1.16, 1.2 in Arabic).
   Word-by-word headings (`.split-heading`) and `Reveal variant="title"` arrive blur to sharp with a slight rise,
   like the hero and the AI section, and are finished at rest.
 - One primary button everywhere, the assistant included: off-white with `--li-on-light` text. Ghosts are glass
-  with a hairline. Help cards are glass; contact links are glass pills.
-- Colour is living light: big signals are ink; the lead achievement and the band's accent words carry the aurora;
-  the journey's progress line is aurora like the scroll bar.
-- One chip: every tag (`.tag-list`, the timeline's kinds, the ideas and workshop chips) is the showcase's glass
-  pill at 13px. Labels below the AI section read at 13px too; nothing on the page is under 12.5px.
-- The organizations rail is dark glass with the logos in off-white. A brand's colour is a faint glow on the tile
-  that is on air (hovered, focused or open), never a fill.
-- Panels end flush: a card left alone on the last row of a grid becomes a strip across it.
+  with a hairline. Lists are hairline rows, not boxes; only what you act on is glass.
+- Colour is living light: «أفضل 5%», the quote marks and the band's accent words carry the aurora, like the
+  scroll bar.
+- The organizations are a still grid with the logos in off-white; no brand colour fills a tile.
 - Text on a showcase tile uses `--li-ink-2` at the quietest: over the tile's accent light `--li-ink-3` falls
   under 4.5:1 (both pairs are in `scripts/contrast-audit.mjs`).
 

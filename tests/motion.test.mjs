@@ -109,7 +109,7 @@ test("offscreen entrance holds its delay frame without clipping and respects red
 test("the band moves on its own: no scroll-only timeline, and it stops with motion off", async () => {
   const { readFileSync } = await import("node:fs");
   const experience = readFileSync(new URL("../app/experience.css", import.meta.url), "utf8");
-  const band = experience.slice(experience.indexOf("/* ---------- Kinetic band"), experience.indexOf("/* ---------- Journey timeline"));
+  const band = experience.slice(experience.indexOf("/* ---------- Kinetic band"), experience.indexOf("/* ---------- Word-by-word headings"));
   assert.ok(band.length > 200, "the band block");
   assert.doesNotMatch(band, /animation-timeline/, "no view() override that ties it to scroll only");
   assert.match(band, /\.kinetic-band__row--solid \{ animation: band-left 56s linear infinite; \}/);

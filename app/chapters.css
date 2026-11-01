@@ -27,6 +27,7 @@
 .portfolio-v3 :is(#about, #achievements) .section-header h2 {
   max-width: 18ch;
   margin: 0;
+  color: var(--li-ink);
   font-size: var(--li-t1);
   font-weight: 600;
   line-height: 1.16;
@@ -223,7 +224,6 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .about__now-play { inset-inline-start: 12px; bottom: 12px; }
 }
 
-
 /* ===== Recognition (owner: recog) ===== */
 /* #achievements (components/achievements-section.tsx) with the quotes #recommendations
    (.recognition__quotes, components/recommendations-section.tsx). FINAL-SPEC 6.5. */
@@ -269,8 +269,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
 .recognition__issuer { grid-column: 10 / span 3; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; text-align: end; }
 
 /* «قالوا عنّي»: an h3 and two quotes at t2, each under a hairline, with an aurora quote mark. */
-/* (portfolio.css still pads the old #recommendations section by id; inline here, it takes no padding of its own.) */
-.portfolio-v3 #recommendations.recognition__quotes { margin-top: var(--li-group); padding-block: 0; }
+.portfolio-v3 .recognition__quotes { margin-top: var(--li-group); }
 .portfolio-v3 .recognition__quotes-title { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
 .recognition__quote-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--li-open) clamp(32px, 5vw, 80px); margin-top: 40px; }
 .recognition__quote { min-width: 0; padding-top: 32px; border-top: 1px solid var(--li-line-2); }
@@ -304,7 +303,6 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .recognition__signal, .recognition__text, .recognition__issuer { grid-column: 1 / -1; text-align: start; }
   .recognition__quote-grid { grid-template-columns: minmax(0, 1fr); }
 }
-
 
 /* ===== Outside the projects (owner: rest) ===== */
 /* «خارج المشاريع» (components/deeper-section.tsx: .deeper, .deeper__head, .deeper-row and its
@@ -558,6 +556,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
 .portfolio-v3 .row-ideas__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-top: 20px; border-top: 1px solid var(--li-line); }
 .portfolio-v3 .deeper .row-ideas__topics { display: grid; gap: 4px; max-width: 46rem; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
 .portfolio-v3 .row-ideas__follow { display: flex; flex-wrap: wrap; gap: 10px; }
+.portfolio-v3 .row-ideas__follow .li-btn { font-size: var(--li-t6); }
 
 /* Narrower screens: the line drops under the title, and the bodies fold to fewer columns. */
 @media (max-width: 1100px) {
@@ -590,7 +589,6 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .portfolio-v3 .row-ideas__foot { display: grid; justify-content: stretch; }
 }
 
-
 /* ===== Contact + Help (owner: rest) ===== */
 /* #contact (components/contact-section.tsx) with the help paths #help (.contact__help,
    components/help-section.tsx), the socials and the aurora horizon. FINAL-SPEC 6.8. */
@@ -604,10 +602,10 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   font-size: var(--li-t1);
   font-weight: 600;
   line-height: 1.16;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
-.portfolio-v3 [dir="rtl"] .finale .finale__title { line-height: 1.2; }
+.portfolio-v3 [dir="rtl"] .finale .finale__title { line-height: 1.2; letter-spacing: 0; }
 .portfolio-v3 .finale .finale__lead { max-width: 34em; margin: 0; color: var(--li-ink-2); font-size: var(--li-t4); line-height: 1.75; }
 
 /* One email action, and the address to copy. */
@@ -690,7 +688,6 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .portfolio-v3 .finale .finale__btn { width: 100%; }
 }
 
-
 /* ===== Closing and footer (owner: rest) ===== */
 /* The quiet wordmark under the horizon and the one-row footer (components/footer.tsx). FINAL-SPEC 6.9. */
 .portfolio-v3 .closing { position: relative; }
@@ -732,6 +729,11 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   transition: color 0.2s ease;
 }
 .portfolio-v3 .closing__row a:hover { color: var(--li-ink); }
+/* The assistant's launcher is fixed at the bottom inline-end corner (app/agent.css): «للأعلى ↑» stops short of
+   it, so the last link on the page is never under the button. */
+@media (min-width: 701px) {
+  .portfolio-v3 .closing__row { padding-inline-end: max(0px, calc(250px - var(--li-margin))); }
+}
 @media (max-width: 700px) {
   .portfolio-v3 .closing__row { flex-direction: column; justify-content: center; text-align: center; padding-top: 4px; }
   .portfolio-v3 .closing__row a { margin-inline-start: 0; }
