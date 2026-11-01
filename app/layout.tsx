@@ -11,6 +11,7 @@ import "./cv.css";
 import "./welcome.css";
 import "./rtl.css";
 import "./living.css";
+import "./chapters.css";
 import "./hero.css";
 import "./showcase.css";
 import "./ai.css";

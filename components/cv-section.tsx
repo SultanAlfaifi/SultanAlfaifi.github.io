@@ -326,9 +326,9 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   const name = company.trim();
 
   return (
-    <section ref={sectionRef} id="cv" className="section cv-section" aria-label={copy.title}>
+    <section ref={sectionRef} id="cv" className="section cv-section li-chapter" aria-label={copy.title}>
       <div className="page-shell">
-        <SectionHeader title={copy.title} description={copy.description} />
+        <SectionHeader numbered title={copy.title} description={copy.description} />
         <div className="cv-layout">
           <div className="cv-get">
             {personal ? (

@@ -185,9 +185,10 @@ test("the rebuilt sections and the older ones read as one product", () => {
   }
   assert.match(block, /\.help-card \{[\s\S]*?background: var\(--li-glass-fill\);/);
   assert.match(block, /\.proof-card--lead \.proof-card__signal,\s*\.kinetic-band__row \.kinetic-band__accent \{[\s\S]*?background: var\(--li-aurora\);/);
-  // Both section eyebrows carry the living rule.
-  assert.match(read("../components/projects-section.tsx"), /li-eyebrow li-eyebrow--live sc-head__eyebrow/);
-  assert.match(read("../components/runtime-section.tsx"), /li-eyebrow li-eyebrow--live ai-eyebrow/);
+  // Both section eyebrows carry the living rule, now as numbered chapter eyebrows ("01 · Featured projects").
+  assert.match(read("../components/section-header.tsx"), /className=\{`li-eyebrow li-eyebrow--live li-chapter__eyebrow \$\{className\}`/);
+  assert.match(read("../components/projects-section.tsx"), /<ChapterEyebrow text=\{copy\.index\} className="sc-head__eyebrow" \/>/);
+  assert.match(read("../components/runtime-section.tsx"), /<ChapterEyebrow text=\{copy\.eyebrow\} className="ai-eyebrow" \/>/);
   // Section titles everywhere arrive like the hero's: blur to sharp.
   assert.match(read("../components/reveal.tsx"), /variant === "title"\s*\? \[\{ transform: "translateY\(16px\)", opacity: 0, filter: "blur\(10px\)" \}/);
 });

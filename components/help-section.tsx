@@ -1,15 +1,18 @@
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
-import { SectionHeader } from "./section-header";
 
 // Speaks to the three reasons people arrive: hiring, building an AI product, or running a program.
+// A block inside Contact (components/contact-section.tsx), so its heading is an h3.
 export function HelpSection({ locale = "en" }: { locale?: Locale }) {
   const { helpPaths, ui } = getContent(locale);
   return (
-    <section id="help" className="section help-section">
+    <section id="help" className="contact__help help-section" aria-labelledby="help-title">
       <div className="page-shell">
-        <SectionHeader title={ui.help.title} description={ui.help.description} />
+        <header className="contact__help-head">
+          <h3 id="help-title">{ui.help.title}</h3>
+          <p>{ui.help.description}</p>
+        </header>
         <div className="help-grid">
           {helpPaths.map((path, index) => (
             <Reveal key={path.cta.href} className="help-card-shell" delay={index * 70}>

@@ -74,15 +74,23 @@ test("portfolio positioning stays specific and evidence-conscious", () => {
 });
 
 test("work leads the page and the full journey remains available", () => {
-  const communityIndex = pageSource.indexOf("<CommunitySection");
-  const recommendationsIndex = pageSource.indexOf("<RecommendationsSection");
-  const ideasIndex = pageSource.indexOf("<IdeasSection");
-
-  assert.ok(communityIndex >= 0);
-  assert.ok(recommendationsIndex > communityIndex);
-  assert.ok(ideasIndex > communityIndex);
-  assert.ok(pageSource.indexOf("<ProjectsSection") < pageSource.indexOf("<AboutSection"));
-  assert.match(pageSource, /ui\.deeper\.title/);
+  const component = (file) => readFileSync(new URL(`../components/${file}`, import.meta.url), "utf8");
+  // Eight blocks after the hero, in the browse order; work first, contact last.
+  const order = ["<ProjectsSection", "<KineticBand", "<RuntimeSection", "<AboutSection", "<AchievementsSection", "<CvSection", "<DeeperSection", "<ContactSection"];
+  const at = order.map((tag) => pageSource.indexOf(tag));
+  assert.ok(at.every((index) => index > 0), "every block is on the page");
+  assert.deepEqual([...at].sort((a, b) => a - b), at, "in the browse order");
+  // The blocks that moved still render, inside the chapter they now belong to.
+  assert.match(component("about-section.tsx"), /<ExperienceSection locale=\{locale\} \/>/);
+  assert.match(component("achievements-section.tsx"), /<RecommendationsSection locale=\{locale\} \/>/);
+  assert.match(component("contact-section.tsx"), /<HelpSection locale=\{locale\} \/>/);
+  // The full journey: six rows in "Beyond the projects", each with its section id, timeline first.
+  const deeper = component("deeper-section.tsx");
+  const rows = ["timeline", "organizations", "skills", "journey", "community", "ideas"].map((id) => deeper.indexOf(`<DeeperRow id="${id}"`));
+  assert.ok(rows.every((index) => index > 0), "all six rows");
+  assert.deepEqual([...rows].sort((a, b) => a - b), rows);
+  for (const tag of ["<JourneyTimeline", "<OrganizationRail", "<SkillsSection", "<ProgramsSection", "<CommunitySection", "<IdeasSection"]) assert.ok(deeper.includes(tag), tag);
+  assert.match(deeper, /ui\.deeper\.title/);
   assert.match(readFileSync(new URL("../data/ui.ts", import.meta.url), "utf8"), /title: "Beyond the projects"/);
 });
 

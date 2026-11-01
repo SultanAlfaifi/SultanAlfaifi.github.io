@@ -3,7 +3,6 @@ import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
 import { SallaExperienceStory } from "./salla-experience-story";
-import { SectionHeader } from "./section-header";
 
 export function ExperienceSection({ locale = "en" }: { locale?: Locale }) {
   const { experience, ui } = getContent(locale);
@@ -12,13 +11,12 @@ export function ExperienceSection({ locale = "en" }: { locale?: Locale }) {
   const remainingExperience = experience.filter((item) => item !== sallaExperience);
 
   return (
-    <section id="experience" className="section section--paper experience-section">
-      <div className="page-shell">
-        <SectionHeader
-          title={ui.experience.title}
-          description={ui.experience.description}
-        />
-      </div>
+    // The Now card inside About (components/about-section.tsx). It keeps the #experience anchor.
+    <article id="experience" className="about__now experience-section" aria-labelledby="experience-title">
+      <header className="about__now-head">
+        <h3 id="experience-title">{ui.experience.title}</h3>
+        <p>{ui.experience.description}</p>
+      </header>
 
       {sallaExperience && sallaAsset ? (
         <SallaExperienceStory experience={sallaExperience} asset={sallaAsset} locale={locale} />
@@ -67,6 +65,6 @@ export function ExperienceSection({ locale = "en" }: { locale?: Locale }) {
           </div>
         </div>
       ) : null}
-    </section>
+    </article>
   );
 }

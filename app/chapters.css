@@ -1,0 +1,30 @@
+/* ==========================================================================================
+   The lower chapters (FINAL-SPEC 6.4 to 6.9). Imported right after app/living.css, so it builds on the
+   Calm tokens there: --li-chapter, --li-group, --li-open, --li-gap and --li-t0 to --li-t7.
+   Each block below has one owner. Write only inside your own block; anything shared (tokens, the
+   chapter counter, the seams and seeds) lives in app/living.css, "Calm".
+   ========================================================================================== */
+
+/* ===== About + Now (owner: recog) ===== */
+/* #about (components/about-section.tsx) with the Now card #experience (.about__now,
+   components/experience-section.tsx) and the «التالي» line. FINAL-SPEC 6.4. */
+
+
+/* ===== Recognition (owner: recog) ===== */
+/* #achievements (components/achievements-section.tsx) with the quotes #recommendations
+   (.recognition__quotes, components/recommendations-section.tsx). FINAL-SPEC 6.5. */
+
+
+/* ===== Outside the projects (owner: rest) ===== */
+/* «خارج المشاريع» (components/deeper-section.tsx: .deeper, .deeper__head, .deeper-row and its
+   summary, .deeper-row__body) and the six row bodies inside it. FINAL-SPEC 6.7. */
+
+
+/* ===== Contact + Help (owner: rest) ===== */
+/* #contact (components/contact-section.tsx) with the help paths #help (.contact__help,
+   components/help-section.tsx), the socials and the aurora horizon. FINAL-SPEC 6.8. */
+
+
+/* ===== Closing and footer (owner: rest) ===== */
+/* The quiet wordmark under the horizon and the one-row footer (components/footer.tsx). FINAL-SPEC 6.9. */
+

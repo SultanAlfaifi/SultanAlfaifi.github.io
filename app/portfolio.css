@@ -29,7 +29,6 @@
 .portfolio-v3 .section-header__copy > p { max-width: 39ch; margin: 0; font-size: 1rem; line-height: 1.65; }
 .flow-dot { width: 9px; height: 9px; border-radius: 50%; background: #31647b; flex: none; transition: transform 250ms var(--ease-arrive); }
 .draft-state { display: inline-block; color: #514328; background: #d5c9b3; padding: 4px 10px; border-radius: 5px; font-size: .7rem; }
-.portfolio-v3 #about { padding-block: var(--section-space); }
 .portfolio-v3 #about .section-header { margin-bottom: 44px; }
 .portfolio-v3 .about-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: center; }
 .portfolio-v3 .about-portrait { grid-column: auto; grid-row: auto; padding: 0; align-self: center; max-width: 360px; width: 100%; margin: auto; }

@@ -200,6 +200,63 @@ language through the "One product" block at the end of `app/living.css`:
 - Text on a showcase tile uses `--li-ink-2` at the quietest: over the tile's accent light `--li-ink-3` falls
   under 4.5:1 (both pairs are in `scripts/contrast-audit.mjs`).
 
+## Calm
+
+Sultan asked for a page that breathes: «المواقع الراقية تكون بمساحات وتوزيع وفراغات مدروسة». The page gets
+calm from space and from fewer things on screen, never from duller colour: the black ground, the living light,
+the aurora and the glass all stay. The rules are in the "Calm" block at the end of `app/living.css`; the lower
+chapters are styled in `app/chapters.css`, one block per chapter.
+
+**Grid and rhythm.** Four steps of space, each clearly bigger than the one inside it. Cards never sit closer
+than 32px at 1440, and chapters sit at least three card gaps apart.
+
+| Token | Use | 1440 / 1280 / 390 |
+|---|---|---|
+| `--li-margin` | Side margin | 80 / 64 / 24 |
+| `--li-shell` | Content width | 1,280 / 1,152 / 342 |
+| `--li-gap` | Gutter, and the gap between cards | 32 / 28 / 16 |
+| `--li-chapter` | Between chapters; each chapter's padding-block is half of it | 232 / 204 / 128 |
+| `--li-group` | Between groups inside a chapter | 112 / 100 / 64 |
+| `--li-open` | A chapter's opener (eyebrow, headline, lead) to its object | 88 / 77 / 48 |
+
+Inside a card: 8, 16, 24 or 40px. `--li-space-feature` (the work and AI sections) is half a chapter.
+
+**Type.** Eight sizes, weights 400, 500 and 600 only, IBM Plex Sans Arabic only. Arabic text is never under
+13px outside the CV paper. Body text never runs wider than 60ch.
+
+| Token | Role | 1440 / 1280 / 390 |
+|---|---|---|
+| `--li-t0` | The page's one moment («أفضل 5%») | 120 / 108 / 64 |
+| `--li-t1` | The six chapter headlines (`--li-display`) | 76 / 68 / 44 |
+| `--li-t2` | Project titles, quotes, the appendix title | 40 / 36 / 28 |
+| `--li-t3` | Row and card titles, signals, audiences | 26 / 23 / 22 |
+| `--li-t4` | A chapter's lead, in `--li-ink-2` | 20 / 18 / 17 |
+| `--li-t5` | Body, the large button | 17 / 16 / 16 |
+| `--li-t6` | Meta, buttons, links, row lines | 15 |
+| `--li-t7` | Eyebrows, notes, captions | 13 |
+
+**Chapters.** After the hero come eight blocks: six numbered chapters (`.li-chapter`: work, the AI assistant,
+about, recognition, the CV, contact), the band between work and the AI chapter (`.li-pause`), and the "Beyond the
+projects" appendix (`.li-chapter li-chapter--appendix`). A chapter's eyebrow is `<ChapterEyebrow>`
+(`components/section-header.tsx`, or `<SectionHeader numbered>`): the aurora rule, the two-digit number, and the
+section's own eyebrow words only where it already has some ("01 · Featured projects", "02 · AI assistant"). The
+number is a CSS counter in DOM order, so a visitor's own order renumbers the chapters with no code. No new
+eyebrow words.
+
+**The pause.** Where two blocks meet: a `--li-seam` hairline, and on it a 9px seed of the orb (a CSS conic
+gradient, no WebGL slot). It blooms once when its seam is 60% of the way up the screen
+(`components/interaction-layer.tsx` marks the block `.is-seen`), then rests. Without that script, with reduced
+motion, or with the Motion switch off, the seed simply rests lit.
+
+**Motion budget.** At most three live WebGL orbs (hero, AI, brand). Below the AI chapter only the band moves
+continuously. One-time motions are fine: the seeds, the CV reveal, the verifier strike, the ring. No marquee, no
+rotating badge, no pinned scroller, no proximity effect.
+
+**One fold level.** Folds are one `<details>` deep, never nested. A folded section carries its id on the
+`<details>` itself (the six "Beyond the projects" rows), and `revealAnchor`, `showOnPage` and the palette's jump
+open every fold around their target (`openFolds` in `lib/agent/reveal.ts`). A shared link to a folded place
+(`/ar/#skills`) opens it after hydration and on every hash change. The CV's Turnstile slot is never in a fold.
+
 ## Orbs and the welcome screen
 
 - Every orb but the welcome screen's own holds one still frame while `html[data-welcome="show"]` is set, since

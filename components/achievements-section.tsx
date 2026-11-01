@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
 import { MetaParts } from "./meta-parts";
+import { RecommendationsSection } from "./recommendations-section";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -18,9 +19,10 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
   const visible = achievements.filter((achievement) => achievement.enabled);
 
   return (
-    <section id="achievements" className="section proof-section">
+    <section id="achievements" className="section proof-section li-chapter">
       <div className="page-shell">
         <SectionHeader
+          numbered
           title={ui.proof.title}
           description={ui.proof.description}
         />
@@ -78,6 +80,9 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
             );
           })}
         </ol>
+
+        {/* «قالوا عنّي»: the two recommendations, inside Recognition (#recommendations). */}
+        <RecommendationsSection locale={locale} />
       </div>
     </section>
   );

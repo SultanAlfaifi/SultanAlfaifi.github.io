@@ -8,7 +8,7 @@ export function KineticBand({ locale = "en" }: { locale?: Locale }) {
   const outlineRow = [...band.outline, ...band.outline, ...band.outline];
   const second = locale === "en" ? "ar" : "en";
   return (
-    <section className="kinetic-band" aria-hidden="true" data-cursor={band.cursor} dir="ltr">
+    <section className="kinetic-band li-pause" aria-hidden="true" data-cursor={band.cursor} dir="ltr">
       <div className="kinetic-band__row kinetic-band__row--solid">
         {solidRow.map(([primary, secondary], index) => (
           <span key={`${primary}-${index}`}>

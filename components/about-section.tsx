@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
+import { ExperienceSection } from "./experience-section";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
@@ -11,9 +12,10 @@ export function AboutSection({ locale = "en" }: { locale?: Locale }) {
   const educationLogo = getPortfolioAsset(about.educationAssetId);
 
   return (
-    <section id="about" className="section section--paper">
+    <section id="about" className="section section--paper li-chapter about-chapter">
       <div className="page-shell">
         <SectionHeader
+          numbered
           title={ui.about.title}
         />
 
@@ -79,6 +81,9 @@ export function AboutSection({ locale = "en" }: { locale?: Locale }) {
             </Reveal>
           </div>
         </div>
+
+        {/* The Now card: what he does at Salla, inside About (#experience). */}
+        <ExperienceSection locale={locale} />
       </div>
     </section>
   );

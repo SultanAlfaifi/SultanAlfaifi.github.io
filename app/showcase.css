@@ -24,7 +24,8 @@
   background: transparent;
   box-shadow: none;
   color: var(--li-ink);
-  overflow: clip;
+  /* Sideways only, so the pause seed on its seam keeps its upper half (app/living.css, "Calm"). */
+  overflow: clip visible;
 }
 .portfolio-v3 #work.sc-section > .page-shell { position: relative; width: var(--shell); margin-inline: auto; }
 

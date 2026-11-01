@@ -2,15 +2,15 @@ import type { CSSProperties } from "react";
 import { getContent, type Locale } from "@/data/i18n";
 import { MetaParts } from "./meta-parts";
 
-// On wide screens with scroll-driven animation support, the track is pinned and slides sideways as you scroll.
-// Everywhere else it is a native horizontal scroller with snap points.
+// The dated timeline, inside its "Beyond the projects" row (components/deeper-section.tsx), which carries
+// #timeline and the title. On wide screens with scroll-driven animation support, the track is pinned and
+// slides sideways as you scroll. Everywhere else it is a native horizontal scroller with snap points.
 export function JourneyTimeline({ locale = "en" }: { locale?: Locale }) {
   const { journey, ui } = getContent(locale);
   return (
-    <section id="timeline" className="timeline" aria-labelledby="timeline-title" style={{ "--count": journey.length } as CSSProperties}>
+    <div className="timeline" style={{ "--count": journey.length } as CSSProperties}>
       <div className="timeline__sticky">
         <div className="page-shell timeline__head">
-          <h2 id="timeline-title">{ui.timeline.title}</h2>
           <p>{ui.timeline.description}</p>
         </div>
         <div className="timeline__viewport" tabIndex={0} aria-label={ui.timeline.aria} data-cursor={ui.timeline.cursor}>
@@ -29,6 +29,6 @@ export function JourneyTimeline({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="page-shell timeline__progress" aria-hidden="true"><span /></div>
       </div>
-    </section>
+    </div>
   );
 }

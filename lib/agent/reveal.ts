@@ -1,12 +1,23 @@
 import { motionAllowed } from "@/components/motion-preference";
 
-// Scrolls to a page anchor the agent cited or opened, expanding the "Beyond the projects" panel if the
-// anchor sits inside it, and briefly outlines the target so the visitor sees where they landed.
+// Opens every fold around a target, the target itself included when it is a <details> (the "Beyond the
+// projects" rows carry their section ids). The page keeps folds one level deep; this opens them all anyway,
+// so a nested fold can never hide what the assistant or the palette points at.
+export function openFolds(target: Element) {
+  for (let d = target.closest("details"); d; d = d.parentElement?.closest("details") ?? null) d.open = true;
+}
+
+function inClosedFold(target: Element) {
+  for (let d = target.closest("details"); d; d = d.parentElement?.closest("details") ?? null) if (!d.open) return true;
+  return false;
+}
+
+// Scrolls to a page anchor the agent cited or opened, opening any fold it sits in, and briefly outlines the
+// target so the visitor sees where they landed.
 export function revealAnchor(id: string, highlight = true) {
   const target = document.getElementById(id);
   if (!target) return false;
-  const details = target.closest("details");
-  if (details && !details.open) details.open = true;
+  openFolds(target);
   target.scrollIntoView({ behavior: motionAllowed() ? "smooth" : "auto", block: "start" });
   if (highlight) {
     target.classList.remove("agent-highlight");
@@ -65,9 +76,22 @@ export function showOnPage(id: string, quote?: string | null) {
   clearSpotlight();
   const spot = quote ? findWords(id, quote) : null;
   if (!spot) return revealAnchor(id);
-  const details = spot.closest("details");
-  if (details && !details.open) details.open = true;
+  openFolds(spot);
   spot.classList.add(SPOT);
   scrollToSee(spot);
   return true;
+}
+
+// A shared link to a folded place (/ar/#skills, or #project-danna inside the smaller builds) opens its fold
+// and lands on it. Runs after hydration and on every hash change; any other hash is left to the browser.
+export function revealFoldedHash() {
+  let id = "";
+  try {
+    id = decodeURIComponent(window.location.hash.slice(1));
+  } catch {
+    return false;
+  }
+  const target = id ? document.getElementById(id) : null;
+  if (!target || !inClosedFold(target)) return false;
+  return revealAnchor(id, false);
 }

@@ -1,8 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
-import { SectionHeader } from "./section-header";
 
+// Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #community and the title.
 export function CommunitySection({ locale = "en" }: { locale?: Locale }) {
   const { community, ui } = getContent(locale);
   const mainWorkshop = community.workshops.find((workshop) => workshop.primary);
@@ -11,13 +11,9 @@ export function CommunitySection({ locale = "en" }: { locale?: Locale }) {
   );
 
   return (
-    <section id="community" className="section section--community">
-      <div className="page-shell">
-        <SectionHeader
-          title={ui.community.title}
-          description={ui.community.description}
-          inverse
-        />
+    <div className="deeper-body section--community">
+      <div>
+        <p className="deeper-body__lead">{ui.community.description}</p>
 
         <div className="community-metrics" aria-label={ui.community.impact}>
           {community.metrics.map((metric, index) => (
@@ -73,6 +69,6 @@ export function CommunitySection({ locale = "en" }: { locale?: Locale }) {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

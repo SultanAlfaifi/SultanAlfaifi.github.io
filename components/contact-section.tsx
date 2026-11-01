@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Check, Clipboard, Mail, MapPin } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
-import { SplitWords } from "./section-header";
+import { HelpSection } from "./help-section";
+import { ChapterEyebrow, SplitWords } from "./section-header";
 import { SocialLinks } from "./social-links";
 
 export function ContactSection({ locale = "en" }: { locale?: Locale }) {
@@ -33,9 +34,10 @@ export function ContactSection({ locale = "en" }: { locale?: Locale }) {
   }
 
   return (
-    <section id="contact" className="contact-section" aria-labelledby="contact-title">
+    <section id="contact" className="contact-section li-chapter" aria-labelledby="contact-title">
       <div className="page-shell contact-section__inner">
         <div className="contact-section__copy">
+          <ChapterEyebrow />
           <h2 id="contact-title" className="split-heading"><SplitWords text={ui.contact.title} /></h2>
           <p>{ui.contact.body}</p>
         </div>
@@ -73,6 +75,9 @@ export function ContactSection({ locale = "en" }: { locale?: Locale }) {
           <SocialLinks includeEmail locale={locale} />
         </div>
       </div>
+
+      {/* «كيف أقدر أخدمك؟»: the three ways to start, inside Contact (#help), so Contact closes every order. */}
+      <HelpSection locale={locale} />
     </section>
   );
 }

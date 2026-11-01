@@ -184,7 +184,8 @@ test("the source order is the reading order, so focus moves the way the screen r
   ]);
   const css = read("../app/hero.css");
   assert.doesNotMatch(css, /grid-template-areas|[;{\s]order\s*:|-reverse/, "no visual reordering that focus wouldn't follow");
-  assert.match(read("../app/layout.tsx"), /import "\.\/living\.css";\r?\nimport "\.\/hero\.css";/, "hero.css loads after the design system");
+  // The design system, then its lower chapters (app/chapters.css), then the hero.
+  assert.match(read("../app/layout.tsx"), /import "\.\/living\.css";\r?\nimport "\.\/chapters\.css";\r?\nimport "\.\/hero\.css";/, "hero.css loads after the design system");
 });
 
 test("the portrait isn't preloaded at high priority, so the H1 stays the LCP element", () => {

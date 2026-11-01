@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motionAllowed, subscribeMotion, toast, TOAST_EVENT } from "./motion-preference";
 import { currentLocale, getContent } from "@/data/i18n";
+import { revealFoldedHash } from "@/lib/agent/reveal";
 import { unlockSecret } from "./secrets";
 
 const SCRAMBLE_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/#*+";
@@ -11,6 +12,11 @@ const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "Ar
 function formatCount(value: number) {
   return Math.round(value).toLocaleString("en-US");
 }
+
+// The seams between chapters (app/living.css, "Calm"): a pause seed blooms once when its seam is 60% of the
+// way up the screen, then rests. A seam already above the screen counts as seen, so scrolling back up never
+// finds a seed waiting to bloom. Without this observer (no JavaScript, reduced motion) the seeds rest lit.
+const SEAMS = ".li-chapter, .li-pause";
 
 // Page-wide pointer craft. Every effect is decorative and stops with reduced motion or the Motion toggle.
 export function InteractionLayer() {
@@ -29,7 +35,10 @@ export function InteractionLayer() {
       frame = 0;
       // Read every rect first, then write, so one frame never forces repeated style recalcs.
       const cards = Array.from(document.querySelectorAll<HTMLElement>(".glow-card, .li-glass--light"), (element) => ({ element, rect: element.getBoundingClientRect() }));
-      const characters = Array.from(document.querySelectorAll<HTMLElement>("[data-proximity] .px-char"), (element) => ({ element, rect: element.getBoundingClientRect() }));
+      // Nothing on the page swells with the pointer any more unless something opts in with data-proximity.
+      const characters = document.querySelector("[data-proximity]")
+        ? Array.from(document.querySelectorAll<HTMLElement>("[data-proximity] .px-char"), (element) => ({ element, rect: element.getBoundingClientRect() }))
+        : [];
       root.style.setProperty("--mx", `${pointerX}px`);
       root.style.setProperty("--my", `${pointerY}px`);
       for (const { element, rect } of cards) {
@@ -143,6 +152,24 @@ export function InteractionLayer() {
     }, { threshold: 0.6 });
     document.querySelectorAll("[data-count]").forEach((element) => counters.observe(element));
 
+    let seeds: IntersectionObserver | null = null;
+    if (motionAllowed()) {
+      root.dataset.seeds = "on";
+      seeds = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting && entry.boundingClientRect.top > 0) continue;
+          entry.target.classList.add("is-seen");
+          seeds?.unobserve(entry.target);
+        }
+      }, { rootMargin: "0px 0px -40% 0px", threshold: 0 });
+      document.querySelectorAll(SEAMS).forEach((element) => seeds?.observe(element));
+    }
+
+    // A shared link to a folded row (/ar/#skills) opens it. After hydration, once the visitor's own order
+    // has settled, and on every later hash change.
+    const hashTimer = window.setTimeout(revealFoldedHash, 120);
+    const handleHash = () => revealFoldedHash();
+
     let konamiIndex = 0;
     function handleKeyDown(event: KeyboardEvent) {
       const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
@@ -175,11 +202,16 @@ export function InteractionLayer() {
     document.documentElement.addEventListener("pointerleave", handlePointerLeave);
     document.addEventListener("keydown", handleKeyDown);
     window.addEventListener(TOAST_EVENT, handleToast);
+    window.addEventListener("hashchange", handleHash);
     const unsubscribe = subscribeMotion(handleMotion);
 
     return () => {
       cancelAnimationFrame(frame);
       counters.disconnect();
+      seeds?.disconnect();
+      delete root.dataset.seeds;
+      window.clearTimeout(hashTimer);
+      window.removeEventListener("hashchange", handleHash);
       window.clearTimeout(toastTimer);
       document.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("pointerover", handlePointerOver);

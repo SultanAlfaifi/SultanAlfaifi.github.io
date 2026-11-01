@@ -616,9 +616,9 @@ export const sectionOrder = [
 
 export const navigation = [
   { label: "Work", href: "#work" },
-  { label: "Recognition", href: "#achievements" },
+  { label: "AI assistant", href: "#runtime" },
   { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
+  { label: "CV", href: "#cv" },
   { label: "Contact", href: "#contact" }
 ] satisfies Link[];
 

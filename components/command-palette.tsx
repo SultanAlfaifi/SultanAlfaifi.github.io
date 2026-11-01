@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 import { ArrowUpRight, AtSign, Command, CornerDownLeft, FolderGit2, Hash, Sparkles, Terminal, Waves } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { openAssistant } from "@/lib/agent/assistant";
+import { openFolds } from "@/lib/agent/reveal";
 import { rememberLanguage } from "@/lib/visitor";
 import { motionAllowed, openPalette, PALETTE_EVENT, setMotionEnabled, toast } from "./motion-preference";
 import { unlockSecret } from "./secrets";
@@ -20,8 +21,7 @@ type PaletteItem = {
 function jump(hash: string) {
   const target = document.querySelector(hash);
   if (!target) return;
-  const details = target.closest("details");
-  if (details && !details.open) details.open = true;
+  openFolds(target);
   target.scrollIntoView({ behavior: motionAllowed() ? "smooth" : "auto", block: "start" });
   history.replaceState(null, "", hash);
 }

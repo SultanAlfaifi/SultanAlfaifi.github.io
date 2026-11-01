@@ -57,9 +57,9 @@ export const about = {
 
 export const navigation: Link[] = [
   { label: "أعمالي", href: "#work" },
-  { label: "الإنجازات", href: "#achievements" },
+  { label: "المساعد الذكي", href: "#runtime" },
   { label: "عنّي", href: "#about" },
-  { label: "الخبرة", href: "#experience" },
+  { label: "سيرتي", href: "#cv" },
   { label: "تواصل معي", href: "#contact" }
 ];
 

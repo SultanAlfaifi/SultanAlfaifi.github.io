@@ -163,8 +163,8 @@ const en = {
     cursor: "Scroll"
   },
   proof: {
-    title: "Recognition and numbers",
-    description: "Where I was selected or ranked, and the numbers behind my work.",
+    title: "Recognition",
+    description: "Where I was selected or ranked.",
     recognition: "Recognition",
     evidence: "See the source"
   },
@@ -231,7 +231,13 @@ const en = {
     close: "Close organization details",
     explore: (name: string) => `See what I did with ${name}`
   },
-  deeper: { title: "Beyond the projects", subtitle: "Workshops, courses, skills, and what I write" },
+  deeper: {
+    title: "Beyond the projects",
+    subtitle: "Where I've been, who I learned with, workshops, courses, skills, and what I write.",
+    // The line each row shows while it is closed. The other rows' lines are existing copy or are composed
+    // from the data (lib/deeper-rows.ts), so a changed number flows through.
+    rows: { timeline: (count: number) => `${count} stops, from starting my degree to what I'm working on now` }
+  },
   skills: { title: "What I work with", description: "Laravel, PHP, and MySQL are what I use in my Salla COOP. My public repos are mostly Python and JavaScript. The last group is what I’m learning now." },
   programs: {
     title: "Courses I’ve finished",
@@ -304,16 +310,17 @@ const en = {
     results: "Results",
     empty: "No match. Try “work”, “email”, or “console”.",
     groups: { Navigate: "Sections", Projects: "Projects", Actions: "Actions", Elsewhere: "Elsewhere" },
+    // In page order. lib/agent/anchors.ts reads eight of these labels, so every row stays.
     sections: [
       ["Projects", "#work", "work projects portfolio try demo"],
-      ["Recognition and numbers", "#achievements", "proof achievements awards metrics recognition"],
-      ["About me", "#about", "about bio person sultan"],
-      ["How I got here", "#timeline", "journey history timeline dates"],
       ["Agent console", "#runtime", "runtime terminal shell cli console"],
+      ["About me", "#about", "about bio person sultan"],
       ["What I do at Salla", "#experience", "experience job internship coop salla laravel"],
+      ["Recognition", "#achievements", "proof achievements awards metrics recognition"],
       ["Recommendations", "#recommendations", "references quotes in their words"],
+      ["My CV", "#cv", "cv resume download pdf سيرة"],
+      ["How I got here", "#timeline", "journey history timeline dates"],
       ["How I can help", "#help", "help hire services work together"],
-      ["My CV", "#cv", "cv resume download pdf"],
       ["Contact", "#contact", "email hire contact"]
     ] as [string, string, string][],
     copyEmail: "Copy email address",
@@ -542,6 +549,10 @@ const en = {
     emailOffline: "Email copies need the live server, which is offline right now. The download works without it.",
     emailFailed: "Couldn't send the code. You can still download the CV.",
     privacy: "Your email is used only to send this copy, after you confirm a code. Sultan gets a note with the company, the field, and the CV, plus your email if you add it.",
+    more: "More options",
+    moreHint: "Job posting · Email copy",
+    notify: "If you add a company, a role, or a job posting, your download sends Sultan a note with the company, the field, and the CV.",
+    emailPrivacy: "Your email is used only to send this copy, after you confirm a code. Sultan's note includes it.",
     restored: "Picked up where you left off.",
     hesitation: "Short on time? The general CV has everything on one page.",
     hesitationAction: "Download it now",
@@ -709,8 +720,8 @@ const ar: UiStrings = {
     cursor: "مرّر"
   },
   proof: {
-    title: "إنجازات وأرقام",
-    description: "برامج اختارتني، ومسابقات وصلت فيها للنهائي أو فزت بها، وأرقام من أعمالي.",
+    title: "إنجازات",
+    description: "برامج اختارتني، ومسابقات وصلت فيها للنهائي أو فزت بها.",
     recognition: "الإنجازات",
     evidence: "شوف المصدر"
   },
@@ -775,7 +786,11 @@ const ar: UiStrings = {
     close: "أغلق تفاصيل الجهة",
     explore: (name: string) => `اعرض دوري مع ${name}`
   },
-  deeper: { title: "خارج المشاريع", subtitle: "ورش ودورات ومهارات، وما أكتبه" },
+  deeper: {
+    title: "خارج المشاريع",
+    subtitle: "محطاتي، والجهات التي تعلّمت فيها، وورش ودورات ومهارات، وما أكتبه.",
+    rows: { timeline: (count: number) => `${count} محطة، من بدء دراستي حتى ما أعمل عليه الآن` }
+  },
   skills: { title: "الأدوات التي أعمل بها", description: "أستخدم Laravel وPHP وMySQL في تدريبي التعاوني في سلة، ومستودعاتي العامة أغلبها بـ Python وJavaScript. والمجموعة الأخيرة أتعلّمها الآن." },
   programs: {
     title: "دورات وبرامج أكملتها",
@@ -850,14 +865,14 @@ const ar: UiStrings = {
     groups: { Navigate: "الأقسام", Projects: "المشاريع", Actions: "الإجراءات", Elsewhere: "خارج الموقع" },
     sections: [
       ["المشاريع", "#work", "work projects أعمال مشاريع تجربة"],
-      ["إنجازات وأرقام", "#achievements", "proof achievements إنجازات جوائز أرقام"],
-      ["عنّي", "#about", "about نبذة سلطان"],
-      ["محطاتي منذ 2023", "#timeline", "timeline journey محطات خط زمني تواريخ"],
       ["طرفية المساعد الذكي", "#runtime", "terminal console طرفية تيرمنال أوامر"],
+      ["عنّي", "#about", "about نبذة سلطان"],
       ["تدريبي في سلة", "#experience", "experience salla coop laravel خبرة سلة تدريب تعاوني"],
+      ["إنجازات", "#achievements", "proof achievements إنجازات جوائز أرقام"],
       ["التوصيات", "#recommendations", "recommendations توصيات قالوا"],
-      ["كيف أقدر أخدمك", "#help", "help hire services خدمات تعاون توظيف ورشة"],
       ["سيرتي الذاتية", "#cv", "cv resume سيرة ذاتية تحميل"],
+      ["محطاتي منذ 2023", "#timeline", "timeline journey محطات خط زمني تواريخ"],
+      ["كيف أقدر أخدمك", "#help", "help hire services خدمات تعاون توظيف ورشة"],
       ["تواصل معي", "#contact", "contact email تواصل بريد"]
     ],
     copyEmail: "انسخ بريدي",
@@ -1081,6 +1096,10 @@ const ar: UiStrings = {
     emailOffline: "إرسال النسخة يحتاج الخادم، وهو متوقف الآن. والتنزيل يشتغل بدونه.",
     emailFailed: "ما قدرت أرسل الرمز. وتقدر تنزّل السيرة عادي.",
     privacy: "نستخدم بريدك فقط لإرسال هذه النسخة، بعد أن تؤكّد الرمز. ويصل إلى سلطان إشعار فيه اسم الشركة والمجال والسيرة، وبريدك إن كتبته.",
+    more: "خيارات أكثر",
+    moreHint: "إعلان الوظيفة · نسخة على بريدك",
+    notify: "إذا كتبت شركة أو وظيفة أو لصقت إعلانًا، يصل إلى سلطان مع التنزيل إشعار فيه اسم الشركة والمجال والسيرة.",
+    emailPrivacy: "نستخدم بريدك فقط لإرسال هذه النسخة، بعد أن تؤكّد الرمز، ويصل بريدك إلى سلطان مع الإشعار.",
     restored: "كمّلت من حيث وقفت.",
     hesitation: "وقتك ضيق؟ السيرة العامة فيها كل شيء في صفحة واحدة.",
     hesitationAction: "حمّلها الآن",

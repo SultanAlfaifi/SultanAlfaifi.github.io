@@ -3,7 +3,6 @@ import { ArrowUpRight, Quote } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
 import { Reveal } from "./reveal";
-import { SectionHeader } from "./section-header";
 
 const recommendationLogoDimensions: Record<string, { width: number; height: number }> = {
   ibm: { width: 1259, height: 480 },
@@ -13,12 +12,13 @@ const recommendationLogoDimensions: Record<string, { width: number; height: numb
 export function RecommendationsSection({ locale = "en" }: { locale?: Locale }) {
   const { recommendations, ui } = getContent(locale);
   return (
-    <section id="recommendations" className="section section--recommendations">
-      <div className="page-shell">
-        <SectionHeader
-          title={ui.recommendations.title}
-          description={ui.recommendations.description}
-        />
+    // A block inside Recognition (components/achievements-section.tsx), so its heading is an h3.
+    <section id="recommendations" className="recognition__quotes section--recommendations" aria-labelledby="recommendations-title">
+      <div>
+        <header className="recognition__quotes-head">
+          <h3 id="recommendations-title">{ui.recommendations.title}</h3>
+          <p>{ui.recommendations.description}</p>
+        </header>
 
         <div className="recommendations-grid">
           {recommendations.map((recommendation, index) => (

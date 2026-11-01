@@ -90,9 +90,16 @@ test("an unknown stored value is ignored", () => {
 
 test("each visitor's section order covers every section exactly once", () => {
   const all = [...home.matchAll(/id: "([a-z]+)"/g)].map((match) => match[1]).sort();
-  assert.equal(all.length, 13);
-  for (const [visitor, order] of Object.entries(SECTION_ORDERS)) assert.deepEqual([...order].sort(), all, visitor);
-  assert.equal(SECTION_ORDERS.hiring.indexOf("cv") < SECTION_ORDERS.hiring.indexOf("about"), true, "hiring visitors reach the CV early");
+  assert.equal(all.length, 8, "eight blocks after the hero");
+  assert.deepEqual(all, ["about", "achievements", "band", "contact", "cv", "deeper", "runtime", "work"]);
+  assert.deepEqual(Object.keys(SECTION_ORDERS).sort(), ["collaborate", "hiring"]);
+  for (const [visitor, order] of Object.entries(SECTION_ORDERS)) {
+    assert.equal(order.length, 8, `${visitor}: all eight keys`);
+    assert.deepEqual([...order].sort(), all, visitor);
+  }
+  assert.ok(SECTION_ORDERS.hiring.indexOf("cv") < 3, "the CV is within the first 3 blocks for hiring");
+  assert.equal(SECTION_ORDERS.hiring[0], "about", "hiring visitors meet what he does now first (About, with the Salla card)");
+  for (const order of Object.values(SECTION_ORDERS)) assert.equal(order.at(-1), "contact", "contact closes every order");
 });
 
 test("the welcome screen is a real dialog: three choices, a skip, Escape, and a language link that remembers", () => {

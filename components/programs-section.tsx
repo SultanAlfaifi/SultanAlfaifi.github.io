@@ -4,19 +4,16 @@ import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
 import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
-import { SectionHeader } from "./section-header";
 
+// Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #journey and the title.
 export function ProgramsSection({ locale = "en" }: { locale?: Locale }) {
   const { certifications, programs, ui } = getContent(locale);
   const visible = programs.filter((program) => program.enabled);
 
   return (
-    <section id="journey" className="section section--paper">
-      <div className="page-shell">
-        <SectionHeader
-          title={ui.programs.title}
-          description={ui.programs.description}
-        />
+    <div className="deeper-body section--paper">
+      <div>
+        <p className="deeper-body__lead">{ui.programs.description}</p>
 
         <div className="program-grid">
           {visible.map((program, index) => {
@@ -92,6 +89,6 @@ export function ProgramsSection({ locale = "en" }: { locale?: Locale }) {
           </ul>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

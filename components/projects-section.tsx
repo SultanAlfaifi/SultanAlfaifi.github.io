@@ -4,6 +4,7 @@ import type { CheckpointKind, Project } from "@/data/portfolio";
 import { GitHubIcon } from "./brand-icons";
 import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
+import { ChapterEyebrow } from "./section-header";
 import { Showcase } from "./showcase";
 import { showcaseOrder } from "./showcase-parts";
 
@@ -34,12 +35,12 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
   const additional = visible.filter((project) => !project.featured);
   const count = (kind: CheckpointKind | "bound") => featured.filter((project) => (project.checkpoint?.kind ?? "bound") === kind).length;
   return (
-    <section id="work" className="work-section sc-section" aria-labelledby="work-title">
+    <section id="work" className="work-section sc-section li-chapter" aria-labelledby="work-title">
       <div className="sc-light" aria-hidden="true" />
       <div className="page-shell">
         <header className="sc-head">
           <Reveal variant="title" className="sc-head__title">
-            <p className="li-eyebrow li-eyebrow--live sc-head__eyebrow">{s.count(featured.length)}</p>
+            <ChapterEyebrow text={copy.index} className="sc-head__eyebrow" />
             <h2 id="work-title" className="sc-head__h2">{copy.title}</h2>
           </Reveal>
           <p className="sc-head__lede">{copy.description}</p>

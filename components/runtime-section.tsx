@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { getContent, type Locale } from "@/data/i18n";
 import { AgentTerminal } from "./agent-terminal";
 import { AssistantStage } from "./assistant-stage";
+import { ChapterEyebrow } from "./section-header";
 
 // A principle opens with its rule; the rest is the evidence from a project. The rule is set bold.
 function splitPrinciple(text: string) {
@@ -16,10 +17,10 @@ export function RuntimeSection({ locale = "en" }: { locale?: Locale }) {
   const { principles, ui } = getContent(locale);
   const copy = ui.runtime;
   return (
-    <section id="runtime" className="section runtime-section ai-section" aria-labelledby="runtime-title">
+    <section id="runtime" className="section runtime-section ai-section li-chapter" aria-labelledby="runtime-title">
       <div className="page-shell ai-grid">
         <header className="ai-head">
-          <p className="li-eyebrow li-eyebrow--live ai-eyebrow">{copy.eyebrow}</p>
+          <ChapterEyebrow text={copy.eyebrow} className="ai-eyebrow" />
           <h2 id="runtime-title" className="ai-title">
             {copy.title.split(" ").map((word, index) => (
               <span key={`${word}-${index}`}>

@@ -1,8 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { Reveal } from "./reveal";
-import { SectionHeader } from "./section-header";
 
+// Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #ideas and the title.
 export function IdeasSection({ locale = "en" }: { locale?: Locale }) {
   const { content, socialLinks, ui } = getContent(locale);
   const contentSocials = socialLinks.filter(
@@ -10,13 +10,9 @@ export function IdeasSection({ locale = "en" }: { locale?: Locale }) {
   );
 
   return (
-    <section id="ideas" className="section section--ideas">
-      <div className="page-shell">
-        <SectionHeader
-          title={ui.ideas.title}
-          description={ui.ideas.description}
-          inverse
-        />
+    <div className="deeper-body section--ideas">
+      <div>
+        <p className="deeper-body__lead">{ui.ideas.description}</p>
 
         <div className="ideas-intro">
           <Reveal>
@@ -62,6 +58,6 @@ export function IdeasSection({ locale = "en" }: { locale?: Locale }) {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

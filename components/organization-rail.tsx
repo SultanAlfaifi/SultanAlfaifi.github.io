@@ -475,11 +475,11 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
     ? ({ "--panel-height": `${panelHeight}px` } as DetailStageStyle)
     : undefined;
 
+  // Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #organizations and
+  // the title.
   return (
-    <section
-      id="organizations"
+    <div
       className="organization-showcase"
-      aria-labelledby="organizations-title"
       onPointerLeave={(event) => { if (event.pointerType === "mouse") closePanel(); }}
       onBlur={handleSectionBlur}
       onKeyDown={(event) => {
@@ -488,7 +488,6 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
     >
       <div className="page-shell organization-showcase__header">
         <p>{copy.kicker}</p>
-        <h2 id="organizations-title">{copy.title}</h2>
         <p className="organization-showcase__intro">
           {copy.intro}
         </p>
@@ -594,6 +593,6 @@ export function OrganizationRail({ locale = "en" }: { locale?: Locale }) {
           </article>
         ) : null}
       </div>
-    </section>
+    </div>
   );
 }
