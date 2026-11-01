@@ -1015,9 +1015,9 @@ export const projects: Project[] = [
     featured: true,
     status: "Open source · v1.2.0 · Codex & Claude Code",
     challenge:
-      "Coding agents can render video, but left alone they skip the brief, break Arabic letters apart, and add music nobody asked for.",
+      "Coding agents can render video, but left alone they skip the brief and break Arabic letters apart.",
     decision:
-      "I kept it to one portable skill: a focused brief first, one main renderer picked per job, no music unless you ask for it, and a check of the frames and the rendered file before the final render.",
+      "I kept it to one portable skill: a focused brief first, one main renderer picked per job, and a check of the frames and the rendered file before the final render.",
     evidence:
       "Public source and an Arabic demo with sound effects only that you can rebuild from its source. Claude Code support follows the documented Agent Skills format. I haven’t tested it in an interactive Claude Code session yet.",
     highlights: [
