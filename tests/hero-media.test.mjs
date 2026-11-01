@@ -93,7 +93,9 @@ async function mountMedia({ reduced = false, motionOff = false, requested = fals
   };
 }
 
-for (const [name, component] of [["Intro", HeroMedia], ["Salla", SallaExperienceStory]]) {
+// The Salla film in the Now card is a still poster until the visitor presses play (FINAL-SPEC 6.4): it has its
+// own tests below, and these three describe the intro film only.
+for (const [name, component] of [["Intro", HeroMedia]]) {
 test(`${name} playback follows viewport and page visibility while keeping an explicit pause`, async () => {
   const media = await mountMedia({ component });
   try {
@@ -157,6 +159,56 @@ test(`${name} failed playback supplies feedback and retries only after a user ac
   } finally { await media.cleanup(); }
 });
 }
+
+test("Salla never starts on its own: a press plays it with controls, and leaving the screen or the tab pauses it", async () => {
+  for (const reduced of [false, true]) {
+    const media = await mountMedia({ component: SallaExperienceStory, reduced });
+    try {
+      assert.equal(media.video.autoplay, false);
+      assert.equal(media.video.loop, false, "nothing loops");
+      assert.equal(media.video.preload, "none");
+      await media.intersect(true);
+      await media.setHidden(true);
+      await media.setHidden(false);
+      assert.equal(media.playCalls, 0, "in view is not a request to play");
+      assert.equal(media.video.controls, false, "a poster until pressed");
+      await media.clickPlayback();
+      assert.equal(media.paused, false, "the press plays it, with reduced motion too");
+      assert.equal(media.video.controls, true, "with its own controls");
+      await media.intersect(false);
+      assert.equal(media.paused, true, "off screen, it pauses");
+      await media.intersect(true);
+      assert.equal(media.paused, true, "and stays paused when it comes back");
+      await act(async () => { await media.video.play(); });
+      await media.setHidden(true);
+      assert.equal(media.paused, true, "a hidden tab pauses it");
+      await media.setHidden(false);
+      assert.equal(media.paused, true);
+      assert.equal(media.playCalls, 2, "every play came from the visitor");
+    } finally { await media.cleanup(); }
+  }
+});
+
+test("Salla failed playback supplies feedback and retries only after a user action", async () => {
+  const media = await mountMedia({ component: SallaExperienceStory });
+  try {
+    media.rejectPlayback(true);
+    await media.intersect(true);
+    assert.equal(media.playCalls, 0);
+    await media.clickPlayback();
+    assert.match(media.status, /couldn’t start/);
+    assert.equal(media.paused, true);
+    media.rejectPlayback(false);
+    await media.clickPlayback();
+    assert.equal(media.paused, false);
+    assert.equal(media.status, "");
+    await media.failSource();
+    assert.match(media.status, /couldn’t load/);
+    await media.clickPlayback();
+    assert.equal(media.loadCalls, 1, "a failed source is loaded again before the retry");
+    assert.equal(media.paused, false);
+  } finally { await media.cleanup(); }
+});
 
 test("Intro follows the page's Motion toggle, not only the OS setting", async () => {
   const media = await mountMedia({ motionOff: true });

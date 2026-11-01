@@ -210,7 +210,81 @@ test("videos use lightweight responsive sources and immediate posters", () => {
   assert.match(heroMediaSource, /preload="none"[\s\S]*?poster=\{poster\}/);
   assert.match(heroMediaSource, /media="\(max-width: 840px\)"/);
   assert.match(sallaStorySource, /preload="none"[\s\S]*?salla-experience-poster\.webp/);
-  assert.match(sallaStorySource, /IntersectionObserver/);
+  // The Salla film is a still poster until the visitor presses play: it never starts on its own and never
+  // loops, plays with its own controls once started, and pauses when it leaves the screen.
+  assert.doesNotMatch(sallaStorySource, /\bloop\b|autoPlay/);
+  assert.match(sallaStorySource, /controls=\{started\}/);
+  assert.match(sallaStorySource, /onClick=\{\(\) => void play\(\)\}/);
+  assert.match(sallaStorySource, /IntersectionObserver\(\(\[entry\]\) => \{\s*if \(!entry\.isIntersecting\) pause\(\);/);
+});
+
+test("About and Recognition keep their facts with less on screen (FINAL-SPEC 6.4, 6.5)", async () => {
+  const { JSDOM } = await import("jsdom");
+  const { createElement } = await import("react");
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const { AboutSection } = await import("../components/about-section.tsx");
+  const { AchievementsSection } = await import("../components/achievements-section.tsx");
+  const { getContent } = await import("../data/i18n.ts");
+  for (const locale of ["en", "ar"]) {
+    const { about, achievements, experience, journey, recommendations, ui } = getContent(locale);
+    const render = (component) => new JSDOM(renderToStaticMarkup(createElement(component, { locale }))).window.document;
+
+    // About: paragraphs 1 and 3, one meta line, no second CV link.
+    const page = render(AboutSection);
+    const text = page.querySelector(".about__text").textContent;
+    assert.ok(text.includes(about.paragraphs[0]) && text.includes(about.paragraphs[2]), `${locale}: p1 and p3`);
+    assert.ok(!text.includes(about.paragraphs[1]), `${locale}: paragraph 2 left the page`);
+    assert.equal(page.querySelectorAll(".about__meta li").length, 3, `${locale}: location · education · languages`);
+    assert.equal(page.querySelector('#about a[href$=".pdf"]'), null, `${locale}: the CV chapter is the one download`);
+    // The Now card: #experience inside About, no chips, no intro, the film still until pressed.
+    const now = page.querySelector("#about #experience.about__now");
+    assert.ok(now, `${locale}: the Now card`);
+    assert.equal(now.querySelector("h3").textContent, ui.experience.title);
+    assert.equal(now.querySelectorAll(".tag-list").length, 0, `${locale}: no tech chips`);
+    for (const gone of [experience[0].description, ui.experience.description]) assert.ok(!now.textContent.includes(gone), `${locale}: ${gone}`);
+    assert.equal(now.querySelectorAll(".about__now-duties li").length, experience[0].responsibilities.length);
+    assert.ok(now.querySelector(".about__now-note").textContent.includes(experience[0].note), `${locale}: the learning note stays`);
+    const video = now.querySelector("video");
+    assert.equal(video.getAttribute("preload"), "none");
+    assert.ok(!video.hasAttribute("loop") && !video.hasAttribute("autoplay"), `${locale}: nothing loops or starts on its own`);
+    assert.equal(now.querySelector("button.about__now-play").textContent.trim(), ui.media.salla.play);
+    // «التالي»: the last journey stop, verbatim, under the card.
+    const next = journey[journey.length - 1];
+    assert.equal(page.querySelector(".about__next-label").textContent, next.date);
+    assert.equal(page.querySelector(".about__next-title").textContent, next.title);
+    assert.equal(page.querySelector(".about__next-detail").textContent, next.detail);
+
+    // Recognition: one moment, the rest as rows with their full descriptions, no number row.
+    const recognition = render(AchievementsSection);
+    const [lead, ...rest] = achievements.filter((item) => item.enabled);
+    assert.equal(recognition.querySelectorAll(".proof-metrics, [data-count]").length, 0, `${locale}: no number row`);
+    assert.equal(recognition.querySelector(".recognition__moment .li-aurora-text bdi[dir=\"ltr\"]").textContent, "5%", `${locale}: 5%, never %5`);
+    assert.equal(recognition.querySelector(".recognition__lead-title").textContent, lead.title);
+    const rows = [...recognition.querySelectorAll("ol.recognition__rows > li.recognition__row")];
+    assert.equal(rows.length, rest.length, `${locale}: ${rest.length} rows`);
+    rows.forEach((row, index) => {
+      assert.ok(row.querySelector(".recognition__signal > bdi"), `${locale}: the signal is isolated`);
+      assert.equal(row.querySelector("h3").textContent, rest[index].title);
+      assert.equal(row.querySelector(".recognition__text p").textContent, rest[index].description, `${locale}: the full description`);
+      assert.equal(row.querySelectorAll("img").length, 0, `${locale}: no logos on the rows`);
+    });
+    // The quotes: an h3, two figures, roles on one line, each note once, the LinkedIn link; no avatars or chips.
+    const quotes = recognition.querySelector("#achievements #recommendations");
+    assert.equal(quotes.querySelector("h3").textContent, ui.recommendations.title);
+    assert.equal(quotes.querySelectorAll("h2").length, 0);
+    const figures = [...quotes.querySelectorAll("figure")];
+    assert.equal(figures.length, recommendations.length);
+    assert.equal(quotes.querySelectorAll("img, .tag-list").length, 0, `${locale}: no logos, avatars or chips`);
+    assert.ok(!quotes.textContent.includes(ui.recommendations.description), `${locale}: no intro`);
+    if (ui.recommendations.translated) assert.ok(!quotes.textContent.includes(ui.recommendations.translated), `${locale}: no duplicate translation note`);
+    figures.forEach((figure, index) => {
+      const { note, publicUrl, quote, roles } = recommendations[index];
+      assert.equal(figure.querySelector("blockquote").textContent, quote);
+      assert.equal(figure.querySelector(".recognition__quote-role").textContent, roles.join(" · "));
+      if (note) assert.equal(figure.textContent.split(note).length - 1, 1, `${locale}: ${note} once`);
+      assert.equal(Boolean(figure.querySelector(`a[href="${publicUrl}"]`)), Boolean(publicUrl));
+    });
+  }
 });
 
 test("featured work reflects current products and preserves supplied usage evidence", () => {

@@ -12,13 +12,10 @@
 }
 [dir="rtl"] :is(h1, h2, h3):not([dir="ltr"] *) { line-height: 1.32; }
 [dir="rtl"] .split-word { padding-block: 0.14em 0.34em; margin-block: -0.14em -0.34em; }
-/* The recommendations heading has its own tighter rule; Arabic needs the same room as the rest. */
-[dir="rtl"] #recommendations .section-header h2 { line-height: 1.32; }
+/* The recommendations heading is an h3 inside Recognition now; Arabic gets the same room as the chapter's other titles. */
+[dir="rtl"] #recommendations h3 { line-height: 1.4; }
 /* Parts of a "a · b · c" line read in written order, even when two neighbours are English (components/meta-parts.tsx). */
 .meta-part { unicode-bidi: isolate; }
-[dir="rtl"] .proof-card__signal,
-[dir="rtl"] .proof-card--lead .proof-card__signal { line-height: 1.25; }
-[dir="rtl"] .proof-card--lead .proof-card__signal { font-size: clamp(3rem, 6vw, 5.4rem); }
 
 /* Directional icons mirror; anything explicitly LTR keeps its orientation. */
 [dir="rtl"] :is(.lucide-arrow-up-right, .lucide-arrow-right, .lucide-arrow-left, .lucide-corner-down-left):not([dir="ltr"] *) { scale: -1 1; }
@@ -62,8 +59,6 @@
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
 .language-switch:hover { border-color: var(--mint); background: var(--mint); color: var(--ink); }
-
-.recommendation-card__translated { margin: 10px 0 0; color: var(--muted); font-size: 0.74rem; }
 
 @media (max-width: 840px) {
   [dir="rtl"] .nav__tools { margin-right: auto; margin-left: 8px; }

@@ -1,221 +1,142 @@
 "use client";
 
 import Image from "next/image";
-import { Pause, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getContent, type Locale } from "@/data/i18n";
 import type { Experience, PortfolioAsset } from "@/data/portfolio";
-import { Reveal } from "./reveal";
+import { MetaParts } from "./meta-parts";
 
 type SallaExperienceStoryProps = {
   experience: Experience;
-  asset: PortfolioAsset;
+  asset: PortfolioAsset | null;
+  title: string;
   locale?: Locale;
 };
 
-export function SallaExperienceStory({ experience, asset, locale = "en" }: SallaExperienceStoryProps) {
+// The inside of the Now card (FINAL-SPEC 6.4): the role in one line, the three duties, the learning note,
+// and the Salla film as a still poster. The film never starts on its own and never loops: the visitor
+// presses play, it plays inline with its controls, and it pauses when it leaves the screen or the tab.
+export function SallaExperienceStory({ experience, asset, title, locale = "en" }: SallaExperienceStoryProps) {
   const copy = getContent(locale).ui.media;
   const videoRef = useRef<HTMLVideoElement>(null);
-  const togglePlaybackRef = useRef<() => void>(() => undefined);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // A source that failed to load needs a fresh load() before the next try; play() alone would reject again.
+  const failedRef = useRef(false);
+  const [started, setStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const mark = asset ? asset.derived.monochrome ?? asset.derived.color : null;
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let inView = false;
-    let userPaused = false;
-    let userRequested = false;
-    let pending = false;
-    let failed = false;
-    let disposed = false;
-    let requestId = 0;
-
-    video.muted = true;
-
-    const shouldPlay = () =>
-      inView && !document.hidden && !userPaused && (!reducedMotion.matches || userRequested);
-
-    function pause() {
-      requestId += 1;
-      pending = false;
-      video!.pause();
-      setIsPlaying(false);
-      setLoading(false);
-    }
-
-    async function play() {
-      if (!shouldPlay() || pending || !video!.paused) return;
-      const currentRequest = ++requestId;
-      pending = true;
-      setLoading(true);
-      setMessage("");
-      try {
-        await video!.play();
-        if (disposed || currentRequest !== requestId) return;
-        pending = false;
-        if (!shouldPlay()) pause();
-      } catch {
-        if (disposed || currentRequest !== requestId) return;
-        pending = false;
-        userPaused = true;
-        setIsPlaying(false);
-        setLoading(false);
-        setMessage(copy.failedStart);
-      }
-    }
-
-    function syncPlayback() {
-      if (shouldPlay()) void play();
-      else pause();
-    }
-
-    const handlePlay = () => {
-      if (!shouldPlay()) {
-        pause();
-        return;
-      }
-      failed = false;
-      setIsPlaying(true);
+    const pause = () => {
+      if (!video.paused) video.pause();
+    };
+    const onPlaying = () => {
       setLoading(false);
       setMessage("");
     };
-    const handlePause = () => {
-      setIsPlaying(false);
+    const onWaiting = () => setLoading(true);
+    const onPause = () => setLoading(false);
+    // A <source> that fails fires on the source, not the video, so listen in the capture phase.
+    const onError = () => {
+      failedRef.current = true;
       setLoading(false);
-    };
-    const handleWaiting = () => {
-      if (shouldPlay()) setLoading(true);
-    };
-    const handleError = () => {
-      failed = true;
-      userPaused = true;
-      pause();
+      setStarted(false);
       setMessage(copy.failedLoad);
     };
-    const handleMotionChange = () => {
-      userRequested = false;
-      syncPlayback();
+    const onVisibility = () => {
+      if (document.hidden) pause();
     };
-
-    togglePlaybackRef.current = () => {
-      if (!video.paused || pending) {
-        userPaused = true;
-        pause();
-      } else {
-        userPaused = false;
-        userRequested = true;
-        if (failed || video.error) {
-          failed = false;
-          video.load();
-        }
-        void play();
-      }
-    };
-
-    video.addEventListener("playing", handlePlay);
-    video.addEventListener("pause", handlePause);
-    video.addEventListener("waiting", handleWaiting);
-    video.addEventListener("error", handleError, true);
-    document.addEventListener("visibilitychange", syncPlayback);
-    reducedMotion.addEventListener("change", handleMotionChange);
-
     const observer = new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting;
-      syncPlayback();
+      if (!entry.isIntersecting) pause();
     }, { threshold: 0 });
     observer.observe(video);
-
+    video.addEventListener("playing", onPlaying);
+    video.addEventListener("waiting", onWaiting);
+    video.addEventListener("pause", onPause);
+    video.addEventListener("error", onError, true);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      disposed = true;
-      requestId += 1;
-      togglePlaybackRef.current = () => undefined;
       observer.disconnect();
-      document.removeEventListener("visibilitychange", syncPlayback);
-      reducedMotion.removeEventListener("change", handleMotionChange);
-      video.removeEventListener("playing", handlePlay);
-      video.removeEventListener("pause", handlePause);
-      video.removeEventListener("waiting", handleWaiting);
-      video.removeEventListener("error", handleError, true);
+      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("waiting", onWaiting);
+      video.removeEventListener("pause", onPause);
+      video.removeEventListener("error", onError, true);
+      document.removeEventListener("visibilitychange", onVisibility);
       video.pause();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- copy is static per locale
   }, []);
 
+  async function play() {
+    const video = videoRef.current;
+    if (!video) return;
+    setStarted(true);
+    setLoading(true);
+    setMessage("");
+    if (failedRef.current || video.error) {
+      failedRef.current = false;
+      video.load();
+    }
+    // The play button goes away; focus moves to the film's own controls instead of falling to the page.
+    video.focus({ preventScroll: true });
+    try {
+      await video.play();
+    } catch {
+      setStarted(false);
+      setLoading(false);
+      setMessage(copy.failedStart);
+    }
+  }
+
   return (
-    <div className="salla-story">
-      <div className="salla-story__media-runway" aria-label={copy.salla.runway}>
-        <div className="salla-story__stage">
-          <div className="salla-story__frame">
-            <video
-              ref={videoRef}
-              className="salla-story__video"
-              muted
-              loop
-              playsInline
-              preload="none"
-              poster="/assets/media/salla-experience-poster.webp"
-              aria-label={copy.salla.film}
-            >
-              <source
-                src="/assets/media/salla-experience-mobile.mp4"
-                media="(max-width: 840px)"
-                type="video/mp4"
-              />
-              <source src="/assets/media/salla-experience.mp4" type="video/mp4" />
-            </video>
-            <div className="salla-story__scrim" aria-hidden="true" />
-            <button
-              type="button"
-              className="salla-story__playback"
-              onClick={() => togglePlaybackRef.current()}
-              aria-label={isPlaying || loading ? copy.salla.pause : copy.salla.play}
-            >
-              {isPlaying || loading ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-              <span>{isPlaying || loading ? copy.salla.pauseShort : copy.salla.playShort}</span>
-            </button>
-            <p className="salla-story__status" role="status" aria-live="polite">
-              {message || (loading ? copy.loading : "")}
-            </p>
-          </div>
-        </div>
+    <>
+      <div className="about__now-copy">
+        <header className="about__now-head">
+          <h3 id="experience-title">{title}</h3>
+          {mark ? <Image className="about__now-mark" src={mark} alt="" width={1101} height={480} /> : null}
+        </header>
+        <p className="about__now-meta">
+          <MetaParts text={[experience.role, experience.dates, experience.location].join(" · ")} />
+        </p>
+        <ul className="about__now-duties">
+          {experience.responsibilities.map((responsibility) => (
+            <li key={responsibility}>{responsibility}</li>
+          ))}
+        </ul>
+        <p className="about__now-note">
+          <span className="li-lamp li-k-asks" aria-hidden="true" />
+          <span>{experience.note}</span>
+        </p>
       </div>
 
-      <div className="page-shell salla-story__details">
-        <Reveal className="salla-story__identity" variant="media">
-          <div className="salla-story__logo">
-            <Image src={asset.derived.color} alt={asset.alt} width={260} height={104} loading="eager" fetchPriority="low" />
-          </div>
-          <p className="salla-story__organization">{experience.organization}</p>
-        </Reveal>
-
-        <div className="salla-story__experience-grid">
-          <Reveal className="salla-story__meta" variant="left">
-            <p>{experience.dates}</p>
-            <p>{experience.location}</p>
-          </Reveal>
-
-          <Reveal className="salla-story__content" variant="title" delay={80}>
-            <h3>{experience.role}</h3>
-            <p className="salla-story__description">{experience.description}</p>
-
-            <ul className="salla-story__responsibilities">
-              {experience.responsibilities.map((responsibility) => (
-                <li key={responsibility}>{responsibility}</li>
-              ))}
-            </ul>
-
-            <ul className="tag-list tag-list--dark" aria-label={copy.salla.tech}>
-              {experience.technologies.map((technology) => (
-                <li key={technology}>{technology}</li>
-              ))}
-            </ul>
-
-            <p className="salla-story__note">{experience.note}</p>
-          </Reveal>
-        </div>
+      <div className={`about__now-film${started ? " is-started" : ""}`}>
+        <video
+          ref={videoRef}
+          className="about__now-video"
+          muted
+          playsInline
+          preload="none"
+          poster="/assets/media/salla-experience-poster.webp"
+          controls={started}
+          tabIndex={started ? 0 : -1}
+          aria-label={copy.salla.film}
+        >
+          <source src="/assets/media/salla-experience-mobile.mp4" media="(max-width: 840px)" type="video/mp4" />
+          <source src="/assets/media/salla-experience.mp4" type="video/mp4" />
+        </video>
+        {!started ? (
+          <button type="button" className="about__now-play" onClick={() => void play()}>
+            <Play aria-hidden="true" />
+            <span>{copy.salla.play}</span>
+          </button>
+        ) : null}
+        <p className="about__now-status" role="status" aria-live="polite">
+          {message || (loading ? copy.loading : "")}
+        </p>
       </div>
-    </div>
+    </>
   );
 }

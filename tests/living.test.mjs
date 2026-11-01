@@ -184,7 +184,11 @@ test("the rebuilt sections and the older ones read as one product", () => {
     assert.ok(rule.includes("background: var(--li-ink);") && rule.includes("color: var(--li-on-light);"), `${selector} is the off-white primary`);
   }
   assert.match(block, /\.help-card \{[\s\S]*?background: var\(--li-glass-fill\);/);
-  assert.match(block, /\.proof-card--lead \.proof-card__signal,\s*\.kinetic-band__row \.kinetic-band__accent \{[\s\S]*?background: var\(--li-aurora\);/);
+  assert.match(block, /\.kinetic-band__row \.kinetic-band__accent \{[\s\S]*?background: var\(--li-aurora\);/);
+  // Recognition's one moment carries the living light at t0; no rules are left for the old achievement cards.
+  assert.doesNotMatch(living, /\.proof-card(--lead|__signal|:not)/, "no rules left for the old achievement cards");
+  assert.match(read("../components/achievements-section.tsx"), /<span className="li-aurora-text"><Signal text=\{lead\.signal\} \/><\/span>/);
+  assert.match(read("../app/chapters.css"), /\.recognition__moment \{[^}]*font-size: var\(--li-t0\);/);
   // Both section eyebrows carry the living rule, now as numbered chapter eyebrows ("01 · Featured projects").
   assert.match(read("../components/section-header.tsx"), /className=\{`li-eyebrow li-eyebrow--live li-chapter__eyebrow \$\{className\}`/);
   assert.match(read("../components/projects-section.tsx"), /<ChapterEyebrow text=\{copy\.index\} className="sc-head__eyebrow" \/>/);
@@ -242,7 +246,8 @@ test("the older sections share the rebuilt sections' chips, type and glass, and 
   assert.match(tile, /color-mix\(in srgb, var\(--brand-a\) 0%, transparent\)/, "the brand is dark at rest");
   assert.match(living, /:is\(\.journey-tile\.is-active, \.journey-tile:hover, \.journey-tile:focus-within\) \{[\s\S]*?var\(--brand-a\) 30%/, "and a faint glow only on air");
   assert.match(living, /\.portfolio-v3 \.organization-showcase__rail \{[\s\S]*?clip-path: none;/);
-  assert.match(living, /\.proof-card:not\(\.proof-card--lead\):last-child:nth-child\(3n\) \{\s*grid-column: 1 \/ -1;/, "the achievements grid ends flush");
+  // Recognition is hairline rows, never cards, so no grid of them can end on a hole.
+  assert.match(read("../app/chapters.css"), /\.recognition__row \{[^}]*border-top: 1px solid var\(--li-line\);/, "the recognitions are hairline rows");
   assert.match(living, /\.portfolio-v3 \.terminal__input textarea \{ min-height: 44px; \}/);
   assert.match(living, /\.portfolio-v3 \.nav__brand \{ min-width: 44px; \}/);
 });
