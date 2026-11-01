@@ -309,13 +309,431 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
 /* ===== Outside the projects (owner: rest) ===== */
 /* «خارج المشاريع» (components/deeper-section.tsx: .deeper, .deeper__head, .deeper-row and its
    summary, .deeper-row__body) and the six row bodies inside it. FINAL-SPEC 6.7. */
+.portfolio-v3 .deeper {
+  --row-num: 3.5rem;                       /* the number column; an open row's body lines up with the titles */
+  --row-gap: 24px;
+  --row-stack: clamp(40px, 4vw, 56px);     /* between the groups inside an open row */
+}
+
+/* The header: the appendix title at t2, with one quiet line under it. */
+.portfolio-v3 .deeper .deeper__head { display: grid; gap: 12px; max-width: 46rem; margin-bottom: var(--li-open); }
+.portfolio-v3 .deeper .deeper__head h2 { color: var(--li-ink); font-size: var(--li-t2); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; }
+.portfolio-v3 .deeper .deeper__head p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* Six sibling rows on hairlines. Closed, each reads as one line: number, title, its one fact, and a «+». */
+.portfolio-v3 .deeper__rows { border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper-row { border-bottom: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper-row__summary {
+  display: grid;
+  grid-template-columns: var(--row-num) minmax(0, 0.92fr) minmax(0, 1.08fr) 44px;
+  grid-template-areas: "num title line plus";
+  align-items: center;
+  column-gap: var(--row-gap);
+  min-height: 84px;
+  padding-block: 16px;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color 0.3s ease;
+}
+.portfolio-v3 .deeper-row__summary::-webkit-details-marker { display: none; }
+.portfolio-v3 .deeper-row__summary::marker { content: ""; }
+.portfolio-v3 .deeper-row__summary:focus-visible { outline: 2px solid var(--li-focus); outline-offset: 2px; border-radius: var(--li-r-s); }
+.portfolio-v3 .deeper .deeper-row__num { grid-area: num; color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .deeper-row__title { grid-area: title; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
+.portfolio-v3 .deeper .deeper-row__line { grid-area: line; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .deeper-row__plus {
+  position: relative;
+  grid-area: plus;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--li-line-2);
+  border-radius: 50%;
+  background: var(--li-glass);
+  transition: transform 0.5s var(--li-ease-spring), border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.4s ease;
+}
+.portfolio-v3 .deeper-row__plus::before,
+.portfolio-v3 .deeper-row__plus::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--li-ink-2);
+  translate: -50% -50%;
+}
+.portfolio-v3 .deeper-row__plus::after { rotate: 90deg; }
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus { border-color: var(--li-line-3); background: var(--li-glass-2); }
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus::before,
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus::after { background: var(--li-ink); }
+/* Open: the «+» turns to «×», and its rim catches a little of the living light. */
+.portfolio-v3 .deeper-row[open] .deeper-row__plus {
+  transform: rotate(45deg);
+  border-color: rgb(var(--li-iris-rgb) / 45%);
+  box-shadow: 0 0 18px -4px rgb(var(--li-iris-rgb) / 60%);
+}
+.portfolio-v3 .deeper .deeper-row[open] .deeper-row__num { color: var(--li-ink-2); }
+
+/* An open row: the body lines up with the titles above it. */
+.portfolio-v3 .deeper-row__body { padding: 8px 0 var(--li-open); padding-inline-start: calc(var(--row-num) + var(--row-gap)); }
+@keyframes deeper-open { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .portfolio-v3 .deeper-row[open] .deeper-row__body { animation: deeper-open 0.6s var(--li-ease-spring) both; }
+  /* Where the browser can animate a fold's height, the row eases open instead of jumping. */
+  @supports selector(::details-content) {
+    html:not([data-motion="off"]) .portfolio-v3 .deeper { interpolate-size: allow-keywords; }
+    html:not([data-motion="off"]) .portfolio-v3 .deeper-row::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition: block-size 0.55s var(--li-ease-spring), content-visibility 0.55s allow-discrete;
+    }
+    html:not([data-motion="off"]) .portfolio-v3 .deeper-row[open]::details-content { block-size: auto; }
+  }
+}
+
+/* What every row body shares: a lead in the body size, small labels, links with a hairline underline, a
+   figure that sits with its note, and a two-column split for rows that have facts beside their text. */
+.portfolio-v3 .deeper .deeper-body__lead { max-width: 60ch; color: var(--li-ink-2); font-size: var(--li-t5); line-height: 1.75; }
+.portfolio-v3 .deeper :is(h4, p, li) { margin: 0; }
+.portfolio-v3 .deeper h4 { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.5; letter-spacing: 0; }
+.portfolio-v3 .deeper .row-label { color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--li-ink);
+  font-size: var(--li-t6);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--li-line-3);
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease;
+}
+.portfolio-v3 .deeper .row-link svg { flex: none; color: var(--li-ink-3); }
+.portfolio-v3 .deeper .row-link:hover { text-decoration-color: var(--li-ink); }
+.portfolio-v3 .deeper .row-split { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: calc(var(--li-gap) * 2); row-gap: var(--row-stack); align-items: start; }
+.portfolio-v3 .deeper .row-facts { display: grid; gap: 24px; padding-top: 20px; border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper .row-figure { display: grid; gap: 2px; }
+.portfolio-v3 .deeper .row-figure__value { color: var(--li-ink); font-size: var(--li-t2); font-weight: 600; line-height: 1.2; }
+.portfolio-v3 .deeper .row-figure > span:last-child { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .deeper .row-facts__item { display: grid; gap: 4px; }
+.portfolio-v3 .deeper .row-figure__note { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-facts__text { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 01 · The timeline: one still column. A thin line of the living light runs down through the stops, and each
+   stop's dot is lit in its kind's colour (the same tints as before); "Next" is a lamp. */
+.portfolio-v3 .row-timeline { display: grid; gap: var(--row-stack); max-width: 54rem; }
+.portfolio-v3 .row-timeline__list { --when: 8.5rem; position: relative; display: grid; }
+.portfolio-v3 .row-timeline__list::before {
+  content: "";
+  position: absolute;
+  inset-block: 22px 22px;
+  inset-inline-start: calc(var(--when) + 20px + 3.5px);
+  width: 1px;
+  background: linear-gradient(180deg, rgb(var(--li-apricot-rgb) / 45%), rgb(var(--li-rose-rgb) / 45%) 35%, rgb(var(--li-iris-rgb) / 50%) 70%, rgb(var(--li-glacier-rgb) / 60%));
+}
+.portfolio-v3 .row-timeline__stop {
+  --k: var(--li-ink-3);
+  --k-text: var(--li-ink-3);
+  display: grid;
+  grid-template-columns: var(--when) 8px minmax(0, 1fr);
+  column-gap: 20px;
+  padding-block: 14px;
+}
+.portfolio-v3 .row-timeline__stop--recognition { --k: var(--li-glacier); --k-text: var(--li-tint-glacier); }
+.portfolio-v3 .row-timeline__stop--product { --k: var(--li-apricot); --k-text: var(--li-tint-apricot); }
+.portfolio-v3 .row-timeline__stop--career { --k: var(--li-iris); --k-text: var(--li-tint-iris); }
+.portfolio-v3 .row-timeline__stop--hackathon { --k: var(--li-rose); --k-text: var(--li-tint-rose); }
+.portfolio-v3 .row-timeline__stop--open-source { --k: var(--li-ink); --k-text: var(--li-ink); }
+.portfolio-v3 .row-timeline__stop--learning { --k: var(--li-ink-2); --k-text: var(--li-ink-2); }
+.portfolio-v3 .row-timeline__stop--now { --k: var(--li-glacier); --k-text: var(--li-tint-glacier); }
+.portfolio-v3 .deeper .row-timeline__when { display: grid; align-content: start; gap: 2px; padding-top: 2px; }
+.portfolio-v3 .deeper .row-timeline__date { color: var(--li-ink-2); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-timeline__kind { color: var(--k-text); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .row-timeline__dot {
+  position: relative;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--li-bg);
+  box-shadow: inset 0 0 0 1.5px var(--k);
+}
+.portfolio-v3 .row-timeline__stop--now .row-timeline__dot { background: var(--li-glacier); box-shadow: 0 0 0 3px var(--li-bg), 0 0 12px 2px rgb(var(--li-glacier-rgb) / 70%); }
+.portfolio-v3 .row-timeline__body { display: grid; gap: 4px; min-width: 0; }
+.portfolio-v3 .deeper .row-timeline__body p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 02 · Organizations: a still grid of off-white logos on hairlines, each with what I did there. */
+.portfolio-v3 .row-orgs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--li-gap); row-gap: 8px; }
+.portfolio-v3 .row-orgs__item { display: grid; align-content: start; gap: 4px; padding-block: 24px 28px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .row-orgs__logo {
+  position: relative;
+  display: block;
+  width: 140px;
+  height: 40px;
+  margin-bottom: 14px;
+  opacity: 0.72;
+  transform: scale(var(--visual-scale, 1));
+  transform-origin: left center;
+  transition: opacity 0.3s ease;
+}
+[dir="rtl"] .portfolio-v3 .row-orgs__logo, .portfolio-v3 [dir="rtl"] .row-orgs__logo { transform-origin: right center; }
+.portfolio-v3 .row-orgs__logo img { object-fit: contain; object-position: left center; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+[dir="rtl"] .portfolio-v3 .row-orgs__logo img, .portfolio-v3 [dir="rtl"] .row-orgs__logo img { object-position: right center; }
+.portfolio-v3 .row-orgs__logo--inked img { filter: brightness(0) invert(1); }
+.portfolio-v3 .row-orgs__item:hover .row-orgs__logo { opacity: 1; }
+.portfolio-v3 .deeper .row-orgs__name a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-block: -10px;
+  color: var(--li-ink);
+  text-decoration: none;
+}
+.portfolio-v3 .deeper .row-orgs__name a svg { flex: none; color: var(--li-ink-3); transition: color 0.2s ease, translate 0.3s var(--li-ease-spring); }
+.portfolio-v3 .deeper .row-orgs__name a:hover svg { color: var(--li-tint-glacier); translate: 2px -2px; }
+[dir="rtl"] .portfolio-v3 .deeper .row-orgs__name a:hover svg, .portfolio-v3 [dir="rtl"] .deeper .row-orgs__name a:hover svg { translate: -2px -2px; }
+.portfolio-v3 .deeper .row-orgs__kind { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-orgs__note { margin-top: 6px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 03 · Skills: four short lists on hairlines. The strongest tools are in full ink with a lit dot. */
+.portfolio-v3 .row-skills { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--li-gap); }
+.portfolio-v3 .row-skills__group { padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-skills__group h4 { margin-bottom: 10px; font-size: var(--li-t6); }
+.portfolio-v3 .deeper .row-skills__group li { display: flex; align-items: center; gap: 10px; padding-block: 5px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .row-skills__group li > span { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--li-ink-4); }
+.portfolio-v3 .deeper .row-skills__group li.is-strong { color: var(--li-ink); }
+.portfolio-v3 .row-skills__group li.is-strong > span { background: var(--li-glacier); box-shadow: 0 0 8px 1px rgb(var(--li-glacier-rgb) / 60%); }
+
+/* 04 · Courses and programs: three columns of hairline blocks, then the other certificates as quiet rows. */
+.portfolio-v3 .row-programs { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .row-programs__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--li-gap); row-gap: 8px; }
+.portfolio-v3 .row-program { display: flex; flex-direction: column; gap: 6px; padding-block: 24px 28px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .row-program__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 34px; margin-bottom: 10px; }
+.portfolio-v3 .row-program__logo { position: relative; display: block; width: 116px; height: 30px; opacity: 0.72; }
+.portfolio-v3 .row-program__logo img { object-fit: contain; object-position: left center; }
+[dir="rtl"] .portfolio-v3 .row-program__logo img, .portfolio-v3 [dir="rtl"] .row-program__logo img { object-position: right center; }
+.portfolio-v3 .row-program__logo--inked img { filter: brightness(0) invert(1); }
+.portfolio-v3 .deeper .row-program__result { font-size: var(--li-t6); font-weight: 600; line-height: 1.65; white-space: nowrap; }
+.portfolio-v3 .deeper :is(.row-program__issuer, .row-program__focus) { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-program__summary { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .deeper .row-certs h4 { margin-bottom: 12px; font-size: var(--li-t6); }
+.portfolio-v3 .row-certs ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--li-gap); }
+.portfolio-v3 .deeper .row-certs li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name link" "by link";
+  align-items: center;
+  column-gap: 16px;
+  padding-block: 10px;
+  border-top: 1px solid var(--li-line);
+}
+.portfolio-v3 .deeper .row-certs__name { grid-area: name; color: var(--li-ink); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .deeper .row-certs__by { grid-area: by; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-certs li > :last-child { grid-area: link; }
+
+/* 05 · Teaching and volunteering: the trainings on hairlines; beside them, the hours with their source. */
+.portfolio-v3 .row-community { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .row-workshops { margin-top: 12px; }
+.portfolio-v3 .row-workshop { display: grid; gap: 6px; padding-block: 20px 24px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-workshop__meta { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-workshop > p:not(.row-workshop__meta) { max-width: 60ch; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+/* The bootcamp's five steps, joined by short strokes of the living light. */
+.portfolio-v3 .row-workshop__steps { display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; margin-top: 6px; }
+.portfolio-v3 .deeper .row-workshop__steps li { display: inline-flex; align-items: center; color: var(--li-ink-2); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .row-workshop__steps li + li::before { content: ""; width: 18px; height: 1px; margin-inline: 10px; background: var(--li-aurora); opacity: 0.8; }
+
+/* 06 · Writing: what and for whom, the followers figure beside it, three kinds of post, the topics. */
+.portfolio-v3 .row-ideas { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .deeper .row-ideas__intro { max-width: 60ch; margin-top: 16px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.75; }
+.portfolio-v3 .row-ideas__pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--li-gap); }
+.portfolio-v3 .row-ideas__pillars > li { display: grid; align-content: start; gap: 6px; padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-ideas__index { color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-ideas__pillars p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .row-ideas__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-ideas__topics { display: grid; gap: 4px; max-width: 46rem; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .row-ideas__follow { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Narrower screens: the line drops under the title, and the bodies fold to fewer columns. */
+@media (max-width: 1100px) {
+  .portfolio-v3 :is(.row-skills, .row-orgs, .row-programs__list) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1023px) {
+  .portfolio-v3 .deeper { --row-num: 2.25rem; --row-gap: 16px; }
+  .portfolio-v3 .deeper-row__summary {
+    grid-template-columns: var(--row-num) minmax(0, 1fr) 44px;
+    grid-template-areas: "num title plus" "num line plus";
+    row-gap: 4px;
+    padding-block: 18px;
+  }
+  .portfolio-v3 .deeper .deeper-row__num { align-self: start; padding-top: 6px; }
+  .portfolio-v3 .deeper .row-split { grid-template-columns: minmax(0, 1fr); }
+  .portfolio-v3 .row-ideas__pillars { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .portfolio-v3 .row-ideas__pillars > li { padding-block: 20px; }
+  .portfolio-v3 .row-certs ul { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .portfolio-v3 .deeper-row__body { padding-inline-start: 0; padding-bottom: 56px; }
+  .portfolio-v3 :is(.row-skills, .row-orgs, .row-programs__list) { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .portfolio-v3 .row-skills { gap: 8px; }
+  .portfolio-v3 .row-timeline__list { --when: 0px; }
+  .portfolio-v3 .row-timeline__list::before { inset-inline-start: 3.5px; }
+  .portfolio-v3 .row-timeline__stop { grid-template-columns: 8px minmax(0, 1fr); grid-template-areas: "dot when" "dot body"; column-gap: 16px; }
+  .portfolio-v3 .row-timeline__stop .row-timeline__dot { grid-area: dot; }
+  .portfolio-v3 .deeper .row-timeline__when { grid-area: when; display: flex; flex-wrap: wrap; gap: 0 10px; padding-top: 0; }
+  .portfolio-v3 .row-timeline__body { grid-area: body; }
+  .portfolio-v3 .row-ideas__foot { display: grid; justify-content: stretch; }
+}
 
 
 /* ===== Contact + Help (owner: rest) ===== */
 /* #contact (components/contact-section.tsx) with the help paths #help (.contact__help,
    components/help-section.tsx), the socials and the aurora horizon. FINAL-SPEC 6.8. */
+/* The last chapter ends on its horizon, so it has no space under it: the wordmark rests right below. */
+.portfolio-v3 .li-chapter.finale { padding-bottom: 0; }
+.portfolio-v3 .finale__inner { display: grid; justify-items: center; text-align: center; }
+.portfolio-v3 .finale__head { display: grid; justify-items: center; gap: 20px; max-width: 54rem; }
+.portfolio-v3 .finale .finale__title {
+  margin: 0;
+  color: var(--li-ink);
+  font-size: var(--li-t1);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.portfolio-v3 [dir="rtl"] .finale .finale__title { line-height: 1.2; }
+.portfolio-v3 .finale .finale__lead { max-width: 34em; margin: 0; color: var(--li-ink-2); font-size: var(--li-t4); line-height: 1.75; }
+
+/* One email action, and the address to copy. */
+.portfolio-v3 .finale__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 40px; }
+.portfolio-v3 .finale .finale__btn { min-height: 56px; padding-inline: 28px; font-size: var(--li-t5); }
+.portfolio-v3 .finale .finale__btn svg { width: 18px; height: 18px; }
+.portfolio-v3 .finale .finale__meta { margin: 16px 0 0; color: var(--li-ink-3); font-size: var(--li-t6); line-height: 1.7; }
+
+/* «كيف أقدر أخدمك؟»: three hairline columns, each with who it is for, the offer and one link. */
+.portfolio-v3 .finale .contact__help { width: 100%; margin-top: var(--li-group); }
+.portfolio-v3 .finale .contact__help-title { margin: 0; color: var(--li-ink-2); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.portfolio-v3 .contact__paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--li-gap); margin-top: 32px; text-align: start; }
+.portfolio-v3 .contact__path { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding-top: 28px; border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .finale .contact__path h4 { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
+.portfolio-v3 .finale .contact__path p { margin: 0; max-width: 46ch; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.8; }
+.portfolio-v3 .finale .contact__path-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--li-ink);
+  font-size: var(--li-t6);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--li-line-3);
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease;
+}
+.portfolio-v3 .finale .contact__path-cta svg { flex: none; color: var(--li-ink-3); transition: color 0.2s ease, translate 0.3s var(--li-ease-spring); }
+.portfolio-v3 .finale .contact__path-cta:hover { text-decoration-color: var(--li-ink); }
+.portfolio-v3 .finale .contact__path-cta:hover svg { color: var(--li-tint-glacier); translate: 2px -2px; }
+.portfolio-v3 [dir="rtl"] .finale .contact__path-cta:hover svg { translate: -2px -2px; }
+
+/* The profiles: the only row of them below the hero. */
+.portfolio-v3 .finale__socials { margin-top: var(--li-open); }
+.portfolio-v3 .finale__socials .social-links { justify-content: center; gap: 10px; margin: 0; }
+.portfolio-v3 .finale__socials .social-links a {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  background: var(--li-glass);
+  color: var(--li-ink);
+  font-family: inherit;
+  font-size: var(--li-t6);
+  font-weight: 500;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.portfolio-v3 .finale__socials .social-links a:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
+.portfolio-v3 .finale__socials .social-links a span { font: inherit; letter-spacing: 0; text-transform: none; }
+
+/* The horizon: a still, blurred glow of iris and rose, and one line of the living light across it. No orb. */
+.portfolio-v3 .finale__horizon { position: relative; height: clamp(140px, 16vw, 220px); margin-top: var(--li-open); pointer-events: none; }
+.portfolio-v3 .finale__horizon::before {
+  content: "";
+  position: absolute;
+  inset-inline: -10%;
+  bottom: -60%;
+  height: 120%;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--li-iris-rgb) / 30%), rgb(var(--li-rose-rgb) / 12%) 45%, transparent 70%);
+  filter: blur(10px);
+}
+.portfolio-v3 .finale__horizon::after {
+  content: "";
+  position: absolute;
+  inset-inline: 8%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--li-apricot-rgb) / 60%), rgb(var(--li-rose-rgb) / 70%), rgb(var(--li-iris-rgb) / 70%), rgb(var(--li-glacier-rgb) / 60%), transparent);
+}
+
+@media (max-width: 900px) {
+  .portfolio-v3 .contact__paths { grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 20px; }
+  .portfolio-v3 .contact__path { padding-block: 24px 20px; }
+}
+@media (max-width: 560px) {
+  .portfolio-v3 .finale__acts { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .portfolio-v3 .finale .finale__btn { width: 100%; }
+}
 
 
 /* ===== Closing and footer (owner: rest) ===== */
 /* The quiet wordmark under the horizon and the one-row footer (components/footer.tsx). FINAL-SPEC 6.9. */
+.portfolio-v3 .closing { position: relative; }
+/* The name in the page's language, filled with ink that fades from 13% to 2%. Still, and decoration only. */
+.portfolio-v3 .closing .closing__mark {
+  margin: 0;
+  padding-inline: 16px;
+  font-size: clamp(64px, 11vw, 156px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  background: linear-gradient(180deg, rgb(var(--li-ink-rgb) / 13%), rgb(var(--li-ink-rgb) / 2%) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+/* Latin is wider than the Arabic name: it scales down a little sooner so it stays on one line on a phone. */
+.portfolio-v3 [dir="ltr"] .closing .closing__mark { font-size: clamp(44px, 10.5vw, 150px); line-height: 1.2; letter-spacing: -0.035em; }
+.portfolio-v3 .closing__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+  padding-block: 12px 28px;
+  color: var(--li-ink-3);
+  font-size: var(--li-t7);
+  line-height: 1.65;
+}
+.portfolio-v3 .closing__row p { margin: 0; }
+.portfolio-v3 .closing__row a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-inline-start: auto;
+  color: var(--li-ink-2);
+  transition: color 0.2s ease;
+}
+.portfolio-v3 .closing__row a:hover { color: var(--li-ink); }
+@media (max-width: 700px) {
+  .portfolio-v3 .closing__row { flex-direction: column; justify-content: center; text-align: center; padding-top: 4px; }
+  .portfolio-v3 .closing__row a { margin-inline-start: 0; }
+}
 

@@ -65,7 +65,30 @@ test("(e) every visitor order lists exactly the eight blocks the page passes to 
   }
 });
 
-test.todo("(f) the footer has no [data-proximity] (owner: rest)");
+test("(f) the footer has no [data-proximity]: the page closes on a still name in its own language and one row", () => {
+  for (const [locale, document] of Object.entries(pages)) {
+    const { identity, ui } = getContent(locale);
+    const footer = document.querySelector("footer");
+    assert.ok(footer, `${locale}: a footer`);
+    assert.equal(document.querySelectorAll("footer[data-proximity], footer [data-proximity], footer [data-cursor]").length, 0, `${locale}: nothing in the footer follows the pointer`);
+    const mark = footer.querySelector(".closing__mark");
+    assert.equal(mark.getAttribute("aria-hidden"), "true", `${locale}: the name is decoration`);
+    assert.equal(mark.textContent, identity.name, `${locale}: the name in the page's language`);
+    assert.deepEqual([...footer.querySelectorAll("a")].map((link) => link.getAttribute("href")), ["#home"], `${locale}: one link, back to the top; no social row`);
+    assert.ok(footer.textContent.includes(ui.footer.designed) && footer.textContent.includes(ui.footer.rights), locale);
+    // Contact, just above it: one email action, the address once as text, the help paths inline, the profiles
+    // once, and the horizon. No rotating badge.
+    const contact = document.getElementById("contact");
+    assert.deepEqual([...contact.querySelectorAll(".li-btn--primary")].map((link) => link.getAttribute("href")), [`mailto:${identity.email}`], `${locale}: one primary`);
+    assert.equal(contact.querySelectorAll(`a[href="mailto:${identity.email}"]`).length, 1, `${locale}: no second email pill`);
+    assert.ok(contact.querySelector(".finale__meta").textContent.includes(identity.email), `${locale}: the address as text`);
+    assert.equal(contact.querySelector("#help h3").textContent, ui.help.title, `${locale}: «كيف أقدر أخدمك؟» keeps its title`);
+    assert.equal(contact.querySelectorAll("#help .contact__path").length, 3);
+    assert.equal(document.querySelectorAll(".finale__socials .social-links a").length, 3, `${locale}: GitHub, LinkedIn and X`);
+    assert.equal(contact.querySelector(".finale__horizon").getAttribute("aria-hidden"), "true");
+    assert.equal(contact.querySelector(".contact-orb, textPath"), null, `${locale}: the rotating badge is gone`);
+  }
+});
 
 test("(g) the CV's privacy note is split: who gets notified beside the fields, the email's use beside the email", () => {
   for (const locale of locales) {

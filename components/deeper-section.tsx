@@ -10,16 +10,15 @@ import { SkillsSection } from "./skills-section";
 
 // One row: a <details> that carries the section's own id, so the assistant, the palette and a shared link
 // (/ar/#skills) open exactly the row they point at (lib/agent/reveal.ts). The closed row still says something
-// true: its number, its title and one line from the data.
+// true: its number, its title and one line from the data. The summary holds one heading and its line, which
+// is what a <summary> allows; the number and the «+» are decoration.
 function DeeperRow({ id, index, title, line, children }: { id: string; index: number; title: string; line: string; children: ReactNode }) {
   return (
     <details id={id} className="deeper-row">
       <summary className="deeper-row__summary">
         <span className="deeper-row__num li-num" aria-hidden="true">{String(index).padStart(2, "0")}</span>
-        <span className="deeper-row__text">
-          <h3 className="deeper-row__title">{title}</h3>
-          <span className="deeper-row__line">{line}</span>
-        </span>
+        <h3 className="deeper-row__title">{title}</h3>
+        <span className="deeper-row__line">{line}</span>
         <span className="deeper-row__plus" aria-hidden="true" />
       </summary>
       <div className="deeper-row__body">{children}</div>
@@ -29,7 +28,7 @@ function DeeperRow({ id, index, title, line, children }: { id: string; index: nu
 
 // «خارج المشاريع» / "Beyond the projects": the quiet appendix after the CV. A header and six sibling rows,
 // never nested: the page keeps folds one level deep. It sits on the chapter rhythm and its seam, but it is not
-// a numbered chapter.
+// a numbered chapter. Inside an open row the headings are h4, under the row's own h3.
 export function DeeperSection({ locale = "en" }: { locale?: Locale }) {
   const content = getContent(locale);
   const { ui } = content;
