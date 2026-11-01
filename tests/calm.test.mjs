@@ -56,7 +56,47 @@ test("(e) every visitor order lists exactly the eight blocks the page passes to 
 
 test.todo("(f) the footer has no [data-proximity] (owner: rest)");
 
-test.todo("(g) ui.cv.notify and ui.cv.emailPrivacy exist in both languages and ui.cv.privacy does not (owner: cv)");
+test("(g) the CV's privacy note is split: who gets notified beside the fields, the email's use beside the email", () => {
+  for (const locale of locales) {
+    const cv = getContent(locale).ui.cv;
+    assert.ok(cv.notify?.trim() && cv.emailPrivacy?.trim(), `${locale}: both halves exist`);
+    assert.equal(Object.hasOwn(cv, "privacy"), false, `${locale}: the old single sentence is gone`);
+    assert.doesNotMatch(cv.notify + cv.emailPrivacy + cv.more + cv.moreHint, /tailor|فصّل|فصل/i, locale);
+    const section = pages[locale].getElementById("cv");
+    const folds = section.querySelectorAll("details");
+    assert.equal(folds.length, 1, `${locale}: one fold in the CV, «خيارات أكثر»`);
+    const [more] = folds;
+    assert.ok(more.matches(".cv-more") && more.querySelector(":scope > summary").textContent.includes(cv.moreHint), `${locale}: the fold says what it holds`);
+    // The download sends a note whenever a company, a role or a posting is given, so that half stays in view.
+    const notify = section.querySelector(".cv-notify");
+    assert.equal(notify?.textContent, cv.notify, `${locale}: the notify line`);
+    assert.equal(notify.closest("details"), null, `${locale}: the notify line is never folded away`);
+    assert.ok(notify.closest(".cv-for"), `${locale}: beside the company and role`);
+    assert.equal(section.querySelector(".cv-more .cv-email .cv-email__privacy")?.textContent, cv.emailPrivacy, `${locale}: the email half sits with the email field`);
+    // One download first, then who it's for, then the fold; the posting and the emailed copy are inside it.
+    const order = [".cv-download", ".cv-for", ".cv-more", ".cv-more .cv-posting", ".cv-more .cv-email"].map((selector) => section.querySelector(selector));
+    assert.ok(order.every(Boolean), `${locale}: every part is on the page`);
+    for (let index = 1; index < order.length; index += 1) assert.ok(order[index - 1].compareDocumentPosition(order[index]) & 4, `${locale}: source order`);
+    assert.equal(section.querySelectorAll(".li-btn--primary").length, 1, `${locale}: one primary action`);
+  }
+});
+
+test("the CV page rises out of light and is complete at every point: standing without JavaScript or motion", () => {
+  const css = read("../app/cv.css");
+  const paper = read("../components/cv-paper.tsx");
+  assert.match(css, /@property --rise \{ syntax: "<number>"; inherits: true; initial-value: 1; \}/, "standing by default");
+  const motion = css.slice(css.indexOf("@media (prefers-reduced-motion: no-preference) {"));
+  assert.match(motion, /^@media \(prefers-reduced-motion: no-preference\) \{\s*\/\*[^*]*\*\/\s*@supports \(animation-timeline: view\(\)\) \{\s*html:not\(\[data-motion="off"\]\) \.cv-stage \{\s*animation: cv-rise [^;]+;\s*animation-timeline: view\(\);\s*animation-range: entry 10% cover 40%;/, "tied to scroll, only with motion allowed");
+  assert.match(css, /html\[data-motion="off"\] \.cv-stage \{ --rise: 1 !important; \}/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{\s*\.cv-stage \{ --rise: 1 !important; \}/);
+  assert.match(paper, /CSS\.supports\("animation-timeline: view\(\)"\)/, "a scroll fallback where CSS can't tie it to scroll");
+  // The old drop-in left a blank cream flap on a normal scroll; the underlay sheet is gone with it.
+  assert.doesNotMatch(css, /#e7e5dc|\.cv-sheet::before/);
+  assert.doesNotMatch(paper, /rotate: "x 30deg"/);
+  // The approval moment and the prepared ring are decoration: gated on motion, the status line says it.
+  assert.match(read("../components/cv-section.tsx"), /if \(download === "done" && motionAllowed\(\)\) bloomBrandOrb\(\);/);
+  assert.match(motion, /html:not\(\[data-motion="off"\]\) \.cv-stage\.is-prepared \.cv-ring \{ animation: cv-ring-turn 2\.4s [^}]*1 both; \}/, "the ring turns once");
+});
 
 test("(h) the navigation is the five chapters a visitor looks for, in both languages", () => {
   for (const locale of locales) {
