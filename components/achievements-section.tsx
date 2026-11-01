@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
+import { Fragment } from "react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
 import { MetaParts } from "./meta-parts";
@@ -7,78 +8,66 @@ import { RecommendationsSection } from "./recommendations-section";
 import { Reveal } from "./reveal";
 import { SectionHeader } from "./section-header";
 
-const achievementLogoDimensions: Record<string, { width: number; height: number }> = {
-  "kaust-academy": { width: 874, height: 480 },
-  "amad-hackathon": { width: 762, height: 480 },
-  ibm: { width: 1259, height: 480 },
-  uqu: { width: 1189, height: 480 }
-};
+// A signal reads in the page's direction, and any figure inside it ("5%", "5/5") keeps its own left-to-right
+// order, so «أفضل 5%» never turns into «%5» and «5/5 للفريق» stays whole.
+export function Signal({ text }: { text: string }) {
+  const parts = text.split(/(\d[\d.,/]*%?\+?)/);
+  return (
+    <bdi>
+      {parts.map((part, index) =>
+        index % 2 ? <bdi key={index} dir="ltr" className="li-num">{part}</bdi> : <Fragment key={index}>{part}</Fragment>
+      )}
+    </bdi>
+  );
+}
 
+// Chapter "Recognition" (FINAL-SPEC 6.5): one lead moment («أفضل 5%» in the living light), then the other
+// recognitions as quiet hairline rows with their full descriptions, then the two recommendations. The page's
+// one row of numbers is the hero's spec strip, so there is none here.
 export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
-  const { achievements, proofMetrics, ui } = getContent(locale);
-  const visible = achievements.filter((achievement) => achievement.enabled);
+  const { achievements, ui } = getContent(locale);
+  const [lead, ...rows] = achievements.filter((achievement) => achievement.enabled);
+  const leadMark = lead ? getPortfolioAsset(lead.assetId) : null;
 
   return (
-    <section id="achievements" className="section proof-section li-chapter">
+    <section id="achievements" className="section li-chapter recognition">
       <div className="page-shell">
-        <SectionHeader
-          numbered
-          title={ui.proof.title}
-          description={ui.proof.description}
-        />
+        <SectionHeader numbered title={ui.proof.title} description={ui.proof.description} />
 
-        <dl className="proof-metrics">
-          {proofMetrics.map((metric, index) => {
-            const formatted = metric.value.toLocaleString("en-US");
-            // A sign ("~", "+") stays with the number; a word ("نحو") reads in the page's own direction,
-            // small, before it, as the showcase's figures do.
-            const word = metric.prefix && /\p{L}/u.test(metric.prefix) ? metric.prefix.trim() : null;
-            return (
-              <Reveal key={metric.label} className="proof-metric glow-card" delay={index * 60}>
-                <dt>{metric.label}</dt>
-                <dd>
-                  <strong data-count={metric.value}>
-                    <span className="sr-only">{`${metric.prefix ?? ""}${formatted}${metric.suffix ?? ""}`}</span>
-                    {word ? <span aria-hidden="true" className="proof-metric__word">{word}</span> : null}
-                    <span aria-hidden="true" dir="ltr">{word ? null : metric.prefix}<span data-count-value>{formatted}</span>{metric.suffix}</span>
-                  </strong>
-                  <small><MetaParts text={metric.source} /></small>
-                </dd>
-              </Reveal>
-            );
-          })}
-        </dl>
+        {lead ? (
+          <Reveal className="recognition__lead">
+            <p className="recognition__moment">
+              <span className="li-aurora-text"><Signal text={lead.signal} /></span>
+            </p>
+            <h3 className="recognition__lead-title">{lead.title}</h3>
+            <p className="recognition__lead-text">{lead.description}</p>
+            <p className="recognition__by">
+              {leadMark?.derived.monochrome ? (
+                <Image src={leadMark.derived.monochrome} alt="" width={874} height={480} />
+              ) : null}
+              <MetaParts text={[lead.issuer, lead.date].filter(Boolean).join(" · ")} />
+            </p>
+          </Reveal>
+        ) : null}
 
-        <ol className="proof-grid" aria-label={ui.proof.recognition}>
-          {visible.map((achievement, index) => {
-            const asset = getPortfolioAsset(achievement.assetId);
-            return (
-              <li key={achievement.title} className={`proof-card glow-card ${index === 0 ? "proof-card--lead" : ""}`}>
-                <div className="proof-card__top">
-                  <p className="proof-card__signal">{achievement.signal}</p>
-                  {asset ? (
-                    <Image
-                      src={asset.derived.color}
-                      alt={asset.alt}
-                      width={achievementLogoDimensions[asset.id]?.width ?? 132}
-                      height={achievementLogoDimensions[asset.id]?.height ?? 54}
-                      style={{ height: "auto" }}
-                      loading="eager"
-                      fetchPriority="low"
-                    />
-                  ) : null}
-                </div>
+        <ol className="recognition__rows">
+          {rows.map((achievement) => (
+            <li key={achievement.title} className="recognition__row">
+              <p className="recognition__signal"><Signal text={achievement.signal} /></p>
+              <div className="recognition__text">
                 <h3>{achievement.title}</h3>
-                <p className="proof-card__issuer"><MetaParts text={[achievement.issuer, achievement.date].filter(Boolean).join(" · ")} /></p>
                 <p>{achievement.description}</p>
                 {achievement.verificationUrl ? (
                   <a href={achievement.verificationUrl} target="_blank" rel="noreferrer noopener">
                     {ui.proof.evidence} <ArrowUpRight aria-hidden="true" size={15} />
                   </a>
                 ) : null}
-              </li>
-            );
-          })}
+              </div>
+              <p className="recognition__issuer">
+                <MetaParts text={[achievement.issuer, achievement.date].filter(Boolean).join(" · ")} />
+              </p>
+            </li>
+          ))}
         </ol>
 
         {/* «قالوا عنّي»: the two recommendations, inside Recognition (#recommendations). */}
