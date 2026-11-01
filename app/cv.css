@@ -1,117 +1,286 @@
-/* ---------- My CV: one download, an optional "who's it for", and the page itself ---------- */
-.cv-section { background: var(--paper); color: var(--text); }
-.cv-layout {
-  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  grid-template-areas: "get preview" "for preview" "extra preview";
-  grid-template-rows: auto auto 1fr;
-  gap: 28px clamp(28px, 4.5vw, 72px); align-items: start;
-}
-.cv-get { grid-area: get; display: grid; gap: 10px; justify-items: start; }
-.cv-for { grid-area: for; display: grid; gap: 14px; min-width: 0; padding-top: 24px; border-top: 1px solid var(--line-soft); }
-.cv-extra { grid-area: extra; display: grid; gap: 12px; min-width: 0; }
-.cv-preview { grid-area: preview; position: sticky; top: calc(var(--nav-height, 60px) + 24px); display: grid; gap: 12px; min-width: 0; }
+/* ==========================================================================================
+   My CV (FINAL-SPEC section 5): the centrepiece of the lower page. Beside the text, the real page rises
+   out of light in a glass case with no top edge; the text column holds one download, one optional line
+   (company | role), the notify note, and one fold with the job posting and the emailed copy.
+   components/cv-section.tsx, components/cv-paper.tsx. Calm tokens come from app/living.css ("Calm").
+   ========================================================================================== */
+@property --rise { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --cv-turn { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 
-.cv-get .cv-download { min-height: 60px; padding-inline: 28px; font-size: 1.05rem; font-weight: 700; box-shadow: 0 16px 36px rgb(0 0 0 / 40%); }
-.cv-get__note, .cv-note, .cv-privacy, .cv-for__hint, .cv-preview__caption { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
-.cv-note a { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-.cv-note--warn { color: var(--li-apricot); }
-.cv-privacy { padding-top: 12px; border-top: 1px solid var(--line-soft); font-size: 0.82rem; }
-.cv-preview__caption { text-align: center; }
-
-.cv-button--primary { background: var(--ink); color: var(--paper); }
-.cv-button--primary:hover { background: #fff; }
-.cv-button--secondary { border-color: var(--ink); background: transparent; color: var(--ink); }
-.cv-button--secondary:hover { background: var(--ink); color: var(--paper); }
-.cv-section .button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.cv-section .button:focus-visible, .cv-input:focus-visible, .cv-posting textarea:focus-visible, .cv-suggest button:focus-visible,
-.cv-section summary:focus-visible, .cv-offer a:focus-visible, .cv-offer button:focus-visible {
-  outline: 3px solid var(--focus-light); outline-offset: 2px;
+.portfolio-v3 .cv-section { background: none; color: var(--li-ink); }
+.cv-grid {
+  /* The room above the case that the page rises into. */
+  --cv-breakout: clamp(56px, 9vw, 128px);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(48px, 6.6vw, 96px);
+  align-items: center;
 }
+.cv-text { display: grid; align-content: center; min-width: 0; }
 
-.cv-for h3 { margin: 0; font-size: clamp(1.2rem, 1.8vw, 1.45rem); }
-.cv-for__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.cv-field { display: grid; gap: 6px; min-width: 0; }
-.cv-field label, .cv-email label { color: var(--muted); font-size: 0.86rem; }
-.cv-input, .cv-posting textarea {
-  width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px;
-  background: var(--white); color: var(--text); font: inherit; font-size: 1rem;
+/* ---------- The opener ---------- */
+.cv-head { display: grid; justify-items: start; min-width: 0; }
+.portfolio-v3 .cv-section .cv-title {
+  max-width: none;
+  margin: 18px 0 0;
+  color: var(--li-ink);
+  font-size: var(--li-t1);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
 }
-.cv-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.cv-suggest span { margin-inline-end: 4px; color: var(--muted); font-size: 0.84rem; }
+[dir="rtl"] .cv-section .cv-title { line-height: 1.2; letter-spacing: 0; }
+.cv-section .cv-lead { max-width: 30em; margin: 16px 0 0; color: var(--li-ink-2); font-size: var(--li-t4); font-weight: 400; line-height: 1.75; text-wrap: pretty; }
+
+/* ---------- One download ---------- */
+.cv-get { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 40px; }
+.cv-section .cv-download { gap: 12px; min-height: 56px; max-width: 100%; padding: 0 28px; font-size: var(--li-t5); font-weight: 600; white-space: normal; text-align: center; }
+.cv-section .cv-download svg { width: 18px; height: 18px; }
+.cv-section .cv-download bdi { overflow-wrap: anywhere; }
+.cv-section .cv-download:disabled { cursor: progress; opacity: 0.6; transform: none; }
+.cv-get__note { margin: 0; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+/* Status lines sit right under the button, inline, never a modal. */
+.cv-note { flex-basis: 100%; margin: 0; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.cv-note--done { display: inline-flex; align-items: center; gap: 10px; color: var(--li-ink); }
+.cv-note--warn { color: var(--li-tint-apricot); }
+.cv-note a { color: var(--li-ink); font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+.cv-offer {
+  display: grid;
+  flex-basis: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 8px 12px 18px;
+  border: 1px solid rgb(var(--li-glacier-rgb) / 30%);
+  border-radius: var(--li-r);
+  background: rgb(var(--li-glacier-rgb) / 6%);
+  font-size: var(--li-t6);
+}
+[dir="rtl"] .cv-offer { padding: 12px 18px 12px 8px; }
+.cv-offer p { grid-column: 1; margin: 0; color: var(--li-ink); line-height: 1.6; }
+.cv-offer a { grid-column: 1; justify-self: start; color: var(--li-tint-glacier); font-weight: 500; text-underline-offset: 4px; }
+.cv-offer button {
+  grid-column: 2; grid-row: 1 / span 2; display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border: 0; border-radius: 50%; background: transparent; color: var(--li-ink-2); cursor: pointer;
+}
+.cv-offer button:hover { background: var(--li-glass-2); color: var(--li-ink); }
+
+/* ---------- Who it's for: one glass capsule, the role chips on demand, the notify note ---------- */
+.cv-for { display: grid; gap: 14px; min-width: 0; margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--li-line); container: cv-for / inline-size; }
+.cv-for__label { display: grid; gap: 2px; }
+.portfolio-v3 .cv-section .cv-for h3 { margin: 0; color: var(--li-ink); font-size: var(--li-t6); font-weight: 600; line-height: 1.6; letter-spacing: 0; }
+.cv-for__hint { margin: 0; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+
+.cv-capsule {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r);
+  background: var(--li-glass);
+  box-shadow: var(--li-highlight);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.cv-capsule:focus-within { border-color: var(--li-line-3); box-shadow: var(--li-highlight), 0 0 0 4px rgb(var(--li-iris-rgb) / 16%); }
+.cv-field { display: grid; align-content: center; gap: 1px; min-width: 0; min-height: 64px; padding: 8px 18px; cursor: text; transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+.cv-field + .cv-field { border-inline-start: 1px solid var(--li-line); }
+.cv-field:focus-within { background: var(--li-glass); box-shadow: inset 0 0 0 1px rgb(156 201 255 / 55%); }
+.cv-field__label { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.5; }
+.portfolio-v3 .cv-capsule .cv-input {
+  width: 100%; min-width: 0; min-height: 0; margin: 0; padding: 0;
+  border: 0; border-radius: 0; outline: 0; background: none; box-shadow: none;
+  color: var(--li-ink); font: inherit; font-size: 1rem; line-height: 1.6;
+}
+.cv-section .cv-input::placeholder { color: var(--li-ink-3); opacity: 1; transition: opacity 0.2s ease; }
+.cv-capsule .cv-input:focus::placeholder { opacity: 0; }
+/* An empty Arabic field shows «مثل: Salla» right to left; dir="auto" takes over once something is typed. */
+[dir="rtl"] .cv-input:placeholder-shown { direction: rtl; text-align: start; }
+/* A Latin name typed on the Arabic page still lines up under its Arabic label. */
+[dir="rtl"] .cv-capsule .cv-input { text-align: right; }
+
+/* Role chips: open while the visitor is choosing a role (cv-section.tsx, chipsOpen), 0fr → 1fr. */
+.cv-chips { display: grid; grid-template-rows: 0fr; margin-top: -14px; opacity: 0; transition: grid-template-rows 0.45s var(--li-ease), margin-top 0.45s var(--li-ease), opacity 0.3s ease; }
+.cv-chips.is-open { grid-template-rows: 1fr; margin-top: 0; opacity: 1; }
+.cv-chips__inner { min-height: 0; overflow: hidden; }
+.cv-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 -4px; padding: 4px; }
+.cv-suggest > span { width: 100%; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
 .cv-suggest button {
-  min-height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--white);
-  color: var(--text); font: inherit; font-size: 0.86rem; cursor: pointer; transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+  min-height: 44px; padding: 0 16px; border: 1px solid var(--li-line-2); border-radius: var(--li-r-pill);
+  background: var(--li-glass); color: var(--li-ink-2); font: inherit; font-size: var(--li-t6); cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
-.cv-suggest button:hover { border-color: var(--ink); }
-.cv-suggest button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.cv-suggest button:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
+.cv-suggest button[aria-pressed="true"] { border-color: var(--li-ink); background: var(--li-ink); color: var(--li-on-light); }
 
-.cv-section details { border: 1px solid var(--line-soft); border-radius: 14px; background: var(--white); }
-.cv-section summary {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 18px;
-  font-weight: 600; cursor: pointer; list-style: none;
+.cv-notify { display: flex; align-items: flex-start; gap: 10px; margin: 0; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; text-wrap: balance; }
+.cv-notify svg { flex: none; width: 15px; height: 15px; margin-top: 3px; }
+
+/* ---------- «خيارات أكثر»: the one fold, a hairline row; open, one glass panel with two blocks ---------- */
+.cv-more { margin-top: 24px; border-top: 1px solid var(--li-line); }
+.cv-more > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px;
+  color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.6; list-style: none; cursor: pointer;
 }
-.cv-section summary::-webkit-details-marker { display: none; }
-.cv-section summary::after { content: "+"; color: var(--muted); font-size: 1.3rem; font-weight: 400; transition: transform 200ms ease; }
-.cv-section details[open] > summary::after { transform: rotate(45deg); }
-.cv-posting__body, .cv-email form { display: grid; gap: 10px; justify-items: start; padding: 0 18px 18px; }
-.cv-posting textarea { min-height: 130px; resize: vertical; line-height: 1.6; }
+.cv-more > summary::-webkit-details-marker { display: none; }
+.cv-more__title { color: var(--li-ink); font-weight: 600; }
+.cv-more__hint { color: var(--li-ink-3); font-size: var(--li-t7); }
+/* A plus that turns into a cross. */
+.cv-more__icon { position: relative; flex: none; width: 20px; height: 20px; color: var(--li-ink-3); transition: transform 0.45s var(--li-ease-spring), color 0.2s ease; }
+.cv-more__icon::before, .cv-more__icon::after { content: ""; position: absolute; top: 50%; left: 50%; width: 14px; height: 1.5px; border-radius: 1px; background: currentColor; translate: -50% -50%; }
+.cv-more__icon::after { rotate: 90deg; }
+.cv-more > summary:hover .cv-more__icon { color: var(--li-ink); }
+.cv-more[open] .cv-more__icon { transform: rotate(45deg); color: var(--li-ink); }
+.cv-more__panel { margin-bottom: 8px; padding: 24px; }
+.cv-posting, .cv-email { display: grid; gap: 12px; justify-items: start; min-width: 0; }
+.cv-email { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--li-line); }
+.cv-email form { display: grid; gap: 10px; justify-items: start; width: 100%; }
+.portfolio-v3 .cv-more__panel h3 { margin: 0; color: var(--li-ink); font-size: var(--li-t6); font-weight: 600; line-height: 1.6; letter-spacing: 0; }
+.cv-email label { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.5; }
+.portfolio-v3 .cv-more .cv-input {
+  width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid var(--li-line-2); border-radius: 12px;
+  background: rgb(var(--li-bg-rgb) / 55%); color: var(--li-ink); font: inherit; font-size: 1rem; line-height: 1.6;
+  transition: border-color 0.2s ease;
+}
+.portfolio-v3 .cv-more .cv-input--area { min-height: 132px; padding: 12px 14px; line-height: 1.7; resize: vertical; }
+.portfolio-v3 .cv-more .cv-input:hover { border-color: var(--li-line-3); }
 .cv-inline { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
 .cv-inline .cv-input { flex: 1 1 200px; width: auto; }
-.cv-cover { display: grid; gap: 6px; padding: 14px 16px; border-inline-start: 3px solid var(--signal-dark); background: var(--white); border-radius: 0 12px 12px 0; }
-.cv-cover p { margin: 0; line-height: 1.6; }
-.cv-cover__title { font-weight: 600; font-size: 0.88rem; }
+.cv-section .cv-secondary { min-height: 48px; }
+.cv-section .cv-secondary:disabled { cursor: not-allowed; opacity: 0.5; transform: none; }
+.cv-email__privacy { margin: 0; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.cv-cover { display: grid; gap: 6px; width: 100%; padding: 14px 16px; border-inline-start: 2px solid var(--li-glacier); border-radius: 0 12px 12px 0; background: var(--li-glass); }
 [dir="rtl"] .cv-cover { border-radius: 12px 0 0 12px; }
+.cv-cover p { margin: 0; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.cv-cover .cv-cover__title { color: var(--li-ink); font-weight: 600; }
 
-.cv-offer {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 10px; padding: 12px 8px 12px 16px;
-  border: 1px solid rgb(var(--li-glacier-rgb) / 45%); border-radius: 14px; background: rgb(var(--li-glacier-rgb) / 10%);
-}
-.cv-offer p { grid-column: 1; margin: 0; line-height: 1.5; }
-.cv-offer a { grid-column: 1; justify-self: start; color: var(--ink); font-weight: 600; text-underline-offset: 4px; }
-.cv-offer button { grid-column: 2; grid-row: 1 / span 2; align-self: start; display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
-.cv-offer button:hover { background: var(--li-glass-2); }
+.cv-section :is(summary, .cv-suggest button, .cv-offer a, .cv-offer button, .cv-note a, .cv-more .cv-input):focus-visible { outline: 2px solid var(--li-focus); outline-offset: 3px; }
+.cv-section .agent-turnstile:empty { display: none; }
 
-/* The page itself: a sheet under a desk light. It rests at a slight angle and follows the pointer. */
+/* ==========================================================================================
+   The stage. A glass case with no top edge (its border and glass fade upward), a pool of the orb's light
+   in it, a floor line, and the page standing on the floor, taller than the case. --rise (0 → 1) lays the
+   page back in its case and stands it up; it is 1 wherever motion is off and without JavaScript.
+   ========================================================================================== */
+.cv-stagewrap { position: relative; min-width: 0; padding-top: var(--cv-breakout); }
 .cv-stage {
-  --tilt-x: 4deg; --tilt-y: -6deg; --light-x: 22%; --light-y: 8%;
-  position: relative; overflow: hidden; padding: clamp(26px, 4vw, 52px) clamp(22px, 4vw, 56px);
-  border-radius: 24px;
+  position: relative;
+  isolation: isolate;
+  height: clamp(380px, 46vw, 640px);
+  border-radius: var(--li-r);
+  perspective: 1700px;
+  perspective-origin: 50% 0%;
+}
+/* The case's edge, fading out toward the top. */
+.cv-stage::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; border: 1px solid var(--li-line-2); border-radius: inherit; pointer-events: none;
+  -webkit-mask: linear-gradient(180deg, transparent 0%, transparent 18%, #000 62%);
+  mask: linear-gradient(180deg, transparent 0%, transparent 18%, #000 62%);
+}
+/* The case's glass: deep, lit from above, gone at the top. */
+.cv-case {
+  position: absolute; inset: 0; z-index: -2; overflow: hidden; border-radius: inherit;
   background:
-    radial-gradient(90% 70% at var(--light-x) var(--light-y), rgb(var(--li-iris-rgb) / 16%), transparent 60%),
-    radial-gradient(120% 90% at 50% 0%, var(--li-bg-3) 0%, var(--li-bg-1) 65%);
-  border: 1px solid var(--li-line); box-shadow: var(--li-highlight);
-  perspective: 1500px;
+    radial-gradient(90% 70% at 50% 0%, rgb(255 255 255 / 3.5%), transparent 60%),
+    linear-gradient(180deg, #0d0d12 0%, #060609 72%, #08080c 100%);
+  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 42%);
+  mask: linear-gradient(180deg, transparent 0%, #000 42%);
 }
-.cv-sheet {
-  position: relative; container-type: inline-size;
-  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); transform-style: preserve-3d;
-  transition: transform 700ms var(--ease-arrive);
+/* The light pool: the orb's colours, CSS only. It brightens and grows as the page rises. */
+.cv-pool {
+  position: absolute; left: 50%; bottom: 4%; width: 84%; height: 34%; border-radius: 50%; translate: -50% 0;
+  background: conic-gradient(from calc(210deg + var(--cv-turn)), var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
+  filter: blur(54px);
+  opacity: calc(0.12 + 0.3 * var(--rise));
+  transform: scale(calc(0.6 + 0.4 * var(--rise)));
+  transition: --cv-turn 1.6s var(--li-ease-spring);
 }
-.cv-stage:hover .cv-sheet { transition-duration: 160ms; }
-/* A second sheet underneath, for depth. */
-.cv-sheet::before {
-  content: ""; position: absolute; inset: 0; border-radius: 3px; background: #e7e5dc;
-  transform: translateZ(-26px) rotate(-2.4deg) translate(-2%, 1.6%);
-  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 60%);
+.cv-pool::after {
+  content: ""; position: absolute; inset: 10%; border-radius: 50%; opacity: 0;
+  background: radial-gradient(closest-side, var(--li-glacier), transparent);
+  transition: opacity 1.6s var(--li-ease-spring);
+}
+.cv-floor { position: absolute; inset-inline: 0; bottom: 0; height: 15%; border-top: 1px solid rgb(255 255 255 / 7%); background: linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 70%); }
+.cv-caption { position: absolute; z-index: 3; inset-inline: 0; bottom: 22px; display: flex; justify-content: center; margin: 0; padding-inline: 12px; pointer-events: none; }
+.cv-caption span {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 30px; padding: 3px 14px;
+  border: 1px solid var(--li-line-2); border-radius: var(--li-r-pill); background: rgb(var(--li-bg-rgb) / 70%);
+  color: var(--li-ink-2); font-size: var(--li-t7); line-height: 1.5; text-align: center;
 }
 
-/* Sizes are in points of an A4 page (595.28pt wide), mirroring lib/cv/document.ts. */
+/* The page: the real HTML twin of the PDF, standing on the floor and leaning toward the text. */
+.cv-page {
+  --tx: 4deg;
+  --ty: 10deg;
+  position: absolute; z-index: 1; left: 50%; bottom: 15%; width: 70%;
+  container-type: inline-size;
+  transform-origin: 50% 100%;
+  transform:
+    translateX(-50%)
+    translateY(calc((1 - var(--rise)) * 6%))
+    rotateX(calc(var(--tx) + var(--px, 0deg) + (1 - var(--rise)) * 62deg))
+    rotateY(calc(var(--ty) * var(--rise) + var(--py, 0deg)));
+  transition: transform 0.7s var(--li-ease-spring);
+}
+[dir="ltr"] .cv-page { --ty: -10deg; }
+.cv-stage:hover .cv-page { transition-duration: 0.16s; }
+/* An aurora glow behind the page, growing as it rises. */
+.cv-page::before { content: ""; position: absolute; inset: 3% -3% -2%; z-index: -1; border-radius: 6px; background: var(--li-aurora); filter: blur(34px); opacity: calc(0.28 * var(--rise)); }
+.cv-sheet {
+  position: relative; overflow: hidden; border-radius: 3px; background: #fff;
+  box-shadow: 0 70px 90px -50px rgb(0 0 0 / 95%), 0 0 0 1px rgb(0 0 0 / 35%);
+  /* Never the brightest flat rectangle on the page. */
+  filter: brightness(0.93) contrast(1.02);
+  -webkit-box-reflect: below 2px linear-gradient(transparent 90%, rgb(255 255 255 / 6%));
+}
+/* Light falls from the text's side and from above: the far edge turns away into shade. */
+.cv-sheet::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(var(--cv-shade, 100deg), rgb(255 255 255 / 0%) 35%, rgb(10 8 20 / 16%) 100%),
+    linear-gradient(180deg, rgb(255 255 255 / 0%) 55%, rgb(10 8 20 / 8%));
+}
+[dir="rtl"] .cv-sheet { --cv-shade: 260deg; }
+
+/* "Prepared for …": the footer strip lights up in glacier, a glow band sits under the foot, and the aurora
+   ring turns once around the page (it starts when .is-prepared arrives), then rests lit. */
+.cv-ring {
+  --li-angle: 130deg;
+  position: absolute; inset: -6px; z-index: 2; padding: 1.5px; border-radius: 8px; pointer-events: none; opacity: 0;
+  background: conic-gradient(from var(--li-angle), var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  transition: opacity 0.6s ease;
+}
+.cv-stage.is-prepared .cv-ring { opacity: 1; }
+@keyframes cv-ring-turn { from { --li-angle: 130deg; } to { --li-angle: 490deg; } }
+.cv-glow {
+  position: absolute; left: 6%; right: 6%; bottom: -1.2%; z-index: 1; height: 6.5%; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, rgb(var(--li-glacier-rgb) / 55%), rgb(var(--li-glacier-rgb) / 0%));
+  filter: blur(6px);
+  mix-blend-mode: multiply;
+  transition: opacity 0.8s ease;
+}
+.cv-stage.is-prepared .cv-glow { opacity: 1; }
+.cv-stage::before {
+  content: ""; position: absolute; left: 22%; right: 22%; bottom: 12%; z-index: 0; height: 10%; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, rgb(var(--li-glacier-rgb) / 38%), transparent);
+  filter: blur(18px);
+  transition: opacity 0.8s ease;
+}
+.cv-stage.is-prepared::before { opacity: 1; }
+
+/* ---------- The page itself. Sizes are in points of an A4 page (595.28pt wide), mirroring lib/cv/document.ts. ---------- */
 .cv-paper {
   --pt: calc(100cqi / 595.28); --ink-cv: #111111; --muted-cv: #4a4a4a; --accent-cv: #0b5c55;
   position: relative; box-sizing: border-box; width: 100%; aspect-ratio: 595.28 / 841.89; overflow: hidden;
   padding: calc(26 * var(--pt)) calc(34 * var(--pt)) calc(28 * var(--pt));
-  border-radius: 3px; background: #fff; color: var(--ink-cv);
-  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 70%), 0 18px 36px -18px rgb(0 0 0 / 50%);
+  background: #fff; color: var(--ink-cv);
   font-family: var(--font-arabic), sans-serif; font-size: calc(9 * var(--pt)); line-height: 1.53; text-align: left;
-}
-/* Light falls from the pointer's side, so the far edge reads as turned away. */
-.cv-paper::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(140% 120% at var(--light-x) var(--light-y), rgb(255 255 255 / 0%) 45%, rgb(0 0 0 / 9%) 100%);
 }
 .cv-paper p, .cv-paper ul, .cv-paper li, .cv-paper h3, .cv-paper h4 { margin: 0; }
 .cv-paper a { color: var(--accent-cv); text-decoration: underline; text-underline-offset: 0.15em; }
-.cv-paper__name { font-size: calc(23 * var(--pt)); font-weight: 700; letter-spacing: calc(0.2 * var(--pt)); line-height: 1.425; }
+.portfolio-v3 .cv-paper .cv-paper__name { color: var(--ink-cv); font-size: calc(23 * var(--pt)); font-weight: 700; letter-spacing: calc(0.2 * var(--pt)); line-height: 1.425; }
 .cv-paper .cv-paper__headline { margin: calc(1 * var(--pt)) 0 calc(1.5 * var(--pt)); color: var(--accent-cv); font-size: calc(11 * var(--pt)); }
 .cv-paper .cv-paper__contact { margin-bottom: calc(5 * var(--pt)); color: var(--muted-cv); font-size: calc(8.4 * var(--pt)); }
 .cv-paper__rule { height: 0; margin: 0; border: 0; border-top: calc(1.6 * var(--pt)) solid var(--ink-cv); }
@@ -124,25 +293,97 @@
 .cv-paper .cv-paper__entry { margin: calc(2.5 * var(--pt)) 0 calc(0.5 * var(--pt)); font-size: calc(9.3 * var(--pt)); }
 .cv-paper__muted { color: var(--muted-cv); }
 .cv-paper ul { margin-bottom: calc(1.5 * var(--pt)); padding-left: calc(9.8 * var(--pt)); list-style: disc; }
-.cv-paper__footer {
-  position: absolute; inset-inline: calc(34 * var(--pt)); bottom: calc(7.7 * var(--pt));
-  color: var(--muted-cv); font-size: calc(7.4 * var(--pt)); text-align: center;
+.cv-paper .cv-paper__footer {
+  position: absolute; inset-inline: calc(34 * var(--pt)); bottom: calc(7.7 * var(--pt)); padding: calc(1 * var(--pt)) calc(4 * var(--pt));
+  border-radius: calc(2 * var(--pt)); color: var(--muted-cv); font-size: calc(7.4 * var(--pt)); text-align: center;
+  transition: background-color 0.6s ease;
 }
+.cv-paper__footer mark { background: none; color: inherit; }
+.cv-stage.is-prepared .cv-paper__footer { background: #eefaf9; }
+.cv-stage.is-prepared .cv-paper__footer mark { color: #075a52; font-weight: 600; box-shadow: inset 0 -0.32em 0 rgb(var(--li-glacier-rgb) / 45%); }
 
-/* The About section's "CV" link. */
-.portfolio-v3 .text-link { color: var(--li-tint-glacier); }
-
+/* ---------- Motion. All of it is decoration; with reduced motion or the Motion switch off the page stands. ---------- */
+@keyframes cv-rise { from { --rise: 0; } to { --rise: 1; } }
+@keyframes cv-fade-up { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: none; } }
+@keyframes cv-panel-in { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  /* Tied to scroll where CSS can do it; elsewhere cv-paper.tsx writes --rise while the stage is on screen. */
+  @supports (animation-timeline: view()) {
+    html:not([data-motion="off"]) .cv-stage {
+      animation: cv-rise cubic-bezier(0.33, 1, 0.68, 1) both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
+    html:not([data-motion="off"]) .cv-section :is(.cv-get, .cv-case) {
+      animation: cv-fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+  html:not([data-motion="off"]) .cv-stage.is-prepared .cv-ring { animation: cv-ring-turn 2.4s var(--li-ease) 1 both; }
+  /* The approval moment: the pool turns from apricot-led to glacier-led and settles. */
+  html:not([data-motion="off"]) .cv-stage.is-approved .cv-pool { --cv-turn: -90deg; }
+  html:not([data-motion="off"]) .cv-stage.is-approved .cv-pool::after { opacity: 0.55; }
+  html:not([data-motion="off"]) .cv-more[open] .cv-more__panel { animation: cv-panel-in 0.5s var(--li-ease) both; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .cv-sheet { transition: none; }
+  .cv-stage { --rise: 1 !important; }
+  .cv-page, .cv-pool, .cv-chips, .cv-more__icon { transition: none; }
 }
-html[data-motion="off"] .cv-sheet { transition: none; }
+html[data-motion="off"] .cv-stage { --rise: 1 !important; }
+html[data-motion="off"] :is(.cv-page, .cv-pool, .cv-chips, .cv-more__icon) { transition: none; }
 
+/* ---------- Desktop: one screen; the stage stays beside the options when they open ---------- */
+@media (min-width: 901px) {
+  .cv-stagewrap { position: sticky; top: calc(var(--nav-height, 60px) + 24px); align-self: start; }
+  /* The text starts level with the middle of the page's rise and grows downward, so nothing above the field
+     the visitor is typing in moves when the chips or the options open. */
+  .cv-text { align-self: start; padding-top: calc(var(--cv-breakout) / 2); }
+  /* Landing on #cv puts the chapter's content just under the navigation (html's scroll-padding-top is 88px),
+     so the eyebrow clears the navigation and the case still ends inside 1440×900 and 1280×800. */
+  .portfolio-v3 #cv { scroll-margin-top: calc(16px - var(--li-chapter) / 2); }
+}
+@media (max-width: 1300px) and (min-width: 901px) { .cv-page { width: 72%; } }
+/* Short laptop screens (1280×800): a lower case and a smaller page. */
+@media (min-width: 901px) and (max-height: 820px) {
+  .cv-stage { height: 540px; }
+  .cv-page { width: 62%; }
+  .cv-text { padding-top: 16px; }
+  .portfolio-v3 #cv { scroll-margin-top: calc(16px - max(var(--li-chapter) / 2, var(--nav-height, 60px) + 32px)); }
+}
+
+/* ---------- Phone: heading, the page, the download right under it, then the optional line ---------- */
 @media (max-width: 900px) {
-  .cv-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "get" "preview" "for" "extra"; grid-template-rows: none; }
-  .cv-preview { position: static; }
-  .cv-stage { --tilt-x: 3deg; --tilt-y: -3deg; }
+  .cv-grid { grid-template-columns: minmax(0, 1fr); }
+  .cv-text { display: contents; }
+  .cv-head { order: 1; }
+  .cv-stagewrap { order: 2; margin-top: 40px; --cv-breakout: 96px; }
+  .cv-get { order: 3; margin-top: 32px; }
+  .cv-for { order: 4; }
+  .cv-more { order: 5; }
+  .cv-text > .agent-turnstile { order: 6; }
+  .cv-section .cv-download { width: 100%; }
+  .cv-get__note { width: 100%; text-align: center; }
+  .cv-stage { height: 460px; perspective: 1200px; }
+  .cv-page { --ty: 7deg; width: min(56%, 330px); }
+  [dir="ltr"] .cv-page { --ty: -7deg; }
+  .cv-caption { bottom: 14px; }
+  .cv-more__panel { padding: 20px; }
 }
 @media (max-width: 560px) {
-  .cv-for__fields { grid-template-columns: minmax(0, 1fr); }
-  .cv-get .cv-download { width: 100%; justify-content: center; }
+  .cv-stagewrap { --cv-breakout: 64px; }
+  .cv-stage { height: 372px; }
+  .cv-page { width: 72%; }
+}
+/* A narrow column (a phone, or a small laptop's text column): company on top, role below. */
+@container cv-for (max-width: 420px) {
+  .cv-capsule { grid-template-columns: minmax(0, 1fr); }
+  .cv-field + .cv-field { border-inline-start: 0; border-top: 1px solid var(--li-line); }
+}
+
+/* The About section's "CV" link, until that chapter drops it (FINAL-SPEC 3, item 7). */
+.portfolio-v3 .text-link { color: var(--li-tint-glacier); }
+
+@media print {
+  .cv-stage, .cv-section :is(.cv-get, .cv-case) { animation: none !important; --rise: 1 !important; opacity: 1 !important; }
 }
