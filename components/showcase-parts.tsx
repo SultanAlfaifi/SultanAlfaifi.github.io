@@ -44,9 +44,15 @@ export function showcaseOrder(projects: Project[]) {
     .sort((a, b) => (a.showcase ?? Infinity) - (b.showcase ?? Infinity));
 }
 
-// The figures a tile leads with. AccessFinish leads with its two real-bug results, the one its wall
-// shows first (the data lists "0 of 7" before "15 of 15"); every other project with its first figure.
-// Projects without figures show their status instead.
+// The rhythm of the grid: wide, then pairs, and one left over at the end is wide again, so the grid never
+// ends on a gap. Six projects read wide · pair · pair · wide.
+export function isWide(index: number, total: number) {
+  return index === 0 || (index === total - 1 && (total - 1) % 2 === 1);
+}
+
+// The figure a tile shows on its face: its first metric in data order. AccessFinish shows its two real-bug
+// results together, the one its wall draws first (the data lists "0 of 7" before "15 of 15"). Every other
+// figure (the seeded fault, early trials, stars, downloads, design capacity) is in "Inside the build".
 export function leadFigures(project: Project): ProjectMetric[] {
   const metrics = project.metrics ?? [];
   if (project.slug === "accessfinish") return metrics.filter((metric) => metric.kind === "real-bug").reverse().slice(0, 2);
@@ -72,26 +78,72 @@ export function FigureValue({ value }: { value: string }) {
   );
 }
 
-// A number with what it is: its kind as a tag (unless its own note already says it), its label, its
-// note, its date, and the public place to check it.
+// A number with what it is: the value, its label, then one quiet line with its kind as a tag (unless its
+// own note already says it), its note, its date, and the public place to check it.
 export function Figure({ metric, copy, className = "" }: { metric: ProjectMetric; copy: ShowcaseCopy; className?: string }) {
   const tag = metric.kind && !metric.note ? copy.tags[metric.kind] : null;
   return (
-    <div className={`sc-fig ${className}`}>
-      {tag ? <span className={`sc-tag sc-tag--${metric.kind}`}>{tag}</span> : null}
+    <div className={`sc-fig ${className}`.trim()}>
       <p className="sc-fig__value"><FigureValue value={metric.value} /></p>
       <p className="sc-fig__label">{metric.label}</p>
-      {metric.note ? <p className="sc-fig__note">{metric.note}</p> : null}
-      {metric.asOf ? <p className="sc-fig__note">{copy.asOf(metric.asOf)}</p> : null}
-      {metric.href ? (
-        <a className="sc-fig__check" href={metric.href} target="_blank" rel="noreferrer noopener">{copy.verifyOn}</a>
+      {tag || metric.note || metric.asOf || metric.href ? (
+        <p className="sc-fig__meta">
+          {tag ? <span className={`sc-tag sc-tag--${metric.kind}`}>{tag}</span> : null}
+          {metric.note ? <span className="sc-fig__note">{metric.note}</span> : null}
+          {metric.asOf ? <span className="sc-fig__note">{copy.asOf(metric.asOf)}</span> : null}
+          {metric.href ? <a className="sc-fig__check" href={metric.href} target="_blank" rel="noreferrer noopener">{copy.verifyOn}</a> : null}
+        </p>
       ) : null}
     </div>
   );
 }
 
-// Where the project stops for a person: a track of its flow with the stop lit, the kind of stop, and
-// its own words. A project without a stop shows the line it keeps instead, on a dashed track.
+// The face's figures. Figures of one kind and one date read as one unit: the values side by side at the
+// same size, each with its own label, under a single tag and a single date (AccessFinish: "15 of 15" and
+// "0 of 7", both real-bug results as of 24 Oct 2026). Anything else shows each figure whole.
+export function Figures({ metrics, copy }: { metrics: ProjectMetric[]; copy: ShowcaseCopy }) {
+  const [first] = metrics;
+  if (!first) return null;
+  const shared = metrics.length > 1 && metrics.every((metric) => metric.kind === first.kind && metric.asOf === first.asOf && !metric.note && !metric.href);
+  if (!shared) {
+    return (
+      <div className={`sc-figs${metrics.length > 1 ? " sc-figs--two" : ""}`}>
+        {metrics.map((metric) => <Figure key={metric.label} metric={metric} copy={copy} />)}
+      </div>
+    );
+  }
+  return (
+    <div className="sc-figs sc-figs--unit">
+      <div className="sc-figs__pair">
+        {metrics.map((metric) => (
+          <div key={metric.label} className="sc-fig">
+            <p className="sc-fig__value"><FigureValue value={metric.value} /></p>
+            <p className="sc-fig__label">{metric.label}</p>
+          </div>
+        ))}
+      </div>
+      <p className="sc-fig__meta">
+        {first.kind ? <span className={`sc-tag sc-tag--${first.kind}`}>{copy.tags[first.kind]}</span> : null}
+        {first.asOf ? <span className="sc-fig__note">{copy.asOf(first.asOf)}</span> : null}
+      </p>
+    </div>
+  );
+}
+
+// The face's last word on the project: the lamp in its checkpoint colour and the stop in the project's own
+// words, or the line it keeps (Masari).
+export function StopLine({ project }: { project: Project }) {
+  return (
+    <p className="sc-stop">
+      <span className="li-lamp" aria-hidden="true" />
+      <span className="sc-stop__text">{project.checkpoint?.text ?? project.boundary}</span>
+    </p>
+  );
+}
+
+// Where the project stops for a person, as "Inside the build" tells it: a track of its flow with the stop
+// lit, the kind of stop and its step, and its own words. A project without a stop shows the line it keeps
+// instead, on a dashed track.
 export function CheckpointBlock({ project, copy }: { project: Project; copy: ShowcaseCopy }) {
   const flow = project.flow ?? [];
   const checkpoint = project.checkpoint;

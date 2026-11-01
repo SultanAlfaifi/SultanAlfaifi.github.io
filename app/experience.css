@@ -36,22 +36,27 @@
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) { .cursor-ring { display: none; } }
 html[data-motion="off"] .cursor-ring { display: none; }
 
-/* ---------- Kinetic band ---------- */
-.kinetic-band { position: relative; overflow: hidden; padding-block: clamp(40px, 6vw, 84px); border-top: 1px solid var(--hairline-dark); background: var(--ink); color: var(--paper); }
+/* ---------- Kinetic band ----------
+   The page's one continuous motion below the AI chapter: both rows drift on their own, all the time, and
+   components/kinetic-band.tsx raises their playbackRate while the visitor scrolls (up to 4×, easing back to
+   1× in about 600 ms). Off screen they pause (.is-away). Reduced motion and the Motion switch stand them
+   still. The band sits on its own stage of black: 112 px above and below at 1440, 64 px on a phone. */
+.kinetic-band { position: relative; overflow: hidden; padding-block: var(--li-group, clamp(64px, 7.8vw, 112px)); background: var(--ink); color: var(--paper); }
 .kinetic-band__row { display: flex; width: max-content; white-space: nowrap; font-family: var(--font-display), sans-serif; font-size: clamp(3.2rem, 10vw, 9.5rem); font-weight: 600; line-height: 1.08; letter-spacing: -0.045em; will-change: transform; }
 .kinetic-band__row > span { display: inline-flex; align-items: center; gap: 0.32em; padding-right: 0.32em; }
 .kinetic-band__row i { color: var(--mint); font-size: 0.42em; font-style: normal; -webkit-text-stroke: 0; }
 .kinetic-band__row .kinetic-band__accent { color: var(--mint); font-weight: 600; }
 .kinetic-band__row [lang="ar"] { letter-spacing: 0; }
 .kinetic-band__row--outline { margin-top: 0.12em; color: transparent; font-size: clamp(2.4rem, 7vw, 6.6rem); -webkit-text-stroke: 1.2px rgb(252 252 251 / 55%); }
-.kinetic-band__row--solid { animation: band-left 70s linear infinite; }
-.kinetic-band__row--outline { animation: band-right 80s linear infinite; }
+.kinetic-band__row--solid { animation: band-left 56s linear infinite; }
+.kinetic-band__row--outline { animation: band-right 64s linear infinite; }
+.kinetic-band.is-away .kinetic-band__row { animation-play-state: paused; }
 @keyframes band-left { to { transform: translateX(-33.333%); } }
 @keyframes band-right { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
-@supports (animation-timeline: view()) {
-  .kinetic-band__row--solid { animation: band-left linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
-  .kinetic-band__row--outline { animation: band-right linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-band__row { animation: none; }
 }
+html[data-motion="off"] .kinetic-band__row { animation: none; }
 
 /* ---------- Journey timeline ---------- */
 .portfolio-v3 .timeline { position: relative; background: var(--ink); color: var(--paper); --gutter: max(20px, calc((100vw - 1280px) / 2)); --focus-ring: var(--mint); }

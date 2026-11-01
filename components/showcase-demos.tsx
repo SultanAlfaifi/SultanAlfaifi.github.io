@@ -12,10 +12,10 @@ import type { WorkCopy } from "./showcase-parts";
 // stops for the person. Text inside a demo is never smaller than 12.5px (see app/showcase.css).
 
 export type DemoPhase = "rest" | "primed" | "playing";
-type DemoProps = { project: Project; copy: WorkCopy; phase: DemoPhase; onDone?: () => void };
+// "tile" is the card's face; "case" is "Inside the build", which can say more around the same demo.
+type DemoProps = { project: Project; copy: WorkCopy; phase: DemoPhase; onDone?: () => void; variant?: "tile" | "case" };
 
 // ms from the start at which frames 1..n begin; frame 0 is the start, frame n the finished frame.
-const WALL = Array.from({ length: 15 }, (_, index) => 520 + index * 150);
 const MUSTAKSHIF = [320, 1350, 2150, 3050];
 const MASARI = [380, 1000, 1650, 2250, 3000];
 const MASHHAD = [1050, 2100, 3150, 4200];
@@ -38,55 +38,78 @@ function useFrames(phase: DemoPhase, schedule: number[], onDone?: () => void) {
   return phase === "primed" ? 0 : frame;
 }
 
-const pad = (value: number) => String(value).padStart(2, "0");
-
-/* ---------- AccessFinish: fifteen "booked" pages, each rejected by the verifier ---------- */
-// Variety so the wall reads as fifteen pages, not fifteen boxes: every third page is a booking week with
-// the saved day marked, the rest a form, each with its own line lengths and stamp angle. The marks are
-// drawing, not data: no page claims which day it saved.
+/* ---------- AccessFinish: fifteen "booked" pages, each struck by the verifier ---------- */
+// A quiet texture, not fifteen cards: each page is its "booked" line, struck once the verifier rejects it,
+// and a lamp that turns rose; every third page also keeps its booking week with the saved day marked, drawn
+// as one small picture. The words are said once, in the caption and the aria-label. The marks are drawing,
+// not data: no page claims which day it saved.
 const PAGE_LOOK = Array.from({ length: 15 }, (_, index) => ({
   calendar: index % 3 === 0,
   day: (index * 4 + 2) % 7,
-  style: {
-    "--w1": `${58 + ((index * 37) % 34)}%`,
-    "--w2": `${34 + ((index * 23) % 40)}%`,
-    "--tilt": `${((index * 7) % 9) - 4}deg`
-  }
+  style: { "--i": index }
 }));
 const WEEK = Array.from({ length: 7 }, (_, index) => index);
+// The strike: from 300 ms, a page every 110 ms in reading order, each line drawn in 350 ms (app/showcase.css).
+export const STRIKE_MS = 300 + 14 * 110 + 350 + 110;
 
-export function WallDemo({ copy, phase, onDone }: DemoProps) {
+// Runs once the first time the wall is seen (components/showcase.tsx, playsOnce). At rest, and so without
+// JavaScript or with motion off, every page is already struck.
+export function playsOnce(slug: string) {
+  return slug === "accessfinish";
+}
+
+export function WallDemo({ copy, phase, onDone, variant = "tile" }: DemoProps) {
   const visuals = copy.visuals;
   const wall = copy.showcase.wall;
-  const frame = useFrames(phase, WALL, onDone);
+  const done = useRef(onDone);
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    done.current = onDone;
+  });
+  // Playing: the pages first show "booked" for two frames, so the strike has something to draw from.
+  useEffect(() => {
+    if (phase !== "playing") return;
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => setArmed(true));
+    });
+    const timer = window.setTimeout(() => done.current?.(), STRIKE_MS);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [phase]);
+  const struck = phase === "rest" || (phase === "playing" && armed);
   return (
-    <div className="sc-dm sc-dm--wall" role="img" aria-label={visuals.trialsAria} data-phase={phase}>
-      <div className="sc-dm__bar">
-        <span>{visuals.trials}</span>
-        <span className="sc-wall__verifier"><span className="li-lamp" />{wall.verifier}</span>
-      </div>
+    <div className={`sc-dm sc-dm--wall${struck ? " is-struck" : ""}`} role="img" aria-label={visuals.trialsAria} data-phase={phase}>
+      {variant === "case" ? (
+        <div className="sc-dm__bar">
+          <span>{visuals.trials}</span>
+          <span className="sc-wall__verifier"><span className="li-lamp" />{wall.verifier}</span>
+        </div>
+      ) : null}
       <ol className="sc-wall">
-        {PAGE_LOOK.map((look, index) => {
-          const state = index < frame ? "rejected" : index === frame && phase === "playing" ? "scan" : "claimed";
-          return (
-            <li key={index} className={`sc-page is-${state}`} style={look.style as CSSProperties}>
-              <span className="sc-page__top"><i /><i /><i /><b className="li-num">{pad(index + 1)}</b></span>
-              <span className="sc-page__booked"><Check size={14} strokeWidth={2.4} /><span>{wall.booked}</span></span>
-              {look.calendar ? (
-                <span className="sc-page__cal">{WEEK.map((day) => <i key={day} className={day === look.day ? "is-saved" : undefined} />)}</span>
-              ) : (
-                <span className="sc-page__lines"><i /><i /></span>
-              )}
-              <span className="sc-page__day">{wall.wrongDay}</span>
-              <span className="sc-page__stamp"><X size={13} strokeWidth={2.6} /><span>{wall.rejected}</span></span>
-            </li>
-          );
-        })}
+        {PAGE_LOOK.map((look, index) => (
+          <li key={index} className={`sc-page ${struck ? "is-rejected" : "is-claimed"}`} style={look.style as CSSProperties}>
+            <span className="sc-page__head">
+              <span className="sc-page__booked">{wall.booked}</span>
+              <i className="sc-page__lamp" />
+            </span>
+            {look.calendar ? (
+              <svg className="sc-page__cal" viewBox="0 0 76 6" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                {WEEK.map((day) => <rect key={day} x={day * 11} width="10" height="6" rx="1.5" className={day === look.day ? "is-saved" : undefined} />)}
+              </svg>
+            ) : null}
+          </li>
+        ))}
       </ol>
-      <div className="sc-dm__foot">
-        <span>{visuals.repairNote}</span>
-        <span className="sc-wall__count li-num">{visuals.verified.replace(/\d+/, String(frame))}</span>
-      </div>
+      {variant === "case" ? (
+        <div className="sc-dm__foot">
+          <span>{visuals.repairNote}</span>
+          <span className="sc-wall__count li-num">{visuals.verified}</span>
+        </div>
+      ) : (
+        <p className="sc-wall__cap"><span className="li-lamp" />{visuals.trials}</p>
+      )}
     </div>
   );
 }

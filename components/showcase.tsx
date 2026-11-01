@@ -9,24 +9,30 @@ import type { Project } from "@/data/portfolio";
 import { GitHubIcon } from "./brand-icons";
 import { MetaParts } from "./meta-parts";
 import { motionAllowed, subscribeMotion } from "./motion-preference";
-import { ShowcaseDemo, type DemoPhase } from "./showcase-demos";
+import { playsOnce, ShowcaseDemo, type DemoPhase } from "./showcase-demos";
 import {
   accentPair,
   accentStyle,
   CheckpointBlock,
   Figure,
+  Figures,
   FlowSteps,
+  isWide,
   kindClass,
   leadFigures,
   primaryLink,
   showcaseOrder,
+  StopLine,
   type WorkCopy
 } from "./showcase-parts";
 
-// The featured six: AccessFinish as a full-width feature, then a varied glass grid. Every tile is in the
-// server HTML in its finished state, with its full case text in a <details> (so it works without
-// JavaScript, and the assistant can open it to light the words it quotes). With JavaScript, "Inside the
-// build" opens a case view that grows out of the tile.
+// The featured six, wide · pair · pair · wide: AccessFinish first as the feature, WAREVA last. A face says
+// five things and no more: its number and category, its title, its demo, one figure (AccessFinish its two
+// real-bug results as one unit), and where it stops for a person beside the way in. Everything else (the
+// step track, the kind of stop, the status, the source code, the second figures) is "Inside the build".
+// Every tile is in the server HTML in its finished state, with its full case text in a <details> (so it
+// works without JavaScript, and the assistant can open it to light the words it quotes). With JavaScript,
+// "Inside the build" opens a case view that grows out of the tile.
 
 const subscribeNothing = () => () => undefined;
 const pad = (value: number) => String(value).padStart(2, "0");
@@ -54,9 +60,16 @@ function Meta({ project, copy }: { project: Project; copy: WorkCopy }) {
 function CaseDetails({ project, copy, level }: { project: Project; copy: WorkCopy; level: "h3" | "h4" }) {
   const s = copy.showcase;
   const Heading = level;
+  const inTile = level === "h4";
   return (
     <>
-      {level === "h4" ? <Meta project={project} copy={copy} /> : null}
+      {inTile ? <Meta project={project} copy={copy} /> : null}
+      {inTile ? (
+        <section className="sc-more__stop">
+          <Heading>{s.legend}</Heading>
+          <CheckpointBlock project={project} copy={s} />
+        </section>
+      ) : null}
       <div className="sc-three">
         <section><Heading>{copy.problem}</Heading><p>{project.challenge}</p></section>
         <section><Heading>{copy.decision}</Heading><p>{project.decision}</p></section>
@@ -90,22 +103,29 @@ function CaseDetails({ project, copy, level }: { project: Project; copy: WorkCop
           </aside>
         ) : null}
       </div>
+      {inTile && project.repository ? (
+        <p className="sc-more__links">
+          <a className="sc-link" href={project.repository} target="_blank" rel="noreferrer noopener" aria-label={copy.sourceAria(project.title)}>
+            <GitHubIcon size={16} />{copy.sourceCode}
+          </a>
+        </p>
+      ) : null}
     </>
   );
 }
 
-function Links({ project, copy, size }: { project: Project; copy: WorkCopy; size: "tile" | "big" }) {
+// The case view's way in and its source code, as full buttons.
+function Links({ project, copy }: { project: Project; copy: WorkCopy }) {
   const primary = primaryLink(project, copy);
-  const big = size === "big";
   return (
     <>
       {primary ? (
-        <a className={big ? "li-btn li-btn--primary" : "sc-link sc-link--primary"} href={primary.href} target="_blank" rel="noreferrer noopener">
+        <a className="li-btn li-btn--primary" href={primary.href} target="_blank" rel="noreferrer noopener">
           {primary.label}<ArrowUpRight size={16} aria-hidden="true" />
         </a>
       ) : null}
       {project.repository ? (
-        <a className={big ? "li-btn li-btn--ghost" : "sc-link"} href={project.repository} target="_blank" rel="noreferrer noopener" aria-label={copy.sourceAria(project.title)}>
+        <a className="li-btn li-btn--ghost" href={project.repository} target="_blank" rel="noreferrer noopener" aria-label={copy.sourceAria(project.title)}>
           <GitHubIcon size={16} />{copy.sourceCode}
         </a>
       ) : null}
@@ -119,12 +139,13 @@ type TileProps = {
   index: number;
   copy: WorkCopy;
   feature: boolean;
+  wide: boolean;
   hydrated: boolean;
   onOpen: (index: number) => void;
   register: (index: number, element: HTMLElement | null) => void;
 };
 
-function Tile({ project, index, copy, feature, hydrated, onOpen, register }: TileProps) {
+function Tile({ project, index, copy, feature, wide, hydrated, onOpen, register }: TileProps) {
   const s = copy.showcase;
   const ref = useRef<HTMLElement>(null);
   const demoRef = useRef<HTMLDivElement>(null);
@@ -133,6 +154,8 @@ function Tile({ project, index, copy, feature, hydrated, onOpen, register }: Til
   const [run, setRun] = useState(0);
   const [inView, setInView] = useState(false);
   const figures = leadFigures(project);
+  const primary = primaryLink(project, copy);
+  const once = playsOnce(project.slug);
 
   useEffect(() => {
     register(index, ref.current);
@@ -143,13 +166,14 @@ function Tile({ project, index, copy, feature, hydrated, onOpen, register }: Til
     const tile = ref.current;
     const demo = demoRef.current;
     if (!tile || !demo || !("IntersectionObserver" in window)) return;
-    // The feature's wall is tall, so it starts once a third of it shows; the smaller demos at half.
-    const enough = feature ? 0.35 : 0.5;
+    // The wall is struck the first time 40% of it shows, and only that once; the other demos play at half,
+    // each time they come back into view.
+    const enough = once ? 0.4 : 0.5;
     // Primed to its first frame while still off screen, so the rewind never happens in front of anyone.
     const near = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         if (!played.current && motionAllowed()) setPhase((current) => (current === "rest" ? "primed" : current));
-      } else {
+      } else if (!once || !played.current) {
         played.current = false;
         setPhase("rest");
       }
@@ -182,7 +206,7 @@ function Tile({ project, index, copy, feature, hydrated, onOpen, register }: Til
       arrive.disconnect();
       stop();
     };
-  }, [feature]);
+  }, [once]);
 
   // The whole tile opens the case (a tap on a phone); links, buttons and the open details keep their own.
   function handleClick(event: MouseEvent<HTMLElement>) {
@@ -198,7 +222,7 @@ function Tile({ project, index, copy, feature, hydrated, onOpen, register }: Til
     <article
       ref={ref}
       id={`project-${project.slug}`}
-      className={`sc-tile${feature ? " sc-feature" : ""} li-glass li-glass--light ${kindClass(project)}${lit ? " is-lit" : ""}${hydrated ? " is-live" : ""}`}
+      className={`sc-tile${wide ? " sc-wide" : ""}${feature ? " sc-feature" : ""} li-glass li-glass--light ${kindClass(project)}${lit ? " is-lit" : ""}${hydrated ? " is-live" : ""}`}
       style={accentStyle(project.slug)}
       data-slug={project.slug}
       data-cursor={hydrated ? copy.cursor : undefined}
@@ -212,37 +236,34 @@ function Tile({ project, index, copy, feature, hydrated, onOpen, register }: Til
           {project.imagePresentation === "icon" && project.screenshot ? (
             <Image className="sc-tile__icon" src={project.screenshot} alt="" width={96} height={96} sizes="48px" />
           ) : null}
-          <span>{project.title}</span>
+          <span dir="auto">{project.title}</span>
         </h3>
-        {feature ? <p className="sc-tile__status"><span className="li-lamp" aria-hidden="true" /><MetaParts text={project.status} /></p> : null}
       </header>
-      {feature ? <p className="sc-tile__desc">{project.description}</p> : null}
+      {wide ? <p className="sc-tile__desc">{project.description}</p> : null}
       <div className="sc-demo" ref={demoRef}>
         <ShowcaseDemo key={run} project={project} copy={copy} phase={phase} onDone={() => setPhase("rest")} />
       </div>
-      <div className={`sc-figs${figures.length > 1 ? " sc-figs--two" : ""}`}>
-        {figures.length ? (
-          figures.map((metric) => <Figure key={metric.label} metric={metric} copy={s} />)
-        ) : (
-          <ul className="sc-facts">{(project.status ?? "").split(" · ").map((part) => <li key={part}>{part}</li>)}</ul>
-        )}
-      </div>
-      <CheckpointBlock project={project} copy={s} />
-      <div className="sc-actions">
-        {hydrated ? (
-          <button type="button" className="sc-open" aria-haspopup="dialog" aria-label={s.openAria(project.title)} onClick={() => onOpen(index)}>
-            <span>{s.open}</span>
-            <ChevronRight className="sc-flip" size={18} aria-hidden="true" />
-          </button>
-        ) : null}
-        <span className="sc-links">
-          <Links project={project} copy={copy} size={feature ? "big" : "tile"} />
-        </span>
+      {figures.length ? <Figures metrics={figures} copy={s} /> : null}
+      <div className="sc-foot">
+        <StopLine project={project} />
+        <div className="sc-actions">
+          {primary ? (
+            <a className="sc-link sc-link--primary" href={primary.href} target="_blank" rel="noreferrer noopener">
+              {primary.label}<ArrowUpRight size={16} aria-hidden="true" />
+            </a>
+          ) : null}
+          {hydrated ? (
+            <button type="button" className="sc-open" aria-haspopup="dialog" aria-label={s.openAria(project.title)} onClick={() => onOpen(index)}>
+              <span>{s.open}</span>
+              <ChevronRight className="sc-flip" size={18} aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
       </div>
       <details className="sc-more">
         <summary><span className="sc-more__show">{s.open}</span><span className="sc-more__hide">{s.hide}</span></summary>
         <div className="sc-more__body">
-          {feature ? null : <p className="sc-more__desc">{project.description}</p>}
+          {wide ? null : <p className="sc-more__desc">{project.description}</p>}
           <CaseDetails project={project} copy={copy} level="h4" />
         </div>
       </details>
@@ -285,20 +306,16 @@ function CaseView({ project, index, total, copy, run, phase, onDone, onStep, onC
               {project.imagePresentation === "icon" && project.screenshot ? (
                 <Image className="sc-tile__icon" src={project.screenshot} alt="" width={128} height={128} sizes="64px" />
               ) : null}
-              <span>{project.title}</span>
+              <span dir="auto">{project.title}</span>
             </h2>
             <p className="sc-case__desc">{project.description}</p>
             <Meta project={project} copy={copy} />
-            <div className="sc-case__links"><Links project={project} copy={copy} size="big" /></div>
-            {figures.length ? (
-              <div className={`sc-figs${figures.length > 1 ? " sc-figs--two" : ""}`}>
-                {figures.map((metric) => <Figure key={metric.label} metric={metric} copy={s} />)}
-              </div>
-            ) : null}
+            <div className="sc-case__links"><Links project={project} copy={copy} /></div>
+            {figures.length ? <Figures metrics={figures} copy={s} /> : null}
           </div>
           <div className="sc-case__visual">
             <div className="sc-demo">
-              <ShowcaseDemo key={run} project={project} copy={copy} phase={phase} onDone={onDone} />
+              <ShowcaseDemo key={run} project={project} copy={copy} phase={phase} onDone={onDone} variant="case" />
             </div>
           </div>
         </header>
@@ -457,7 +474,7 @@ export function Showcase({ locale = "en" }: { locale?: Locale }) {
     <>
       <div className="sc-grid">
         {list.map((project, index) => (
-          <Tile key={project.slug} project={project} index={index} copy={copy} feature={index === 0} hydrated={hydrated} onOpen={openCase} register={register} />
+          <Tile key={project.slug} project={project} index={index} copy={copy} feature={index === 0} wide={isWide(index, list.length)} hydrated={hydrated} onOpen={openCase} register={register} />
         ))}
       </div>
       <dialog

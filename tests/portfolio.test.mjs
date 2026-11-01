@@ -219,10 +219,12 @@ test("featured work reflects current products and preserves supplied usage evide
     /slug: "masari"[\s\S]*?value: "About 1,600"[\s\S]*?label: "Active users"[\s\S]*?value: "1,250\+"[\s\S]*?label: "CVs downloaded"/
   );
   assert.match(dataSource, /slug: "danna"[\s\S]*?flagship: false/);
+  // The featured six are chosen in one place (showcaseOrder), which the showcase and its section share.
   assert.match(
-    projectsSource,
+    readFileSync(new URL("../components/showcase-parts.tsx", import.meta.url), "utf8"),
     /filter\(\(project\) => project\.featured\)/
   );
+  assert.match(projectsSource, /project\.enabled && !project\.featured/, "the smaller builds are the rest");
   for (const slug of ["mustakshif", "rajih-engine", "autoflow"]) assert.ok(dataSource.includes(`slug: "${slug}"`));
 });
 

@@ -43,7 +43,18 @@ test("(c) the Turnstile slot is never inside a fold", () => {
   }
 });
 
-test.todo("(d) no music in Mashhad's copy or in the motion note, in either language (owner: work)");
+test("(d) no music in Mashhad's copy or in the motion note, in either language", () => {
+  const music = /music|موسيق/i;
+  for (const locale of locales) {
+    const { projects, ui } = getContent(locale);
+    const mashhad = projects.find((project) => project.slug === "mashhad");
+    assert.doesNotMatch(JSON.stringify(mashhad), music, `${locale}: Mashhad's data`);
+    assert.doesNotMatch(ui.work.visuals.motionNote, music, `${locale}: the motion note`);
+    assert.doesNotMatch(pages[locale].querySelector("#project-mashhad").textContent, music, `${locale}: Mashhad's card`);
+    // The optional voice-over is not music, and it stays.
+    assert.match(mashhad.highlights.join(" "), /ElevenLabs/, `${locale}: the narration stays`);
+  }
+});
 
 test("(e) every visitor order lists exactly the eight blocks the page passes to PersonalOrder", () => {
   const passed = [...read("../components/home-page.tsx").matchAll(/\{ id: "([a-z]+)", node:/g)].map((match) => match[1]);
