@@ -3,6 +3,7 @@
 import { handleChat } from "./chat";
 import { handleCodeConfirm, handleCodeStart, handleNotify, handleTailor } from "./cv";
 import { handleEmailSend } from "./email";
+import { handleIntro } from "./intro";
 import type { Env } from "./env";
 import { KNOWLEDGE_VERSION } from "./generated/knowledge";
 import { HttpError, allowedOrigin, clientIp, corsHeaders, json, readJson } from "./http";
@@ -48,6 +49,8 @@ export default {
           return json(await handleSession(request, env), 200, origin);
         case "POST /chat":
           return await handleChat(request, env, ctx, origin);
+        case "POST /intro":
+          return json(await handleIntro(request, env), 200, origin);
         case "POST /email/send":
           return json(await handleEmailSend(request, env), 200, origin);
         case "POST /cv/tailor":

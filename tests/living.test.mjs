@@ -249,7 +249,7 @@ test("big orbs cap at 60 fps and size from layout; the welcome screen has its ow
   // An orb mounts mid-entrance (scaled): the backing store follows the layout size, not the painted one.
   assert.match(read("../lib/living-orb.ts"), /const cssW = Math\.max\(1, canvas\.clientWidth \|\| rect\?\.width \|\| 1\);/);
   const welcome = read("../components/welcome-screen.tsx");
-  assert.match(welcome, /\{showing \? <LivingOrb className="welcome__orb"[^>]*overWelcome \/> : null\}/, "only while the screen is up, so its context is free again");
+  assert.match(welcome, /\{showing \? <LivingOrb [^>]*className="welcome__orb"[^>]*overWelcome \/> : null\}/, "only while the screen is up, so its context is free again");
   assert.match(welcome, /title\.focus\(\{ preventScroll: true \}\);/, "closing hands focus to the headline, not to <body>");
 });
 

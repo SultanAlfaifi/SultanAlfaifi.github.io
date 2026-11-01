@@ -2,14 +2,15 @@ import { numberVar, type Env } from "./env";
 import { HttpError } from "./http";
 import { today, visitorKey } from "./security";
 
-type Bucket = "chat" | "email" | "code" | "tailor" | "notify";
+type Bucket = "chat" | "email" | "code" | "tailor" | "notify" | "intro";
 
 const CAPS: Record<Bucket, (env: Env) => { global: number; visitor: number }> = {
   chat: (env) => ({ global: numberVar(env.DAILY_CHAT_CAP, 400), visitor: numberVar(env.DAILY_CHAT_PER_VISITOR, 40) }),
   email: (env) => ({ global: numberVar(env.DAILY_EMAIL_CAP, 25), visitor: numberVar(env.DAILY_EMAIL_PER_VISITOR, 3) }),
   code: (env) => ({ global: numberVar(env.DAILY_CODE_CAP, 40), visitor: 3 }),
   tailor: (env) => ({ global: numberVar(env.DAILY_TAILOR_CAP, 80), visitor: numberVar(env.DAILY_TAILOR_PER_VISITOR, 8) }),
-  notify: (env) => ({ global: numberVar(env.DAILY_TAILOR_CAP, 80), visitor: numberVar(env.DAILY_TAILOR_PER_VISITOR, 8) })
+  notify: (env) => ({ global: numberVar(env.DAILY_TAILOR_CAP, 80), visitor: numberVar(env.DAILY_TAILOR_PER_VISITOR, 8) }),
+  intro: (env) => ({ global: numberVar(env.DAILY_INTRO_CAP, 300), visitor: numberVar(env.DAILY_INTRO_PER_VISITOR, 6) })
 };
 
 async function bump(env: Env, key: string, day: string) {

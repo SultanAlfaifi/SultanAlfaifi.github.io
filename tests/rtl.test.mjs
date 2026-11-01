@@ -38,11 +38,11 @@ test("every chapter keeps its own spacing, since the visitor's choice can put an
   assert.match(portfolioCss, /\.portfolio-v3 \.section \{ padding-block: var\(--section-space\); \}/);
 });
 
-test("the welcome screen arranges the page first, then fades out, and never sticks around", () => {
+test("the welcome screen arranges the page first, then flies into it, and never sticks around", () => {
   const finish = welcome.slice(welcome.indexOf("function finish("));
-  assert.ok(finish.indexOf("saveVisitor(detail)") < finish.indexOf("dialog.animate("), "the page is arranged before the fade starts");
-  assert.match(finish, /if \(!motionAllowed\(\) \|\| typeof dialog\.animate !== "function"\) return close\(\);/);
-  assert.match(finish, /window\.setTimeout\(close, 700\);/);
+  assert.ok(finish.indexOf("saveVisitor(detail)") < finish.indexOf("slot.animate("), "the page is arranged before the orb leaves");
+  assert.match(finish, /!motionAllowed\(\) \|\| !slot \|\| !target \|\| typeof slot\.animate !== "function"/);
+  assert.match(finish, /window\.setTimeout\(close, FLIGHT_MS \+ 400\);/);
   // !important, because the hero's motion rules set the animation shorthand (which resets play-state) at a
   // higher specificity than this rule; a plain declaration lost to them and the entrance ran behind the screen.
   assert.match(heroCss, /html\[data-welcome="show"\] \.nav,\s*html\[data-welcome="show"\] \.identity-hero,\s*html\[data-welcome="show"\] \.identity-hero::before,\s*html\[data-welcome="show"\] \.identity-hero \*,\s*html\[data-welcome="show"\] \.identity-hero \*::before,\s*html\[data-welcome="show"\] \.identity-hero \*::after \{ animation-play-state: paused !important; \}/);
