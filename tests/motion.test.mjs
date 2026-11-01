@@ -67,48 +67,20 @@ async function mount(Component, { top = 1200 } = {}) {
   };
 }
 
-test("rail never writes scroll position during a touch gesture or native momentum", async () => {
+test("the organization grid never moves on its own: no autoplay, no drag, nothing to pause", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync(new URL("../components/organization-rail.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /"use client"|useEffect|requestAnimationFrame|scrollLeft|onPointerDown|onWheel|AUTO_SCROLL|setInterval/, "a still grid, rendered on the server");
   const h = await mount(OrganizationRail);
   try {
-    const rail = h.document.querySelector('.organization-showcase__rail');
-    let position = rail.scrollLeft;
-    let writes = 0;
-    Object.defineProperty(rail, "scrollLeft", { get: () => position, set: value => { position = value; writes++; } });
     await h.intersect();
     await h.tick(10000);
-    assert.ok(writes > 0, "autoplay advances the rail");
-    await h.dispatch(rail, "pointerdown", { pointerType: "touch", pointerId: 1, clientX: 150, clientY: 20 });
-    position = 1234;
-    writes = 0;
-    await h.tick(10016);
-    await h.tick(10032);
-    assert.equal(writes, 0, "the browser owns scroll while a finger is down");
-    await h.dispatch(rail, "pointercancel", { pointerType: "touch", pointerId: 1 });
-    await h.dispatch(rail, "scroll");
-    await h.tick(10048);
-    assert.equal(writes, 0, "momentum is not overwritten after pointercancel");
     await h.settle();
-    await h.tick(10064);
-    assert.ok(position > 1234, "autoplay resumes from the user's new position");
-  } finally { await h.cleanup(); }
-});
-
-test("rail pause control stops movement and resume restores it", async () => {
-  const h = await mount(OrganizationRail);
-  try {
-    const rail = h.document.querySelector('.organization-showcase__rail');
-    const button = h.document.querySelector('.journey-motion-toggle');
-    await h.intersect();
-    await h.tick(10000);
-    await h.dispatch(button, "click");
-    const pausedAt = rail.scrollLeft;
-    await h.tick(10016);
-    await h.tick(10032);
-    assert.equal(rail.scrollLeft, pausedAt);
-    assert.equal(button.getAttribute("aria-pressed"), "true");
-    await h.dispatch(button, "click");
-    await h.tick(10048);
-    assert.ok(rail.scrollLeft > pausedAt);
+    const grid = h.document.querySelector(".row-orgs");
+    assert.ok(grid, "the grid renders");
+    assert.equal(grid.querySelectorAll("button, [aria-pressed], [draggable=true]").length, 0, "nothing to pause or drag");
+    assert.equal(h.document.querySelector(".organization-showcase__rail, .journey-marquee"), null, "no marquee");
+    assert.equal(h.animations.length, 0, "no entrance or loop");
   } finally { await h.cleanup(); }
 });
 

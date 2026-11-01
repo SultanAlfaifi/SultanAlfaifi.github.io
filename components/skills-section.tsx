@@ -1,32 +1,25 @@
 import { getContent, type Locale } from "@/data/i18n";
-import { Reveal } from "./reveal";
 
 // Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #skills and the title.
+// The row's line is the description's first sentence; the groups follow, the strongest tools in full ink with
+// a lit dot. The last group's own title says what I'm learning now.
 export function SkillsSection({ locale = "en" }: { locale?: Locale }) {
-  const { skillGroups, ui } = getContent(locale);
+  const { skillGroups } = getContent(locale);
   return (
-    <div className="deeper-body section--white">
-      <div>
-        <p className="deeper-body__lead">{ui.skills.description}</p>
-        <div className="skill-groups">
-          {skillGroups.map((group, index) => (
-            <Reveal key={group.title} className="skill-group" delay={index * 60}>
-              <h3>{group.title}</h3>
-              <ul>
-                {group.skills.map((skill) => (
-                  <li
-                    key={skill}
-                    className={group.strongest?.includes(skill) ? "is-strong" : ""}
-                  >
-                    <span aria-hidden="true" />
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          ))}
+    <div className="row-skills">
+      {skillGroups.map((group) => (
+        <div key={group.title} className="row-skills__group">
+          <h4>{group.title}</h4>
+          <ul>
+            {group.skills.map((skill) => (
+              <li key={skill} className={group.strongest?.includes(skill) ? "is-strong" : undefined}>
+                <span aria-hidden="true" />
+                {skill}
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
+      ))}
     </div>
   );
 }

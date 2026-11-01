@@ -382,42 +382,9 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 }
 
 /* One primary button: off-white with dark text, a soft halo on hover. */
-.portfolio-v3 .help-card__cta {
-  background: var(--li-ink);
-  color: var(--li-on-light);
-  transition: background-color 0.2s ease, box-shadow 0.3s ease;
-}
-.portfolio-v3 .help-card__cta:hover { background: #fff; box-shadow: 0 0 0 6px rgb(255 255 255 / 6%); }
-.portfolio-v3 .contact-orb__core {
-  background: var(--li-ink);
-  color: var(--li-on-light);
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 30%), 0 0 70px -12px rgb(var(--li-iris-rgb) / 70%);
-}
-.portfolio-v3 .contact-orb:hover .contact-orb__core { box-shadow: 0 0 0 14px rgb(255 255 255 / 6%), 0 0 90px -10px rgb(var(--li-rose-rgb) / 60%); }
-.portfolio-v3 .contact-orb:focus-visible { outline-color: var(--li-focus); }
 .cursor-ring[data-state="label"] .cursor-ring__shape { border-color: var(--li-ink); background: var(--li-ink); }
 .cursor-ring__label { color: var(--li-on-light); }
 .portfolio-v3 :is(.motion-toggle, .palette-trigger, .language-switch):hover { border-color: var(--li-ink); background: var(--li-ink); color: var(--li-on-light); }
-
-/* Glass cards and pill links, as in the rebuilt sections. */
-.portfolio-v3 .help-card {
-  border-color: var(--li-line);
-  border-radius: var(--li-r);
-  background: var(--li-glass-fill);
-  box-shadow: var(--li-highlight);
-}
-.portfolio-v3 .help-card__proof { border-top-color: var(--li-line); }
-.portfolio-v3 .contact-section .social-links a,
-.portfolio-v3 .contact-section .button--ghost {
-  min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--li-line-2);
-  border-radius: var(--li-r-pill);
-  background: var(--li-glass);
-  color: var(--li-ink);
-}
-.portfolio-v3 .contact-section .social-links a:hover,
-.portfolio-v3 .contact-section .button--ghost:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
 
 /* Colour as living light: the big signals are ink, the lead one and the band's accents carry the aurora. */
 .portfolio-v3 .proof-card__signal { color: var(--li-ink); }
@@ -502,73 +469,6 @@ html[data-motion="off"] .li-glass--light::before { display: none; }
 .portfolio-v3 .program-card__story p span,
 .portfolio-v3 :is(.proof-card__issuer, .contact-section .social-links a) span { font: inherit; color: inherit; letter-spacing: inherit; text-transform: none; }
 .portfolio-v3 .organization-showcase__intro { color: var(--li-ink-2); font-family: inherit; font-size: 0.9375rem; line-height: 1.65; letter-spacing: 0; text-transform: none; }
-
-/* The older panels (community, ideas) as glass: rounded, a hairline, no cyan rules or grid paper. */
-.portfolio-v3 :is(.workshop, .workshop--primary, .volunteer-note) {
-  border: 1px solid var(--li-line);
-  border-radius: var(--li-r);
-  background: var(--li-glass-fill);
-  box-shadow: var(--li-highlight);
-}
-.portfolio-v3 .community-metrics { gap: 1px; overflow: hidden; border: 1px solid var(--li-line); border-radius: var(--li-r); background: var(--li-line); }
-.portfolio-v3 .community-metric { border: 0; background: var(--li-bg-1); }
-.portfolio-v3 .ideas-metric { border-color: var(--li-line-2); }
-@media (max-width: 840px) {
-  .portfolio-v3 :is(.workshop, .workshop--primary, .volunteer-note) { padding: 22px 18px; }
-  .portfolio-v3 .community-metric { padding: 16px 14px; background: var(--li-bg-1); }
-}
-
-/* The organizations rail: dark glass tiles with the logos in off-white. A brand's colour shows only as a
-   faint glow on the tile that is on air (hovered, focused or open), never as a fill. */
-.portfolio-v3 .organization-showcase__rail {
-  height: 112px;
-  border-block: 0;
-  background: none;
-  clip-path: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-.portfolio-v3 .journey-marquee__group { gap: 10px; padding-inline-end: 10px; }
-.portfolio-v3 .journey-tile {
-  height: calc(100% - 16px);
-  margin-block: 8px;
-  border: 1px solid var(--li-line);
-  border-radius: var(--li-r);
-  background: radial-gradient(120% 140% at 50% 120%, color-mix(in srgb, var(--brand-a) 0%, transparent), transparent 70%), var(--li-bg-1);
-  box-shadow: var(--li-highlight);
-  animation: none;
-  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.4s ease;
-}
-.portfolio-v3 .journey-tile::after { border-radius: inherit; border-width: 1px; }
-.portfolio-v3 .journey-tile.is-active::after { border-color: color-mix(in srgb, var(--brand-a) 55%, var(--li-ink) 20%); }
-.portfolio-v3 .journey-tile__trigger { border-radius: inherit; background: none; }
-.portfolio-v3 .journey-tile__trigger:focus-visible { outline: 2px solid var(--li-focus); outline-offset: -5px; }
-.portfolio-v3 .journey-tile .journey-logo { opacity: 0.66; transition: opacity 0.3s ease, transform 360ms var(--li-ease-spring); }
-.portfolio-v3 :is(.journey-tile.is-active, .journey-tile:hover, .journey-tile:focus-within) {
-  border-color: var(--li-line-2);
-  background: radial-gradient(120% 140% at 50% 120%, color-mix(in srgb, var(--brand-a) 30%, transparent), transparent 70%), var(--li-bg-1);
-  box-shadow: var(--li-highlight), 0 18px 50px -24px color-mix(in srgb, var(--brand-a) 70%, transparent);
-}
-.portfolio-v3 :is(.journey-tile.is-active, .journey-tile:hover, .journey-tile:focus-within) .journey-logo { opacity: 1; }
-/* The open panel: the same dark glass, its brand a soft light in one corner, its logo in off-white. */
-.portfolio-v3 .organization-detail-panel {
-  border-color: var(--li-line-2);
-  border-radius: var(--li-r);
-  background:
-    radial-gradient(70% 120% at 0% 0%, color-mix(in srgb, var(--brand-a) 22%, transparent), transparent 62%),
-    radial-gradient(60% 100% at 100% 100%, color-mix(in srgb, var(--brand-b) 12%, transparent), transparent 60%),
-    var(--li-bg-1);
-  background-size: auto;
-  box-shadow: var(--li-highlight), var(--li-shadow-soft);
-  color: var(--li-ink);
-}
-.portfolio-v3 .organization-detail-panel::before { display: none; }
-.portfolio-v3 .organization-detail-panel .journey-logo--color .journey-logo__image { filter: brightness(0) invert(1); opacity: 0.92; }
-.portfolio-v3 .organization-detail-panel__logo { border: 1px solid var(--li-line-2); border-radius: var(--li-r-s); background: var(--li-glass); box-shadow: var(--li-highlight); }
-.portfolio-v3 :is(.organization-detail-panel__copy > span, .organization-detail-panel__copy > strong, .organization-detail-panel__copy a) { font-family: inherit; font-size: 0.8125rem; }
-.portfolio-v3 .organization-detail-panel__copy > span { color: var(--li-ink-2); }
-.portfolio-v3 .organization-detail-panel__close { border-color: var(--li-line-3); border-radius: var(--li-r-pill); background: var(--li-glass); color: var(--li-ink); }
-.portfolio-v3 :is(.organization-detail-panel__close, .organization-detail-panel__copy a):focus-visible { outline: 2px solid var(--li-focus); }
 
 /* Achievements: the grid always ends flush. A card left alone on the last row becomes a strip across it
    (signal, then title and issuer, then the story), instead of one card beside an empty block. */

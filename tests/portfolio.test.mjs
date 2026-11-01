@@ -101,50 +101,40 @@ test("organization records encode explicit relationships and nullable logos", ()
   assert.doesNotMatch(dataSource, /Companies I Worked With|Trusted By|Partners/);
 });
 
-test("organization journey uses supplied brand palettes and interactive context", () => {
+test("organizations keep their brand palettes, and the grid shows each one still, with its note and link", () => {
   assert.match(dataSource, /name: "Salla"[\s\S]*?colors: \["#004856", "#a5ffe0"\]/);
   assert.match(dataSource, /name: "KAUST Academy"[\s\S]*?"#efb61d"[\s\S]*?"#07a6aa"/);
   assert.match(dataSource, /url: "https:\/\/academy\.kaust\.edu\.sa\/"/);
   assert.doesNotMatch(dataSource, /FDM Group/);
-  assert.match(organizationRailSource, /HOVER_INTENT_DELAY = 80/);
-  assert.match(organizationRailSource, /PANEL_CLOSE_DURATION = 230/);
-  assert.match(organizationRailSource, /aria-expanded=\{active\}/);
-  assert.match(organizationRailSource, /aria-controls="organization-detail-panel"/);
-  assert.match(organizationRailSource, /displayedIndex/);
-  assert.match(organizationRailSource, /mountAndOpen/);
-  assert.match(organizationRailSource, /ResizeObserver/);
-  assert.match(organizationRailSource, /--panel-height/);
-  assert.match(organizationRailSource, /requestAnimationFrame/);
-  assert.match(organizationRailSource, /AUTO_SCROLL_SPEED = 24/);
-  assert.match(organizationRailSource, /RAIL_RESUME_DELAY = 650/);
-  assert.match(organizationRailSource, /scrollPosition \+= \(velocity \* elapsed\) \/ 1000/);
-  assert.match(organizationRailSource, /\[true, false, true\]/);
-  assert.match(organizationRailSource, /onPointerDown=\{handleRailPointerDown\}/);
-  assert.match(organizationRailSource, /onPointerMove=\{handleRailPointerMove\}/);
-  assert.match(organizationRailSource, /onPointerUp=\{finishRailPointer\}/);
-  // The site’s one motion switch (the OS setting or the Motion toggle), and no frames asked for while the
-  // rail cannot move: off screen, in a hidden tab, or with motion off.
-  assert.match(organizationRailSource, /const canMove = \(\) => isVisible && !document\.hidden && motionAllowed\(\);/);
-  assert.match(organizationRailSource, /if \(!canMove\(\)\) \{\s*velocity = 0;\s*return;\s*\}/);
-  assert.match(organizationRailSource, /subscribeMotion\(start\)/);
-  assert.doesNotMatch(organizationRailSource, /onMouseMove/);
-  assert.match(cssSource, /\.organization-showcase__rail\s*\{[\s\S]*?height: 108px/);
-  assert.match(cssSource, /\.journey-tile\s*\{[\s\S]*?width: clamp\(168px, 13vw, 216px\)/);
-  assert.match(cssSource, /\.organization-detail-panel\.is-open/);
-  assert.match(cssSource, /\.organization-detail-stage\.has-panel[\s\S]*?var\(--panel-height/);
-  assert.match(cssSource, /\.organization-showcase[\s\S]*?background: var\(--paper\)/);
-  assert.match(cssSource, /clip-path: inset\(0 0 100% 0\)/);
-  assert.match(cssSource, /@media \(max-width: 840px\), \(pointer: coarse\)/);
-  assert.match(cssSource, /\.organization-showcase__rail[\s\S]*?overflow-x: auto[\s\S]*?touch-action: pan-x pan-y pinch-zoom/);
-  assert.match(cssSource, /\.organization-showcase__rail\.is-dragging\s*\{[\s\S]*?cursor: grabbing/);
-  assert.match(cssSource, /\.organization-showcase__rail[\s\S]*?clip-path: polygon/);
-  assert.match(cssSource, /\.journey-logo__image[\s\S]*?-webkit-user-drag: none/);
+  // A still grid (FINAL-SPEC 6.7): no marquee, no drag, no pause control, no script.
+  assert.doesNotMatch(organizationRailSource, /"use client"|AUTO_SCROLL_SPEED|requestAnimationFrame|onPointerDown|journey-motion-toggle|\[true, false, true\]/);
+  assert.match(organizationRailSource, /organizations\.filter\(\(organization\) => organization\.visible\)/, "every visible organization");
+  assert.match(organizationRailSource, /asset\.derived\.monochrome \?\? asset\.derived\.color/, "the supplied monochrome logo first");
+  assert.match(organizationRailSource, /\{organization\.relationship\}[\s\S]*?\{organization\.journeyNote\}/, "what I did there, in words");
+  assert.match(organizationRailSource, /href=\{organization\.url\} target="_blank" rel="noreferrer noopener"/);
   assert.match(organizationRailSource, /draggable=\{false\}/);
-  assert.match(organizationRailSource, /onDragStart=\{\(event\) => event\.preventDefault\(\)\}/);
-  assert.doesNotMatch(cssSource, /\.journey-marquee__group\[aria-hidden="true"\][\s\S]*?display: none/);
-  assert.match(organizationRailSource, /copy\.hintTouch/);
-  assert.match(readFileSync(new URL("../data/ui.ts", import.meta.url), "utf8"), /Swipe the moving logos, then tap one/);
-  assert.doesNotMatch(organizationRailSource, /organization-focus-card|organization-stage-clip/);
+  const chapters = readFileSync(new URL("../app/chapters.css", import.meta.url), "utf8");
+  const grid = chapters.slice(chapters.indexOf("/* ===== Outside the projects (owner: rest) ===== */"), chapters.indexOf("/* ===== Contact + Help (owner: rest) ===== */"));
+  assert.match(grid, /\.row-orgs \{ display: grid; grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
+  assert.match(grid, /\.row-orgs__logo--inked img \{ filter: brightness\(0\) invert\(1\); \}/, "a colour-only logo is inked off-white too");
+  assert.match(grid, /-webkit-user-drag: none/);
+  assert.doesNotMatch(grid, /overflow-x: auto|cursor: grab|mask-image|@keyframes [\w-]*marquee/, "nothing scrolls sideways or slides");
+});
+
+test("the timeline is a still list of every stop, read top to bottom, with no pin or sideways scroll", async () => {
+  const { createElement } = await import("react");
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const { JourneyTimeline } = await import("../components/journey-timeline.tsx");
+  const { getContent } = await import("../data/i18n.ts");
+  for (const locale of ["en", "ar"]) {
+    const html = renderToStaticMarkup(createElement(JourneyTimeline, { locale }));
+    const { journey } = getContent(locale);
+    assert.equal(html.match(/<li class="row-timeline__stop/g).length, journey.length, `${locale}: every stop`);
+    assert.ok(html.includes(journey.at(-1).title), `${locale}: the "Next" stop too`);
+    assert.doesNotMatch(html, /timeline__viewport|timeline__sticky|data-cursor|tabindex/, `${locale}: nothing to scroll sideways`);
+  }
+  const chapters = readFileSync(new URL("../app/chapters.css", import.meta.url), "utf8");
+  assert.doesNotMatch(chapters, /row-timeline[^{]*\{[^}]*(position: sticky|overflow-x|animation-timeline)/, "no pin");
 });
 
 test("approved supplied assets keep explicit, editable mapping decisions", () => {
@@ -264,7 +254,7 @@ test("responsive and reduced-motion safeguards are present", () => {
   assert.match(navbarSource, /matchMedia\("\(min-width: 841px\)"\)/);
   assert.match(dataSource, /id: "fazzah"[\s\S]*?visualScale: 1\.06/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(organizationRailSource, /motionAllowed\(\)/, "the rail follows the OS setting and the site’s Motion switch");
+  assert.doesNotMatch(organizationRailSource, /motionAllowed\(\)/, "the organization grid has no motion to switch off");
 });
 
 const readComponent = (name) => readFileSync(new URL(`../components/${name}`, import.meta.url), "utf8");

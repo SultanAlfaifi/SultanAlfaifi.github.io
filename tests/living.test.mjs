@@ -177,13 +177,17 @@ test("the rebuilt sections and the older ones read as one product", () => {
   assert.match(block, /:is\(\.kinetic-band, \.organization-rail, \.organization-showcase\) \{[\s\S]*?border-image: var\(--li-seam\) 1;/);
   assert.match(block, /:is\(\.section-header h2, \.timeline__head h2\) \{[\s\S]*?font-size: var\(--li-h2\);/);
   assert.match(block, /@keyframes word-rise \{[\s\S]*?filter: blur\(10px\)/, "split headings arrive blur to sharp");
-  for (const selector of [".help-card__cta", ".contact-orb__core", ".terminal__send", ".companion__primary"]) {
+  for (const selector of [".terminal__send", ".companion__primary"]) {
     const at = block.indexOf(selector);
     assert.ok(at > 0, `${selector} is styled`);
     const rule = block.slice(at, block.indexOf("}", at));
     assert.ok(rule.includes("background: var(--li-ink);") && rule.includes("color: var(--li-on-light);"), `${selector} is the off-white primary`);
   }
-  assert.match(block, /\.help-card \{[\s\S]*?background: var\(--li-glass-fill\);/);
+  // Contact's one email action is the same off-white primary; the help paths are hairline columns, not glass.
+  assert.match(read("../components/contact-section.tsx"), /className="li-btn li-btn--primary finale__btn" href=\{`mailto:\$\{identity\.email\}`\}/);
+  assert.doesNotMatch(read("../components/contact-section.tsx"), /contact-orb|orbRing/, "the rotating badge is gone");
+  assert.match(read("../app/chapters.css"), /\.portfolio-v3 \.contact__path \{[^}]*border-top: 1px solid var\(--li-line-2\);[^}]*\}/);
+  assert.doesNotMatch(block, /^\.portfolio-v3 \.(help-card|contact-orb)/m, "no rules left for the old cards and badge");
   assert.match(block, /\.proof-card--lead \.proof-card__signal,\s*\.kinetic-band__row \.kinetic-band__accent \{[\s\S]*?background: var\(--li-aurora\);/);
   // Both section eyebrows carry the living rule, now as numbered chapter eyebrows ("01 · Featured projects").
   assert.match(read("../components/section-header.tsx"), /className=\{`li-eyebrow li-eyebrow--live li-chapter__eyebrow \$\{className\}`/);
@@ -230,18 +234,20 @@ test("big orbs cap at 60 fps and size from layout; the welcome screen has its ow
   assert.match(welcome, /title\.focus\(\{ preventScroll: true \}\);/, "closing hands focus to the headline, not to <body>");
 });
 
-test("the older sections share the rebuilt sections' chips, type and glass, and the logo rail is dark glass", () => {
+test("the older sections share the rebuilt sections' chips, type and glass, and the lower chapters keep to the type scale", () => {
   const living = read("../app/living.css");
   const chips = living.match(/\.portfolio-v3 :is\(\.tag-list li, \.tag-list--dark li, \.timeline__kind, \.ideas-footer li, \.workshop__diagram span\) \{[\s\S]*?\}/)[0];
   assert.match(chips, /border-radius: var\(--li-r-pill\);/, "one glass pill");
   assert.match(chips, /font-size: 0\.8125rem;/, "13 px, never under 12.5");
-  assert.match(living, /\.organization-detail-stage__hint,[\s\S]*?\) \{ font-size: 0\.8125rem; \}/, "the small labels read at 13 px");
-  const tile = living.match(/\.portfolio-v3 \.journey-tile \{[\s\S]*?\}/)[0];
-  assert.match(tile, /animation: none;/, "no flowing brand fill");
-  assert.match(tile, /var\(--li-bg-1\)/, "a dark tile");
-  assert.match(tile, /color-mix\(in srgb, var\(--brand-a\) 0%, transparent\)/, "the brand is dark at rest");
-  assert.match(living, /:is\(\.journey-tile\.is-active, \.journey-tile:hover, \.journey-tile:focus-within\) \{[\s\S]*?var\(--brand-a\) 30%/, "and a faint glow only on air");
-  assert.match(living, /\.portfolio-v3 \.organization-showcase__rail \{[\s\S]*?clip-path: none;/);
+  // The appendix, Contact and the footer (app/chapters.css, owner rest) speak only in the eight type sizes, and
+  // their logos are off-white: no brand colour fills a tile any more.
+  const chapters = read("../app/chapters.css");
+  const rest = chapters.slice(chapters.indexOf("/* ===== Outside the projects (owner: rest) ===== */"));
+  const sizes = [...rest.matchAll(/font-size: ([^;]+);/g)].map((match) => match[1]);
+  assert.ok(sizes.length > 20);
+  for (const size of sizes) assert.match(size, /^(var\(--li-t[0-7]\)|clamp\(\d+px, [\d.]+vw, \d+px\))$/, `${size}: a type token (or the decorative wordmark)`);
+  assert.doesNotMatch(rest, /font-weight: (?!400|500|600)\d+/, "weights 400, 500 and 600 only");
+  assert.doesNotMatch(rest, /--brand-a|journey-tile|organization-showcase/, "no brand colour in the organizations");
   assert.match(living, /\.proof-card:not\(\.proof-card--lead\):last-child:nth-child\(3n\) \{\s*grid-column: 1 \/ -1;/, "the achievements grid ends flush");
   assert.match(living, /\.portfolio-v3 \.terminal__input textarea \{ min-height: 44px; \}/);
   assert.match(living, /\.portfolio-v3 \.nav__brand \{ min-width: 44px; \}/);
