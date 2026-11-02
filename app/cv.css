@@ -192,18 +192,17 @@
 }
 [dir="ltr"] .cv-page { --ty: -10deg; }
 .cv-stage:hover .cv-page { transition-duration: 0.16s; }
-/* A soft white light behind the page, like a lamp at its back. It grows as the page rises and warms a little
-   brighter on the approval moment. */
+/* A soft white light behind the page, like a lamp at its back: brightest just behind the sheet, fading to
+   black well past its edges. It swells a little on the approval moment. */
 .cv-page::before {
-  content: ""; position: absolute; inset: -16% -24% -10%; z-index: -1; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(closest-side, rgb(255 255 255 / 30%), rgb(255 255 255 / 12%) 45%, rgb(255 255 255 / 0%) 100%);
-  filter: blur(26px);
-  opacity: calc(0.2 + 0.7 * var(--rise));
-  transition: opacity 1.2s var(--li-ease-spring);
+  content: ""; position: absolute; inset: -12% -22% -8%; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 62%) 0%, rgb(255 255 255 / 46%) 58%, rgb(255 255 255 / 16%) 80%, rgb(255 255 255 / 0%) 100%);
+  filter: blur(34px);
+  transition: scale 1.2s var(--li-ease-spring);
 }
 .cv-sheet {
   position: relative; overflow: hidden; border-radius: 3px; background: #fff;
-  box-shadow: 0 70px 90px -50px rgb(0 0 0 / 95%), 0 0 0 1px rgb(0 0 0 / 35%);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 25%);
   /* Never the brightest flat rectangle on the page. */
   filter: brightness(0.93) contrast(1.02);
   -webkit-box-reflect: below 2px linear-gradient(transparent 90%, rgb(255 255 255 / 6%));
@@ -298,7 +297,7 @@
   }
   html:not([data-motion="off"]) .cv-stage.is-prepared .cv-ring { animation: cv-ring-turn 2.4s var(--li-ease) 1 both; }
   /* The approval moment: the light behind the page swells once and settles. */
-  html:not([data-motion="off"]) .cv-stage.is-approved .cv-page::before { opacity: 1; }
+  html:not([data-motion="off"]) .cv-stage.is-approved .cv-page::before { scale: 1.08; }
   html:not([data-motion="off"]) .cv-more[open] .cv-more__panel { animation: cv-panel-in 0.5s var(--li-ease) both; }
 }
 @media (prefers-reduced-motion: reduce) {
