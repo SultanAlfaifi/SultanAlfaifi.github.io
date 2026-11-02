@@ -104,8 +104,8 @@ test("offscreen entrance holds its delay frame without clipping and respects red
   } finally { await h.cleanup(); }
 });
 
-// The band (FINAL-SPEC 6.2): the page's one continuous motion below the AI chapter. It drifts on its own,
-// runs faster while the visitor scrolls, eases back, and stands still with reduced motion or the Motion switch.
+// The band (FINAL-SPEC 6.2): the page's one continuous motion below the AI chapter. It drifts on its own at one
+// steady speed, and stands still with reduced motion or the Motion switch.
 test("the band moves on its own: no scroll-only timeline, and it stops with motion off", async () => {
   const { readFileSync } = await import("node:fs");
   const experience = readFileSync(new URL("../app/experience.css", import.meta.url), "utf8");
@@ -120,48 +120,27 @@ test("the band moves on its own: no scroll-only timeline, and it stops with moti
   assert.match(band, /padding-block: var\(--li-group/, "its own stage of black above and below");
 });
 
-test("scrolling speeds the band up, at most 4×, and it eases back to 1× when the scrolling stops", async () => {
-  const { KineticBand, bandRate } = await import("../components/kinetic-band.tsx");
-  assert.equal(bandRate(0), 1);
-  assert.equal(bandRate(900), 2);
-  assert.equal(bandRate(-1800), 3, "either direction");
-  assert.equal(bandRate(100000), 4, "never more than 4×");
-  const h = await mount(KineticBand);
+test("the band keeps one steady speed: scrolling never changes it, and off screen it rests", async () => {
+  const mod = await import("../components/kinetic-band.tsx");
+  assert.equal("bandRate" in mod || "BAND_BOOST" in mod, false, "no scroll boost");
+  const h = await mount(mod.KineticBand);
   try {
     const window = h.document.defaultView;
     const rows = [...h.document.querySelectorAll(".kinetic-band__row")];
     assert.equal(rows.length, 2);
     const animations = new Map(rows.map((row) => [row, { playbackRate: 1 }]));
     window.HTMLElement.prototype.getAnimations = function () { return animations.has(this) ? [animations.get(this)] : []; };
+    await h.intersect();
+    const section = h.document.querySelector(".kinetic-band");
+    assert.equal(section.classList.contains("is-away"), false);
     let y = 0;
     Object.defineProperty(window, "scrollY", { configurable: true, get: () => y });
-    const rates = () => rows.map((row) => animations.get(row).playbackRate);
-    // Not on screen yet: scrolling does nothing.
-    await h.dispatch(window, "scroll");
-    await h.tick(1000);
-    assert.deepEqual(rates(), [1, 1]);
-    await h.intersect();
-    assert.equal(h.document.querySelector(".kinetic-band").classList.contains("is-away"), false);
-    // A steady scroll: 30 px a frame.
     let time = 2000;
-    let peak = 1;
     for (let frame = 0; frame < 30; frame++) {
       y += 30;
       await h.dispatch(window, "scroll");
       await h.tick((time += 16));
-      peak = Math.max(peak, ...rates());
     }
-    assert.ok(peak > 2, `faster while scrolling (${peak.toFixed(2)}×)`);
-    assert.ok(peak <= 4);
-    assert.equal(rates()[0], rates()[1], "both rows together");
-    // Stopped: back to 1× within about a second, and the loop stops itself.
-    for (let frame = 0; frame < 90; frame++) await h.tick((time += 16));
-    assert.deepEqual(rates(), [1, 1]);
-    // Reduced motion: nothing listens any more.
-    await h.reduced();
-    y += 300;
-    await h.dispatch(window, "scroll");
-    await h.tick((time += 16));
-    assert.deepEqual(rates(), [1, 1]);
+    assert.deepEqual(rows.map((row) => animations.get(row).playbackRate), [1, 1], "the same speed while scrolling");
   } finally { await h.cleanup(); }
 });

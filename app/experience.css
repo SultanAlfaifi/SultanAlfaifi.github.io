@@ -37,9 +37,8 @@
 html[data-motion="off"] .cursor-ring { display: none; }
 
 /* ---------- Kinetic band ----------
-   The page's one continuous motion below the AI chapter: both rows drift on their own, all the time, and
-   components/kinetic-band.tsx raises their playbackRate while the visitor scrolls (up to 4×, easing back to
-   1× in about 600 ms). Off screen they pause (.is-away). Reduced motion and the Motion switch stand them
+   The page's one continuous motion below the AI chapter: both rows drift on their own at one steady
+   speed, all the time; scrolling never changes it. Off screen they pause (.is-away). Reduced motion and the Motion switch stand them
    still. The band sits on its own stage of black: 112 px above and below at 1440, 64 px on a phone. */
 .kinetic-band { position: relative; overflow: hidden; padding-block: var(--li-group, clamp(64px, 7.8vw, 112px)); background: var(--ink); color: var(--paper); }
 .kinetic-band__row { display: flex; width: max-content; white-space: nowrap; font-family: var(--font-display), sans-serif; font-size: clamp(3.2rem, 10vw, 9.5rem); font-weight: 600; line-height: 1.08; letter-spacing: -0.045em; will-change: transform; }
