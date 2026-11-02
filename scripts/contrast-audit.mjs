@@ -1,130 +1,299 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 
+// The Living Intelligence ground (app/living.css). Every text pair a token can form is listed here.
 const pairs = [
   {
-    usage: "Primary text on blush paper",
-    foreground: "#131515",
-    background: "#FFFAFB",
+    usage: "Primary text (--li-ink) on the ground",
+    foreground: "#F4F2EE",
+    background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Secondary text on blush paper",
-    foreground: "#2B2C28",
-    background: "#FFFAFB",
+    usage: "Body text (the older --text) on the ground",
+    foreground: "#D6D3CE",
+    background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Blush text on ink",
-    foreground: "#FFFAFB",
-    background: "#131515",
+    usage: "Secondary text (--li-ink-2) on the ground",
+    foreground: "#B1AFAB",
+    background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Blush text on charcoal",
-    foreground: "#FFFAFB",
-    background: "#2B2C28",
+    usage: "Secondary text (--li-ink-2) on raised glass (--li-bg-3)",
+    foreground: "#B1AFAB",
+    background: "#131318",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Ink text on mint controls",
-    foreground: "#131515",
-    background: "#7DE2D1",
+    usage: "Quiet captions (--li-ink-3) on the ground",
+    foreground: "#8C8A87",
+    background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Mint labels on ink",
-    foreground: "#7DE2D1",
-    background: "#131515",
+    usage: "Quiet captions (--li-ink-3) on raised glass (--li-bg-3)",
+    foreground: "#8C8A87",
+    background: "#131318",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Ink text on teal surfaces",
-    foreground: "#131515",
-    background: "#339989",
+    usage: "Primary text on raised glass (--li-bg-3)",
+    foreground: "#F4F2EE",
+    background: "#131318",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Teal focus ring on blush paper",
-    foreground: "#339989",
-    background: "#FFFAFB",
+    usage: "Body text on a raised card (--li-bg-2)",
+    foreground: "#D6D3CE",
+    background: "#0C0C11",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Dark text (--li-on-light) on the off-white primary button",
+    foreground: "#050507",
+    background: "#F4F2EE",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Dark text (--li-on-light) on the hovered primary button",
+    foreground: "#050507",
+    background: "#FFFFFF",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Glacier tint labels and links on the ground",
+    foreground: "#9FE3FF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Glacier tint labels on raised glass",
+    foreground: "#9FE3FF",
+    background: "#131318",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Dark text on glacier tint controls",
+    foreground: "#050507",
+    background: "#9FE3FF",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Apricot tint gate phrase and asks text on the ground",
+    foreground: "#FFD3A8",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Dark text on the apricot tint Approve button",
+    foreground: "#050507",
+    background: "#FFD3A8",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Iris tint data labels on the ground",
+    foreground: "#C9BEFF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Iris tint data labels on raised glass",
+    foreground: "#C9BEFF",
+    background: "#131318",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Rose tint labels on the ground",
+    foreground: "#FFB3C8",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Apricot warnings on the ground",
+    foreground: "#FFB46A",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "AI section: the orb's state word (--li-ink-2) on its 80% ground pill, worst case over white light",
+    foreground: "#B1AFAB",
+    background: "#353535",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "AI section: console warnings (apricot tint) on the raised console glass",
+    foreground: "#FFD3A8",
+    background: "#0A0A0D",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "AI section: aurora principle numerals at their darkest stop (iris) on the ground",
+    foreground: "#8F6BFF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Aurora display text (the lead achievement, the band's accent words) at its darkest stop (iris) on the ground",
+    foreground: "#8F6BFF",
+    background: "#030304",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
+    usage: "Aurora display text at its darkest stop (iris) on the lead achievement's raised glass (--li-bg-3)",
+    foreground: "#8F6BFF",
+    background: "#131318",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
+    usage: "Focus ring (--li-focus) on the ground",
+    foreground: "#9CC9FF",
+    background: "#030304",
     minimum: 3,
     category: "Focus indicator"
   },
   {
-    usage: "Mint focus ring on ink",
-    foreground: "#7DE2D1",
-    background: "#131515",
+    usage: "Focus ring (--li-focus) on raised glass",
+    foreground: "#9CC9FF",
+    background: "#131318",
     minimum: 3,
     category: "Focus indicator"
   },
   {
-    usage: "Charcoal structural controls on mint",
-    foreground: "#2B2C28",
-    background: "#7DE2D1",
+    usage: "Checkpoint lamp: asks (apricot) on the ground",
+    foreground: "#FFB46A",
+    background: "#030304",
     minimum: 3,
     category: "Borders and controls"
   },
   {
-    usage: "Lime gate phrase and checkpoint text on ink",
-    foreground: "#C8FF3D",
-    background: "#131515",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Ink text on the lime Approve button",
-    foreground: "#131515",
-    background: "#C8FF3D",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Ink text on the lime Approve button, hovered",
-    foreground: "#131515",
-    background: "#DBFF7D",
-    minimum: 4.5,
-    category: "Normal text"
-  },
-  {
-    usage: "Lime approval border on the run card",
-    foreground: "#C8FF3D",
-    background: "#1A201F",
+    usage: "Checkpoint lamp: verifies (glacier) on the ground",
+    foreground: "#47C8F5",
+    background: "#030304",
     minimum: 3,
     category: "Borders and controls"
   },
   {
-    usage: "Blue data labels (read step) on the run card",
-    foreground: "#9BB0FF",
-    background: "#1A201F",
+    usage: "Checkpoint lamp: holds (rose) on the ground",
+    foreground: "#FF5C8D",
+    background: "#030304",
+    minimum: 3,
+    category: "Borders and controls"
+  },
+  {
+    usage: "Checkpoint line: bound (ink 85%) on the ground",
+    foreground: "#D0CECA",
+    background: "#030304",
+    minimum: 3,
+    category: "Borders and controls"
+  },
+  {
+    usage: "Iris accents on the ground",
+    foreground: "#8F6BFF",
+    background: "#030304",
+    minimum: 3,
+    category: "Borders and controls"
+  },
+  {
+    usage: "Showcase: the bottom of the numeral gradient (#a3a19d) on the ground",
+    foreground: "#A3A19D",
+    background: "#030304",
+    minimum: 3,
+    category: "Large text"
+  },
+  {
+    usage: "Showcase: rose tint (rejected stamp, wrong day) on a rejected page (rose 10% over a raised card)",
+    foreground: "#FFB3C8",
+    background: "#241419",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Mint step labels and links on the run card",
-    foreground: "#7DE2D1",
-    background: "#1A201F",
+    usage: "Showcase: secondary text on a rejected page",
+    foreground: "#B1AFAB",
+    background: "#241419",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Quiet captions on the run card",
-    foreground: "#A7B8B1",
-    background: "#1A201F",
+    usage: "Showcase: apricot tint on the seeded-fault tag (apricot 7% over a raised card)",
+    foreground: "#FFD3A8",
+    background: "#1D1814",
     minimum: 4.5,
     category: "Normal text"
   },
   {
-    usage: "Spec strip notes on ink",
-    foreground: "#9FB3AB",
-    background: "#131515",
+    usage: "Showcase: frost tile number (WAREVA) on the ground",
+    foreground: "#E8F6FF",
+    background: "#030304",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: glacier label for a verifying stop on the case sheet",
+    foreground: "#47C8F5",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: rose label for a holding stop on the case sheet",
+    foreground: "#FF5C8D",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: apricot label for an asking stop on the case sheet",
+    foreground: "#FFB46A",
+    background: "#121217",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: quiet captions (--li-ink-3) on a figure cell (#0b0b0e)",
+    foreground: "#8C8A87",
+    background: "#0B0B0E",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: dark text on the off-white PDF chip and primary links",
+    foreground: "#050507",
+    background: "#F4F2EE",
+    minimum: 4.5,
+    category: "Normal text"
+  },
+  {
+    usage: "Showcase: secondary text (--li-ink-2) on a tile’s tinted glass, the worst case measured from pixels (the tile’s accent light and the section’s colour behind the glass, about #2D302E)",
+    foreground: "#B1AFAB",
+    background: "#2D302E",
     minimum: 4.5,
     category: "Normal text"
   }
@@ -132,25 +301,28 @@ const pairs = [
 
 const excludedPairs = [
   {
-    usage: "Lime as text on light tints",
-    foreground: "#C8FF3D",
-    background: "#FFFAFB",
-    reason:
-      "Insufficient contrast. Lime is reserved for checkpoints and approvals: text on ink, or a fill behind ink text."
+    usage: "Quiet captions (--li-ink-3) on a tile’s tinted glass (about #2D302E)",
+    foreground: "#8C8A87",
+    background: "#2D302E",
+    reason: "Insufficient contrast. Text on the showcase tiles (category lines, demo briefs, page numbers, the held end of a flow) uses --li-ink-2."
   },
   {
-    usage: "Protocol blue as small text on the run card",
-    foreground: "#6D8EFF",
-    background: "#1A201F",
-    reason:
-      "Too close to the AA limit for small text. Small blue text on the raised ink uses #9BB0FF instead."
+    usage: "Off-white text on a glacier fill",
+    foreground: "#F4F2EE",
+    background: "#47C8F5",
+    reason: "Insufficient contrast. Fills in the living light carry dark text (--li-on-light), never off-white."
   },
   {
-    usage: "Mint as small text on blush paper",
-    foreground: "#7DE2D1",
-    background: "#FFFAFB",
-    reason:
-      "Insufficient contrast. Mint is reserved for dark surfaces, large decorative type, or backgrounds with ink text."
+    usage: "Off-white text on an apricot fill",
+    foreground: "#F4F2EE",
+    background: "#FFB46A",
+    reason: "Insufficient contrast. The asks colour is a lamp or a fill behind dark text."
+  },
+  {
+    usage: "Decorative ink (--li-ink-4) as text",
+    foreground: "#4C4B49",
+    background: "#030304",
+    reason: "Insufficient contrast. --li-ink-4 is for hairlines and inactive dots only, never text."
   }
 ];
 
@@ -215,7 +387,7 @@ const lines = [
   "- Keyboard focus uses a three-pixel outline with separate light-surface and dark-surface tokens.",
   "- Hover and active states preserve the same text colors and add structural changes.",
   "- There are no disabled interactive controls in the initial portfolio.",
-  "- Organization logos use warm-white monochrome artwork on Ink by default and reveal color on hover or keyboard focus.",
+  "- Colour lives in light: accents are lamps, glows and tinted labels; fills in the living light carry dark text.",
   "",
   `Audit result: **${failures.length === 0 ? "PASS" : "FAIL"}** (${audited.length - failures.length}/${audited.length} approved pairs pass).`,
   ""

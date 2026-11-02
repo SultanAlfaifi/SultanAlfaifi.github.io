@@ -10,6 +10,7 @@ const read = (file) => readFileSync(new URL(file, import.meta.url), "utf8");
 const rtl = read("../app/rtl.css");
 const welcome = read("../components/welcome-screen.tsx");
 const welcomeCss = read("../app/welcome.css");
+const heroCss = read("../app/hero.css");
 const portfolioCss = read("../app/portfolio.css");
 
 test("each part of an 'a · b · c' line is isolated, so two English neighbours keep their order in Arabic", () => {
@@ -26,11 +27,15 @@ test("each part of an 'a · b · c' line is isolated, so two English neighbours 
 });
 
 test("Arabic headings get room for their marks, including the recommendations heading", () => {
-  assert.match(rtl, /\[dir="rtl"\] #recommendations \.section-header h2 \{ line-height: 1\.32; \}/);
+  assert.match(rtl, /\[dir="rtl"\] #recommendations h3 \{ line-height: 1\.4; \}/);
+  assert.doesNotMatch(rtl, /#recommendations \.section-header h2/, "the quotes are a block inside Recognition, with an h3");
 });
 
-test("every section keeps its own spacing, since the visitor's choice can put any section after the hero", () => {
-  assert.match(portfolioCss, /\.portfolio-v3 \.experience-section \{ padding-top: var\(--section-space\);/);
+test("every chapter keeps its own spacing, since the visitor's choice can put any chapter after the hero", () => {
+  // globals.css pads #about by id; the chapter rhythm wins it back. The Now card is a card, not a section.
+  assert.match(read("../app/chapters.css"), /\.portfolio-v3 #about\.li-chapter \{ padding-bottom: calc\(var\(--li-chapter\) \/ 2\); \}/);
+  assert.doesNotMatch(read("../components/experience-section.tsx"), /experience-section"|className="[^"]*\bsection\b/);
+  assert.match(portfolioCss, /\.portfolio-v3 \.section \{ padding-block: var\(--section-space\); \}/);
 });
 
 test("the welcome screen arranges the page first, then fades out, and never sticks around", () => {
@@ -39,6 +44,7 @@ test("the welcome screen arranges the page first, then fades out, and never stic
   assert.match(finish, /if \(!motionAllowed\(\) \|\| typeof dialog\.animate !== "function"\) return close\(\);/);
   assert.match(finish, /window\.setTimeout\(close, 700\);/);
   // !important, because the hero's motion rules set the animation shorthand (which resets play-state) at a
-  // higher specificity than this rule; a plain declaration lost to them and the pulse ran behind the screen.
-  assert.match(welcomeCss, /html\[data-welcome="show"\] \.identity-hero \.hero-run \*,\s*html\[data-welcome="show"\] \.identity-hero \.hero-run__gate::before,\s*html\[data-welcome="show"\] \.identity-hero :is\(\.hero-status__pulse, \.live-clock__dot\)::after \{ animation-play-state: paused !important; \}/);
+  // higher specificity than this rule; a plain declaration lost to them and the entrance ran behind the screen.
+  assert.match(heroCss, /html\[data-welcome="show"\] \.nav,\s*html\[data-welcome="show"\] \.identity-hero,\s*html\[data-welcome="show"\] \.identity-hero::before,\s*html\[data-welcome="show"\] \.identity-hero \*,\s*html\[data-welcome="show"\] \.identity-hero \*::before,\s*html\[data-welcome="show"\] \.identity-hero \*::after \{ animation-play-state: paused !important; \}/);
+  assert.match(welcomeCss, /The hero's entrance waits behind the welcome screen/);
 });

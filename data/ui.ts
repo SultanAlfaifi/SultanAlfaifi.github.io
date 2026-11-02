@@ -12,8 +12,9 @@ const en = {
   },
   motion: { pause: "Pause page motion", resume: "Resume page motion", pauseTitle: "Pause motion", resumeTitle: "Resume motion" },
   hero: {
-    // The words in the headline that carry the approval gate's underline.
-    highlight: "check with you",
+    // The word in the headline that carries the approval gate's underline, and where its second line starts.
+    highlight: "ask",
+    lineTwo: "that ask",
     explore: "See the work",
     getCv: "Get my CV",
     ask: "Ask my agent",
@@ -82,43 +83,33 @@ const en = {
     loading: "Loading video…",
     failedStart: "Video couldn’t start. Press play to try again.",
     failedLoad: "Video couldn’t load. Press play to retry.",
-    salla: { runway: "Salla experience video", film: "Salla brand film", play: "Play Salla video", pause: "Pause Salla video", playShort: "Play", pauseShort: "Pause", tech: "Technologies in this role" }
+    salla: { film: "Salla brand film", play: "Play Salla video" }
   },
   work: {
     title: "Try these first",
     description: "Pick the one closest to your problem. Every card links to something you can try or read today, and “Inside the build” shows the call I made and how to check it.",
     index: "Featured projects",
-    insideBuild: "Inside the build",
     problem: "The problem",
     decision: "The call I made",
     verify: "What you can check yourself",
     sourceCode: "Source code",
-    sourceAria: (title: string) => `View ${title} source on GitHub`,
+    // The name starts with the visible words, so "click Source code" works for speech input (WCAG 2.5.3).
+    sourceAria: (title: string) => `Source code: ${title} on GitHub`,
     tryApp: "Try it live",
     techAria: (title: string) => `${title} technologies`,
-    figuresAria: (title: string) => `${title} key figures`,
     labTitle: "Smaller builds",
     labDescription: "Smaller or less finished work: a multi-agent idea engine, an Arabic Alexa skill, my graduation project, KAUST coursework, and an Agent Skills repo with one skill so far. Each card says how far it got.",
-    cursor: "Tilt",
+    // The cursor ring over a showcase tile, which opens its case.
+    cursor: "Open",
     visuals: {
-      iconAlt: "Mustakshif application icon",
-      previewAlt: (title: string) => `${title} application preview`,
-      mustakshifTitle: ["Which models can", "your PC actually run?"],
       mustakshifPath: ["Your hardware", "Your goals", "Picks with reasons"],
       mustakshifAria: "How Mustakshif picks a model",
-      repairTitle: ["The build passed.", "Can a keyboard-only user book?"],
-      repairAria: "AccessFinish verification pipeline",
       trials: "Real keyboard bug · “booked” pages with the wrong day saved",
       trialsAria: "The verifier rejected all 15 pages that said booked but saved the wrong day",
-      verified: "15 / 15 caught",
+      verified: "15 of 15 caught",
       repairNote: "None of them counted as a fix. Every run is published, failures included.",
       motionAria: "Mashhad production workflow",
-      motionNote: "No music unless you ask for it, and Arabic letters stay connected.",
-      rajihTitle: ["Agents draft and critique ideas,", "and a person settles the close ones."],
-      rajihBranchesAria: "Independent ideation perspectives",
-      rajihBranches: ["Grounded", "Bold", "Demo-first"],
-      rajihFlowAria: "RAJIH decision workflow",
-      rajihNote: "Every run is saved as JSON and Markdown, so you can see why an idea won.",
+      motionNote: "Arabic letters stay connected.",
       autoText: "Text",
       autoVoice: "Voice",
       autoShared: "Same draft either way",
@@ -127,18 +118,40 @@ const en = {
       autoReview: ["Nothing turns on", "until you approve it."],
       autoNote: "Hackathon prototype · Money moves are simulated",
       resumeTitle: ["Write your CV here,", "download a clean PDF."],
-      resumeProfile: "Your details",
-      resumeExperience: "Experience and skills",
-      resumePreview: "Live preview",
-      resumePdf: "Vector PDF export",
       resumeNote: "No account, and your details stay on your device.",
-      waterTitle: ["Ablution water in,", "irrigation out only when it’s safe."],
       waterAria: "How WAREVA decides to irrigate",
       waterSensors: "Simulated sensors",
       waterSensor: (index: number) => `Sensor ${index}`,
-      waterReadingsAria: "Two readings pass and one fails",
       waterHeld: "Irrigation held",
       waterNote: "Each decision is logged with its reason."
+    },
+    // The showcase (components/showcase-*.tsx). Kinds and tags say what a stop or a number is, never more.
+    showcase: {
+      legend: "Where it stops to wait for a human",
+      kinds: { asks: "Asks you first", verifies: "Verifies before a result counts", holds: "Holds on its own when a check fails" },
+      boundary: "The line it keeps",
+      step: (step: number, total: number) => `Step ${step} of ${total}`,
+      tags: { "seeded-fault": "Seeded on purpose", "real-bug": "Real bug", trial: "Early trial", "public-count": "Public count", "own-count": "My own count", team: "Team", design: "Design target" },
+      asOf: (date: string) => `As of ${date}`,
+      verifyOn: "Check it on GitHub",
+      open: "Inside the build",
+      openAria: (title: string) => `Inside the build: ${title}`,
+      hide: "Hide the details",
+      close: "Close",
+      previous: "Previous project",
+      next: "Next project",
+      position: (index: number, total: number) => `${index} of ${total}`,
+      status: "Status",
+      role: "My role",
+      figures: "The numbers, with what they are",
+      more: "Worth knowing",
+      tech: "Built with",
+      caveat: "Not yet",
+      gate: "Its stop",
+      screenshotAlt: (title: string) => `${title}: the editor on the right, the live preview on the left`,
+      wall: { booked: "Booked", wrongDay: "Wrong day saved", rejected: "Rejected", verifier: "Verifier", page: (index: number) => `Page ${index}` },
+      masari: { browser: "Your browser", pdf: "PDF" },
+      mustakshif: { specs: ["CPU", "RAM", "GPU", "VRAM"] }
     }
   },
   band: {
@@ -147,17 +160,14 @@ const en = {
     cursor: "Scroll"
   },
   proof: {
-    title: "Recognition and numbers",
-    description: "Where I was selected or ranked, and the numbers behind my work.",
-    recognition: "Recognition",
+    title: "Recognition",
+    description: "Where I was selected or ranked.",
     evidence: "See the source"
   },
-  about: { title: "Who you’d be working with", resume: "Download my CV", educationMark: "University" },
+  about: { title: "Who you’d be working with" },
   timeline: {
     title: "How I got here",
     description: "Dates come from my CV, LinkedIn, and GitHub releases. Anything without a documented date is listed under Recognition.",
-    aria: "Timeline since 2023, scroll sideways",
-    cursor: "Scroll",
     kinds: { Education: "Education", Recognition: "Recognition", Learning: "Course", Product: "Product", Career: "Work", "Open source": "Public repo", Hackathon: "Hackathon", Now: "Focus" } as Record<string, string>
   },
   welcome: {
@@ -191,37 +201,33 @@ const en = {
     bringBack: "Bring it back here"
   },
   runtime: {
-    aria: "AI assistant console",
-    title: "Ask my AI assistant",
+    // A no-break space keeps "AI assistant" together: the headline breaks after "Ask my".
+    title: "Ask my AI\u00a0assistant",
     description: "An AI assistant that answers only from this site’s verified data. It can open a project for you, check how my work fits a role, or draft an email to me. Console commands like “run” and “help” still work.",
+    eyebrow: "AI assistant",
     principles: "How I build agents",
     cursor: "Press & hold",
-    // Labels for the agent network behind the console, after the featured projects' names.
-    concepts: ["planner", "memory", "tools", "human ✓"]
+    // The living orb beside the console, and the small word under it that says what the assistant is doing.
+    orb: "Sultan's AI assistant as a living light. It listens, thinks, and answers along with the console.",
+    states: { idle: "Ready", greeting: "Saying hello", listening: "Listening", thinking: "Thinking", speaking: "Answering", approved: "Got your yes", gravity: "Gravity" }
   },
   experience: { title: "What I do at Salla", description: "Salla is the platform many Saudi merchants run their online stores on. I’m there for my COOP training." },
   organizations: {
-    kicker: "Experience · Education · Programs · Certifications · Community",
     title: "Where I’ve learned and worked",
     intro: "Salla, Umm Al-Qura, KAUST Academy, IBM, and the groups I’ve run workshops for.",
-    pause: "Pause logo motion",
-    resume: "Resume logo motion",
-    rail: "Organizations",
-    hintPointer: "Drag the logos, or hover over one to see what I did there.",
-    hintTouch: "Swipe the moving logos, then tap one to see what I did there.",
-    visit: "Visit their site",
-    close: "Close organization details",
-    explore: (name: string) => `See what I did with ${name}`
+    rail: "Organizations"
   },
-  deeper: { title: "Beyond the projects", subtitle: "Workshops, courses, skills, and what I write" },
-  skills: { title: "What I work with", description: "Laravel, PHP, and MySQL are what I use in my Salla COOP. My public repos are mostly Python and JavaScript. The last group is what I’m learning now." },
+  deeper: {
+    title: "Beyond the projects",
+    subtitle: "Where I've been, who I learned with, workshops, courses, skills, and what I write.",
+    // The line each row shows while it is closed. The other rows' lines are existing copy or are composed
+    // from the data (lib/deeper-rows.ts), so a changed number flows through.
+    rows: { timeline: (count: number) => `${count} stops, from starting my degree to what I'm working on now` }
+  },
+  skills: { title: "What I work with", description: "Laravel, PHP, and MySQL are what I use in my Salla COOP, and my public repos are mostly Python and JavaScript. The last group is what I’m learning now." },
   programs: {
     title: "Courses I’ve finished",
     description: "KAUST Academy, NVIDIA, IBM, McKinsey.org, DeepLearning.AI, and the University of Michigan.",
-    learned: "Topics",
-    applied: "What I did",
-    achieved: "Result",
-    completed: "Completed",
     verifyCredential: "Verify credential",
     alsoCertified: "Other certificates",
     verify: "Verify",
@@ -230,7 +236,6 @@ const en = {
   community: {
     title: "Teaching and volunteering",
     description: "I ran a three-day bootcamp on building AI agents for Artificial Intelligence Pioneers, and AI workshops for Fazzah in Madinah and for Riadiat. If you want one for your group, email me.",
-    impact: "Teaching and volunteering in numbers",
     visit: "Visit their site",
     diagram: ["Fundamentals", "Tools", "Memory", "Planning", "Build"],
     volunteerTitle: "Volunteering",
@@ -251,18 +256,12 @@ const en = {
   recommendations: {
     title: "In their words",
     description: "Dr. Ahmed Alharthi supervises my graduation project at Umm Al-Qura. Heyam AbuNaseer was my trainer at the IBM AI lab.",
-    context: "Recommendation context",
-    themes: "Recommendation themes",
     linkedin: "Read it on LinkedIn",
     translated: null as string | null
   },
   contact: {
     title: "Tell me what you’re working on",
     body: "Send two or three lines: what you need, who it’s for, and by when. Arabic or English, whichever is easier.",
-    orbAria: "Email me",
-    orbRing: "EMAIL ME ✦ ARABIC OR ENGLISH ✦ IN MAKKAH ✦ ",
-    orbWord: "حيّاك",
-    orbSmall: "Say hi",
     copy: "Copy email",
     copiedButton: "Email copied",
     copied: (email: string) => `${email} copied to clipboard.`,
@@ -272,10 +271,8 @@ const en = {
   footer: {
     designed: "I designed and built this site with Next.js and TypeScript.",
     rights: "© 2026 Sultan Alfaifi. All rights reserved.",
-    links: "Footer links",
     top: "Back to top ↑",
-    topAria: "Back to the top of the page",
-    cursor: "Move me"
+    topAria: "Back to top of the page"
   },
   social: { visit: (platform: string) => `${platform}: Sultan Alfaifi` },
   palette: {
@@ -286,16 +283,17 @@ const en = {
     results: "Results",
     empty: "No match. Try “work”, “email”, or “console”.",
     groups: { Navigate: "Sections", Projects: "Projects", Actions: "Actions", Elsewhere: "Elsewhere" },
+    // In page order. lib/agent/anchors.ts reads eight of these labels, so every row stays.
     sections: [
       ["Projects", "#work", "work projects portfolio try demo"],
-      ["Recognition and numbers", "#achievements", "proof achievements awards metrics recognition"],
-      ["About me", "#about", "about bio person sultan"],
-      ["How I got here", "#timeline", "journey history timeline dates"],
       ["Agent console", "#runtime", "runtime terminal shell cli console"],
+      ["About me", "#about", "about bio person sultan"],
       ["What I do at Salla", "#experience", "experience job internship coop salla laravel"],
+      ["Recognition", "#achievements", "proof achievements awards metrics recognition"],
       ["Recommendations", "#recommendations", "references quotes in their words"],
+      ["My CV", "#cv", "cv resume download pdf سيرة"],
+      ["How I got here", "#timeline", "journey history timeline dates"],
       ["How I can help", "#help", "help hire services work together"],
-      ["My CV", "#cv", "cv resume download pdf"],
       ["Contact", "#contact", "email hire contact"]
     ] as [string, string, string][],
     copyEmail: "Copy email address",
@@ -324,7 +322,7 @@ const en = {
     complete: "All 6 found. You poke at things like an engineer. Email me, I’d like to meet you.",
     items: {
       palette: { title: "Command line", hint: "Some people never touch the mouse. Try ⌘K, Ctrl+K, or /." },
-      gravity: { title: "Gravity well", hint: "Press and hold on the network behind the AI console." },
+      gravity: { title: "Gravity well", hint: "Press and hold the living light beside the AI assistant, then let go." },
       sudo: { title: "Root access", hint: "The console takes orders. Try hiring someone." },
       policy: { title: "Policy enforcer", hint: "Tell the console to rm -rf something." },
       arabic: { title: "Bilingual", hint: "The console knows one Arabic word. It’s listed in help." },
@@ -398,7 +396,7 @@ const en = {
       errorLine: "[agent] couldn't reach the assistant, so here's the scripted reply.",
       verifying: "[agent] checking you're human…",
       thinking: "thinking…",
-      privacy: "Questions you type here go to an AI assistant (Claude via OpenRouter). They're kept for 30 days without your IP to improve answers, so don't share private details.",
+      privacy: "Questions you type here go to an AI assistant through OpenRouter. They're kept for 30 days without your IP to improve answers, so don't share private details.",
       evalsLink: "See how it's tested, failures included",
       steps: { plan: "planner", tool: "tool", result: "result", policy: "policy", sources: "sources", guard: "guard" } as Record<string, string>,
       // The one line that stands for everything the agent did on a turn; it opens to show the steps.
@@ -523,7 +521,10 @@ const en = {
     badCode: "That code didn't match. Check it and try again.",
     emailOffline: "Email copies need the live server, which is offline right now. The download works without it.",
     emailFailed: "Couldn't send the code. You can still download the CV.",
-    privacy: "Your email is used only to send this copy, after you confirm a code. Sultan gets a note with the company, the field, and the CV, plus your email if you add it.",
+    more: "More options",
+    moreHint: "Job posting · Email copy",
+    notify: "If you add a company, a role, or a job posting, your download sends Sultan a note with the company, the field, and the CV.",
+    emailPrivacy: "Your email is used only to send this copy, after you confirm a code. Sultan's note includes it.",
     restored: "Picked up where you left off.",
     hesitation: "Short on time? The general CV has everything on one page.",
     hesitationAction: "Download it now",
@@ -547,6 +548,7 @@ const ar: UiStrings = {
   motion: { pause: "أوقف حركة الصفحة", resume: "شغّل حركة الصفحة", pauseTitle: "إيقاف الحركة", resumeTitle: "تشغيل الحركة" },
   hero: {
     highlight: "يستأذنونك",
+    lineTwo: "يستأذنونك",
     explore: "شوف أعمالي",
     getCv: "خذ سيرتي",
     ask: "اسأل وكيلي",
@@ -613,43 +615,31 @@ const ar: UiStrings = {
     loading: "جارٍ تحميل الفيديو…",
     failedStart: "تعذّر تشغيل الفيديو. اضغط زر التشغيل وجرّب مرة ثانية.",
     failedLoad: "تعذّر تحميل الفيديو. اضغط زر التشغيل لإعادة المحاولة.",
-    salla: { runway: "فيديو عن تدريبي في سلة", film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة", pause: "أوقف فيديو سلة", playShort: "تشغيل", pauseShort: "إيقاف", tech: "التقنيات في هذا التدريب" }
+    salla: { film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة" }
   },
   work: {
     title: "جرّبها بنفسك",
     description: "اختر المشروع الأقرب لمشكلتك. في كل بطاقة شيء يمكنك تجربته أو قراءته اليوم، وفي «كيف بنيته» تجد القرار الذي اتخذته وكيف تتحقق منه.",
     index: "أبرز المشاريع",
-    insideBuild: "كيف بنيته",
     problem: "المشكلة",
     decision: "القرار الذي اتخذته",
     verify: "تحقّق بنفسك",
     sourceCode: "الكود المصدري",
-    sourceAria: (title: string) => `افتح كود ${title} على GitHub`,
+    sourceAria: (title: string) => `الكود المصدري: ${title} على GitHub`,
     tryApp: "جرّبه الآن",
     techAria: (title: string) => `تقنيات ${title}`,
-    figuresAria: (title: string) => `أهم أرقام ${title}`,
     labTitle: "مشاريع أصغر",
     labDescription: "أعمال أصغر حجمًا أو لم تكتمل بعد: محرّك يوازن بين الأفكار بعدة وكلاء، ومهارة عربية على Alexa، ومشروع تخرّجي، ومشاريعي الدراسية في أكاديمية كاوست، ومستودع Agent Skills فيه مهارة واحدة حتى الآن. وفي كل بطاقة تجد أين وصل المشروع.",
-    cursor: "حرّك",
+    cursor: "افتح",
     visuals: {
-      iconAlt: "أيقونة تطبيق مستكشف",
-      previewAlt: (title: string) => `معاينة ${title}`,
-      mustakshifTitle: ["أي النماذج", "يشغّلها جهازك فعلًا؟"],
       mustakshifPath: ["مواصفات جهازك", "احتياجك", "ترشيح مع أسبابه"],
       mustakshifAria: "كيف يرشّح مستكشف النموذج",
-      repairTitle: ["نجح بناء التطبيق.", "لكن هل يُكمل الحجز من يستخدم لوحة المفاتيح وحدها؟"],
-      repairAria: "مسار التحقق في AccessFinish",
       trials: "خلل حقيقي بلوحة المفاتيح · صفحات «تم الحجز» مع يوم محفوظ خاطئ",
       trialsAria: "رفض المدقّق 15 صفحة قالت «تم الحجز» مع أن اليوم المحفوظ خاطئ",
       verified: "كشف 15 من 15",
       repairNote: "لم يُحسب أيٌّ منها إصلاحًا. وكل التشغيلات منشورة، حتى الفاشلة منها.",
       motionAria: "مراحل الإنتاج في مَشهد",
-      motionNote: "لا موسيقى إلا إذا طلبتها، والحروف العربية تبقى متصلة.",
-      rajihTitle: ["يقترح الوكلاء الأفكار وينقدونها،", "وإذا تقاربت النتائج حسمها إنسان."],
-      rajihBranchesAria: "زوايا مستقلة لتوليد الأفكار",
-      rajihBranches: ["واقعي", "جريء", "الديمو أولًا"],
-      rajihFlowAria: "مراحل القرار في RAJIH",
-      rajihNote: "أحفظ كل تشغيل بصيغتي JSON وMarkdown، لتعرف لماذا فازت الفكرة.",
+      motionNote: "الحروف العربية تبقى متصلة.",
       autoText: "نص",
       autoVoice: "صوت",
       autoShared: "المسودة نفسها في الحالتين",
@@ -658,18 +648,39 @@ const ar: UiStrings = {
       autoReview: ["لا يتفعّل شيء", "قبل موافقتك."],
       autoNote: "نموذج أولي لهاكاثون · العمليات المالية فيه محاكاة",
       resumeTitle: ["اكتب سيرتك هنا،", "ونزّلها ملف PDF مرتّبًا."],
-      resumeProfile: "بياناتك",
-      resumeExperience: "الخبرات والمهارات",
-      resumePreview: "معاينة حيّة",
-      resumePdf: "ملف PDF واضح مهما كبّرته",
       resumeNote: "بلا حساب، وبياناتك لا تغادر جهازك.",
-      waterTitle: ["مياه الوضوء تدخل،", "ولا تخرج للري إلا وهي آمنة."],
       waterAria: "كيف يقرر WAREVA الري",
       waterSensors: "حسّاسات افتراضية",
       waterSensor: (index: number) => `حسّاس ${index}`,
-      waterReadingsAria: "قراءتان سليمتان وقراءة فشلت",
       waterHeld: "الري متوقف",
       waterNote: "كل قرار يُسجَّل مع سببه."
+    },
+    showcase: {
+      legend: "أين يتوقف لينتظر إنسانًا",
+      kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" },
+      boundary: "الحد الذي يلتزم به",
+      step: (step: number, total: number) => `الخطوة ${step} من ${total}`,
+      tags: { "seeded-fault": "خلل زرعته عمدًا", "real-bug": "خلل حقيقي", trial: "تجربة أولى", "public-count": "عدّاد عام", "own-count": "من إحصاءاتي", team: "الفريق", design: "هدف تصميمي" },
+      asOf: (date: string) => `حتى ${date}`,
+      verifyOn: "تحقّق منه على GitHub",
+      open: "كيف بنيته",
+      openAria: (title: string) => `كيف بنيته: ${title}`,
+      hide: "أخفِ التفاصيل",
+      close: "إغلاق",
+      previous: "المشروع السابق",
+      next: "المشروع التالي",
+      position: (index: number, total: number) => `${index} من ${total}`,
+      status: "الحالة",
+      role: "دوري",
+      figures: "الأرقام، وماذا تعني",
+      more: "يهمك تعرفه",
+      tech: "التقنيات",
+      caveat: "ما لم يكتمل بعد",
+      gate: "نقطة توقفه",
+      screenshotAlt: (title: string) => `${title}: المحرّر على اليمين، والمعاينة الحيّة على اليسار`,
+      wall: { booked: "تم الحجز", wrongDay: "حُفظ يوم خاطئ", rejected: "مرفوضة", verifier: "المدقّق", page: (index: number) => `الصفحة ${index}` },
+      masari: { browser: "متصفحك", pdf: "PDF" },
+      mustakshif: { specs: ["المعالج", "الذاكرة", "كرت الشاشة", "VRAM"] }
     }
   },
   band: {
@@ -678,17 +689,14 @@ const ar: UiStrings = {
     cursor: "مرّر"
   },
   proof: {
-    title: "إنجازات وأرقام",
-    description: "برامج اختارتني، ومسابقات وصلت فيها للنهائي أو فزت بها، وأرقام من أعمالي.",
-    recognition: "الإنجازات",
+    title: "إنجازات",
+    description: "برامج اختارتني، ومسابقات وصلت فيها للنهائي أو فزت بها.",
     evidence: "شوف المصدر"
   },
-  about: { title: "حيّاك، أنا سلطان", resume: "حمّل سيرتي الذاتية", educationMark: "الجامعة" },
+  about: { title: "حيّاك، أنا سلطان" },
   timeline: {
     title: "محطاتي منذ 2023",
     description: "التواريخ هنا من سيرتي الذاتية ولينكدإن وإصدارات GitHub، وما ليس له تاريخ موثّق تجده في قسم الإنجازات.",
-    aria: "محطاتي منذ 2023، مرّر أفقيًا",
-    cursor: "مرّر",
     kinds: { Education: "دراسة", Recognition: "إنجاز", Learning: "دورة", Product: "منتج", Career: "عمل", "Open source": "مستودع عام", Hackathon: "هاكاثون", Now: "تركيزي" }
   },
   welcome: {
@@ -722,36 +730,29 @@ const ar: UiStrings = {
     bringBack: "رجّعه هنا"
   },
   runtime: {
-    aria: "طرفية المساعد الذكي",
     title: "اسأل مساعدي الذكي",
     description: "مساعد ذكاء اصطناعي يجيب من بيانات هذا الموقع الموثّقة فقط. يفتح لك أي مشروع، ويقارن أعمالي بالوظيفة التي تهمّك، ويكتب لك مسودة رسالة إليّ. وأوامر الطرفية مثل run و help ما زالت تعمل.",
+    eyebrow: "المساعد الذكي",
     principles: "كيف أبني الوكلاء",
     cursor: "اضغط مطوّلًا",
-    concepts: ["مخطِّط", "ذاكرة", "أدوات", "إنسان ✓"]
+    orb: "مساعد سلطان الذكي في صورة ضوء حيّ، يسمع ويفكّر ويجاوب مع الطرفية.",
+    states: { idle: "جاهز", greeting: "يرحّب بك", listening: "يسمعك", thinking: "يفكّر", speaking: "يجاوب", approved: "أخذ موافقتك", gravity: "جاذبية" }
   },
   experience: { title: "تدريبي في سلة", description: "سلة منصة يدير عليها كثير من التجار في السعودية متاجرهم الإلكترونية، وفيها أقضي تدريبي التعاوني." },
   organizations: {
-    kicker: "الخبرة · التعليم · البرامج · الشهادات · المجتمع",
     title: "جهات تعلّمت فيها وعملت معها",
     intro: "سلة وجامعة أم القرى وأكاديمية كاوست وIBM، والجهات التي قدّمت لها ورشًا.",
-    pause: "أوقف حركة الشعارات",
-    resume: "شغّل حركة الشعارات",
-    rail: "الجهات",
-    hintPointer: "اسحب الشعارات، أو مرّر المؤشر على أحدها لترى دوري معها.",
-    hintTouch: "اسحب الشعارات المتحركة، ثم اضغط على أحدها لترى دوري معها.",
-    visit: "افتح موقعهم",
-    close: "أغلق تفاصيل الجهة",
-    explore: (name: string) => `اعرض دوري مع ${name}`
+    rail: "الجهات"
   },
-  deeper: { title: "خارج المشاريع", subtitle: "ورش ودورات ومهارات، وما أكتبه" },
+  deeper: {
+    title: "خارج المشاريع",
+    subtitle: "محطاتي، والجهات التي تعلّمت فيها، وورش ودورات ومهارات، وما أكتبه.",
+    rows: { timeline: (count: number) => `${count} محطة، من بدء دراستي حتى ما أعمل عليه الآن` }
+  },
   skills: { title: "الأدوات التي أعمل بها", description: "أستخدم Laravel وPHP وMySQL في تدريبي التعاوني في سلة، ومستودعاتي العامة أغلبها بـ Python وJavaScript. والمجموعة الأخيرة أتعلّمها الآن." },
   programs: {
     title: "دورات وبرامج أكملتها",
     description: "أكاديمية كاوست وNVIDIA وIBM وMcKinsey.org وDeepLearning.AI وجامعة ميشيغان.",
-    learned: "المواضيع",
-    applied: "ماذا عملت فيه",
-    achieved: "النتيجة",
-    completed: "أكملت البرنامج",
     verifyCredential: "تحقّق من الشهادة",
     alsoCertified: "شهادات أخرى",
     verify: "تحقّق",
@@ -760,7 +761,6 @@ const ar: UiStrings = {
   community: {
     title: "أدرّب وأتطوّع",
     description: "قدّمت مع رواد الذكاء الاصطناعي معسكرًا لثلاثة أيام عن بناء الوكلاء، وورشًا لجمعية فزعة في المدينة المنورة ولرياديات. وإن أردت ورشة مثلها لجهتك، راسلني.",
-    impact: "التدريب والتطوع بالأرقام",
     visit: "افتح موقعهم",
     diagram: ["الأساسيات", "الأدوات", "الذاكرة", "التخطيط", "بناء وكيل"],
     volunteerTitle: "التطوع",
@@ -781,18 +781,12 @@ const ar: UiStrings = {
   recommendations: {
     title: "قالوا عنّي",
     description: "يشرف د. أحمد الحارثي على مشروع تخرّجي في جامعة أم القرى، وكانت هيام أبو نصير مدرّبتي في مختبر IBM للذكاء الاصطناعي.",
-    context: "سياق التوصية",
-    themes: "محاور التوصية",
     linkedin: "اقرأها على لينكدإن",
     translated: "مترجمة عن الإنجليزية"
   },
   contact: {
     title: "عندك فكرة أو فرصة؟ حدّثني عنها",
     body: "اكتب لي سطرين أو ثلاثة: ماذا تحتاج، ولمن، ومتى. بالعربي أو بالإنجليزي، كما يريحك.",
-    orbAria: "راسلني على البريد",
-    orbRing: "EMAIL ME ✦ ARABIC OR ENGLISH ✦ IN MAKKAH ✦ ",
-    orbWord: "حيّاك",
-    orbSmall: "راسلني",
     copy: "انسخ البريد",
     copiedButton: "نُسخ البريد",
     copied: (email: string) => `نسخت لك البريد: ${email}`,
@@ -802,10 +796,8 @@ const ar: UiStrings = {
   footer: {
     designed: "بنيت هذا الموقع بـ Next.js وTypeScript، وصمّمته بنفسي.",
     rights: "© 2026 سلطان الفيفي. جميع الحقوق محفوظة.",
-    links: "روابط أسفل الصفحة",
     top: "للأعلى ↑",
-    topAria: "العودة إلى أعلى الصفحة",
-    cursor: "حرّكني"
+    topAria: "للأعلى: العودة إلى أعلى الصفحة"
   },
   social: { visit: (platform: string) => `${platform}: سلطان الفيفي` },
   palette: {
@@ -818,14 +810,14 @@ const ar: UiStrings = {
     groups: { Navigate: "الأقسام", Projects: "المشاريع", Actions: "الإجراءات", Elsewhere: "خارج الموقع" },
     sections: [
       ["المشاريع", "#work", "work projects أعمال مشاريع تجربة"],
-      ["إنجازات وأرقام", "#achievements", "proof achievements إنجازات جوائز أرقام"],
-      ["عنّي", "#about", "about نبذة سلطان"],
-      ["محطاتي منذ 2023", "#timeline", "timeline journey محطات خط زمني تواريخ"],
       ["طرفية المساعد الذكي", "#runtime", "terminal console طرفية تيرمنال أوامر"],
+      ["عنّي", "#about", "about نبذة سلطان"],
       ["تدريبي في سلة", "#experience", "experience salla coop laravel خبرة سلة تدريب تعاوني"],
+      ["إنجازات", "#achievements", "proof achievements إنجازات جوائز أرقام"],
       ["التوصيات", "#recommendations", "recommendations توصيات قالوا"],
-      ["كيف أقدر أخدمك", "#help", "help hire services خدمات تعاون توظيف ورشة"],
       ["سيرتي الذاتية", "#cv", "cv resume سيرة ذاتية تحميل"],
+      ["محطاتي منذ 2023", "#timeline", "timeline journey محطات خط زمني تواريخ"],
+      ["كيف أقدر أخدمك", "#help", "help hire services خدمات تعاون توظيف ورشة"],
       ["تواصل معي", "#contact", "contact email تواصل بريد"]
     ],
     copyEmail: "انسخ بريدي",
@@ -854,7 +846,7 @@ const ar: UiStrings = {
     complete: "لقيت الأسرار الستة كلها. فضولك فضول مهندس. راسلني، ودّي أتعرّف عليك.",
     items: {
       palette: { title: "قائمة الأوامر", hint: "بعض الناس ما يلمسون الماوس أبدًا. جرّب ⌘K أو Ctrl+K أو /." },
-      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الشبكة خلف طرفية المساعد." },
+      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الضوء الحيّ بجانب المساعد الذكي، ثم أفلته." },
       sudo: { title: "صلاحيات root", hint: "الطرفية تسمع الكلام. جرّب أن توظّف أحدًا." },
       policy: { title: "حارس السياسات", hint: "جرّب الأمر rm -rf في الطرفية." },
       arabic: { title: "ثنائي اللغة", hint: "الطرفية تعرف كلمة عربية واحدة. اكتب help وتلقاها." },
@@ -928,7 +920,7 @@ const ar: UiStrings = {
       errorLine: "[agent] ما قدرت أوصل للمساعد، فهذا الرد المكتوب مسبقًا.",
       verifying: "[agent] أتأكد أنك إنسان…",
       thinking: "أفكّر…",
-      privacy: "ما تكتبه هنا يُرسَل إلى مساعد ذكاء اصطناعي يعمل بـ Claude عبر OpenRouter. ونحتفظ بالأسئلة 30 يومًا دون عنوان IP لتحسين الإجابات، فلا تكتب بيانات خاصة.",
+      privacy: "ما تكتبه هنا يُرسَل إلى مساعد ذكاء اصطناعي عبر OpenRouter. ونحتفظ بالأسئلة 30 يومًا دون عنوان IP لتحسين الإجابات، فلا تكتب بيانات خاصة.",
       evalsLink: "شوف كيف نختبره، مع إخفاقاته",
       steps: { plan: "المخطِّط", tool: "أداة", result: "النتيجة", policy: "السياسة", sources: "المصادر", guard: "حماية" },
       activity: (count: number) => (count === 1 ? "نفّذ خطوة وحدة" : count === 2 ? "نفّذ خطوتين" : `نفّذ ${count} خطوات`),
@@ -1048,7 +1040,10 @@ const ar: UiStrings = {
     badCode: "الرمز ما تطابق. راجعه وجرّب مرة ثانية.",
     emailOffline: "إرسال النسخة يحتاج الخادم، وهو متوقف الآن. والتنزيل يشتغل بدونه.",
     emailFailed: "ما قدرت أرسل الرمز. وتقدر تنزّل السيرة عادي.",
-    privacy: "نستخدم بريدك فقط لإرسال هذه النسخة، بعد أن تؤكّد الرمز. ويصل إلى سلطان إشعار فيه اسم الشركة والمجال والسيرة، وبريدك إن كتبته.",
+    more: "خيارات أكثر",
+    moreHint: "إعلان الوظيفة · نسخة على بريدك",
+    notify: "إذا كتبت شركة أو وظيفة أو لصقت إعلانًا، يصل إلى سلطان مع التنزيل إشعار فيه اسم الشركة والمجال والسيرة.",
+    emailPrivacy: "نستخدم بريدك فقط لإرسال هذه النسخة، بعد أن تؤكّد الرمز، ويصل بريدك إلى سلطان مع الإشعار.",
     restored: "كمّلت من حيث وقفت.",
     hesitation: "وقتك ضيق؟ السيرة العامة فيها كل شيء في صفحة واحدة.",
     hesitationAction: "حمّلها الآن",

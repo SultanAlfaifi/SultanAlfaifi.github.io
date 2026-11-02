@@ -95,12 +95,12 @@ test("the showcase runs 01 AccessFinish to 06 WAREVA, and Approve opens number o
 test("AccessFinish's numbers keep their denominators and their date", () => {
   const accessfinish = en.projects.find((project) => project.slug === "accessfinish");
   const byValue = Object.fromEntries(accessfinish.metrics.map((metric) => [metric.value, metric]));
-  assert.equal(byValue["15 / 15"].kind, "real-bug");
+  assert.equal(byValue["15 of 15"].kind, "real-bug");
   assert.equal(byValue["0 of 7"].kind, "real-bug");
   assert.match(byValue["0 of 7"].label, /across 43 attempts/);
-  assert.equal(byValue["7 / 7"].kind, "seeded-fault", "a seeded fault never reads like a real bug");
-  for (const value of ["15 / 15", "0 of 7", "7 / 7"]) assert.equal(byValue[value].asOf, "24 Oct 2026");
-  assert.equal(byValue["2 / 5"].asOf, undefined);
+  assert.equal(byValue["7 of 7"].kind, "seeded-fault", "a seeded fault never reads like a real bug");
+  for (const value of ["15 of 15", "0 of 7", "7 of 7"]) assert.equal(byValue[value].asOf, "24 Oct 2026");
+  assert.equal(byValue["2 of 5"].asOf, undefined);
   assert.doesNotMatch(JSON.stringify(en.projects), /0\/43|0 \/ 43/);
   // The caveat keeps both denominators in each language: 0 of 7 runs, across 43 attempts.
   for (const content of [en, ar]) {
@@ -130,7 +130,7 @@ test("the agent's knowledge carries each checkpoint and caveat", () => {
   assert.match(knowledge.text.en, /Where it stops for a person: step 3 of 3 \(Ranked picks, with reasons\), it asks you first: nothing installs until you say yes/);
   assert.match(knowledge.text.en, /Not yet: 0 of 7 on a real upstream bug across 43 attempts/);
   assert.match(knowledge.text.en, /The line it keeps: No account and no server\./);
-  assert.match(knowledge.text.en, /15 \/ 15 “Booked” pages with the wrong day saved, rejected by the verifier \(as of 24 Oct 2026\)/);
+  assert.match(knowledge.text.en, /15 of 15 “Booked” pages with the wrong day saved, rejected by the verifier \(as of 24 Oct 2026\)/);
   assert.match(knowledge.text.ar, /أين يتوقف لينتظر إنسانًا: الخطوة 3 من 4 \(مراجعتك\)، يستأذنك أولًا: لا تُفعَّل أي مسودة يكتبها قبل موافقتك/);
   assert.match(knowledge.text.ar, /ما لم يكتمل بعد: المحطة الفعلية لم تُبنَ بعد/);
   assert.match(knowledge.text.ar, /ما لم يكتمل بعد: على خلل حقيقي في المشروع الأصلي، فلم ينجح أيٌّ من 7 تشغيلات، بعد 43 محاولة إجمالًا/);

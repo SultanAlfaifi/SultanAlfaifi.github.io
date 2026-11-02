@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Clipboard, Mail, MapPin } from "lucide-react";
+import { Check, Clipboard, Mail } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
-import { SplitWords } from "./section-header";
+import { HelpSection } from "./help-section";
+import { ChapterEyebrow, ClauseLines } from "./section-header";
 import { SocialLinks } from "./social-links";
 
+// The closing chapter, last in every visitor's order. One email action and a way to copy the address, the
+// address itself in plain text, the three ways I can help (#help), the three profiles, and then the page
+// comes to rest on a horizon of the living light. The quiet wordmark under it is the footer's
+// (components/footer.tsx).
 export function ContactSection({ locale = "en" }: { locale?: Locale }) {
   const { identity, ui } = getContent(locale);
   const [copied, setCopied] = useState(false);
@@ -33,46 +38,41 @@ export function ContactSection({ locale = "en" }: { locale?: Locale }) {
   }
 
   return (
-    <section id="contact" className="contact-section" aria-labelledby="contact-title">
-      <div className="page-shell contact-section__inner">
-        <div className="contact-section__copy">
-          <h2 id="contact-title" className="split-heading"><SplitWords text={ui.contact.title} /></h2>
-          <p>{ui.contact.body}</p>
-        </div>
+    <section id="contact" className="li-chapter finale" aria-labelledby="contact-title">
+      <div className="page-shell finale__inner">
+        <header className="finale__head">
+          <ChapterEyebrow className="finale__eyebrow" />
+          <h2 id="contact-title" className="split-heading finale__title"><ClauseLines text={ui.contact.title} /></h2>
+          <p className="finale__lead">{ui.contact.body}</p>
+        </header>
 
-        <div className="contact-section__actions">
-          <a className="contact-orb" href={`mailto:${identity.email}`} data-magnetic aria-label={ui.contact.orbAria}>
-            <svg className="contact-orb__ring" viewBox="0 0 200 200" aria-hidden="true" direction="ltr">
-              <defs><path id="contact-orb-path" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-              <text><textPath href="#contact-orb-path">{ui.contact.orbRing}</textPath></text>
-            </svg>
-            <span className="contact-orb__core" aria-hidden="true">
-              <Mail size={22} />
-              <span lang="ar">{ui.contact.orbWord}</span>
-              <small>{ui.contact.orbSmall}</small>
-            </span>
+        <div className="finale__acts">
+          <a className="li-btn li-btn--primary finale__btn" href={`mailto:${identity.email}`}>
+            <Mail aria-hidden="true" />
+            {ui.palette.sendEmail}
           </a>
-          <button className="button button--ghost" type="button" onClick={copyEmail}>
-            {copied ? (
-              <Check aria-hidden="true" size={18} />
-            ) : (
-              <Clipboard aria-hidden="true" size={18} />
-            )}
+          <button className="li-btn li-btn--ghost finale__btn" type="button" onClick={copyEmail}>
+            {copied ? <Check aria-hidden="true" /> : <Clipboard aria-hidden="true" />}
             {copied ? ui.contact.copiedButton : ui.contact.copy}
           </button>
-          <p className="contact-section__status" aria-live="polite">
-            {copied ? ui.contact.copied(identity.email) : copyError ? ui.contact.manual(identity.email) : identity.email}
-          </p>
         </div>
+        <p className="finale__meta">
+          <span aria-live="polite">
+            {copied ? ui.contact.copied(identity.email) : copyError ? ui.contact.manual(identity.email) : <bdi dir="ltr">{identity.email}</bdi>}
+          </span>
+          <span aria-hidden="true"> · </span>
+          <span>{ui.contact.based(identity.location)}</span>
+        </p>
 
-        <div className="contact-section__meta">
-          <p>
-            <MapPin aria-hidden="true" size={17} />
-            {ui.contact.based(identity.location)}
-          </p>
-          <SocialLinks includeEmail locale={locale} />
+        {/* «كيف أقدر أخدمك؟»: the three ways to start, inside Contact (#help), so Contact closes every order. */}
+        <HelpSection locale={locale} />
+
+        <div className="finale__socials">
+          <SocialLinks locale={locale} />
         </div>
       </div>
+
+      <div className="finale__horizon" aria-hidden="true" />
     </section>
   );
 }

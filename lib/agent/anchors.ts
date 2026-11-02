@@ -5,8 +5,12 @@ import type { AnchorInfo } from "./types";
 
 type SectionKey = "work" | "achievements" | "about" | "timeline" | "runtime" | "experience" | "organizations" | "skills" | "journey" | "community" | "ideas" | "recommendations" | "help" | "cv" | "contact";
 
-const SECTION_ORDER: SectionKey[] = ["work", "achievements", "about", "timeline", "runtime", "experience", "organizations", "skills", "journey", "community", "ideas", "recommendations", "help", "cv", "contact"];
-const COLLAPSED = new Set<SectionKey>(["skills", "journey", "community", "ideas"]);
+// Page order. Three ids nest inside a chapter (experience in about, recommendations in achievements, help
+// in contact); the six "Beyond the projects" ids are the rows themselves, each a closed <details> that the
+// console, the palette and shared links open (lib/agent/reveal.ts). The anchor "journey" is #journey, the
+// courses row; the dated timeline is #timeline.
+const SECTION_ORDER: SectionKey[] = ["work", "runtime", "about", "experience", "achievements", "recommendations", "cv", "timeline", "organizations", "skills", "journey", "community", "ideas", "contact", "help"];
+const COLLAPSED = new Set<SectionKey>(["timeline", "organizations", "skills", "journey", "community", "ideas"]);
 
 function sectionLabel(key: SectionKey, { ui }: PortfolioContent) {
   const fromPalette = new Map(ui.palette.sections.map(([label, href]) => [href.slice(1), label]));

@@ -4,15 +4,18 @@ import { Fragment, type ReactNode } from "react";
 import type { Visitor } from "@/lib/visitor";
 import { useVisitor } from "./use-visitor";
 
-// The order of the sections after the hero, by why the visitor came. Hiring: what he does now, the
-// proof, then the CV. Working together: the projects, the assistant, and how to start. Browsing or
-// skipping keeps the usual order, which is the order the sections are passed in.
+// The order of the eight blocks after the hero, by why the visitor came. Browsing or skipping keeps the usual
+// order, which is the order the blocks are passed in: work, band, runtime, about, achievements, cv, deeper,
+// contact. Hiring: About first (its Now card, Salla, leads), then the work, then the CV as the third block.
+// Working together: the projects, the assistant, and Contact last, where the three ways to start now live.
+// Contact always closes, so the horizon and the wordmark end every order. Every order lists all eight keys.
 export const SECTION_ORDERS: Partial<Record<Visitor, string[]>> = {
-  hiring: ["experience", "work", "cv", "recommendations", "achievements", "runtime", "about", "organizations", "journey", "band", "deeper", "help", "contact"],
-  collaborate: ["work", "runtime", "help", "achievements", "about", "journey", "band", "experience", "organizations", "recommendations", "deeper", "cv", "contact"]
+  hiring: ["about", "work", "cv", "achievements", "runtime", "band", "deeper", "contact"],
+  collaborate: ["work", "band", "runtime", "achievements", "about", "deeper", "cv", "contact"]
 };
 
-// Reorders the real DOM, not just the paint, so keyboard and screen-reader order match what's seen.
+// Reorders the real DOM, not just the paint, so keyboard and screen-reader order match what's seen, and the
+// chapter numbers (a CSS counter in DOM order) follow the visitor's order.
 export function PersonalOrder({ sections }: { sections: { id: string; node: ReactNode }[] }) {
   const visitor = useVisitor();
   const order = visitor ? SECTION_ORDERS[visitor] : undefined;

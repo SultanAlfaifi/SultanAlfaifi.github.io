@@ -1,11 +1,12 @@
-// The gate tick: a lime ring that closes around a check. It sits beside the headline's gate phrase and
-// only shows once the visitor approves (data-gate="approved" on the hero). It keeps its space while
-// hidden, so the headline never shifts when it lands. Decorative: the run card's status line says it.
+// The gate line under the headline's يستأذنونك / "ask": dashes while the agent waits for the visitor, a
+// solid line of living light when they approve, dimmed when they say "not now" (data-gate on the hero).
+// Two layers, so each change is a transform: the dashes march on their own strip, and the light draws
+// over them from the inline start. Decorative: the run card's status line says what happened.
 export function GateMark() {
   return (
-    <svg className="gate-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <circle className="gate-mark__ring" cx="12" cy="12" r="10" pathLength="1" />
-      <path className="gate-mark__check" d="M7.5 12.4l3 3 6-6.6" pathLength="1" />
-    </svg>
+    <span className="gate-line" aria-hidden="true">
+      <span className="gate-line__dashes" />
+      <span className="gate-line__light" />
+    </span>
   );
 }

@@ -1,0 +1,786 @@
+/* ==========================================================================================
+   The lower chapters (FINAL-SPEC 6.4 to 6.9). Imported right after app/living.css, so it builds on the
+   Calm tokens there: --li-chapter, --li-group, --li-open, --li-gap and --li-t0 to --li-t7.
+   One block per chapter, in page order (tests slice the file on these headings). Anything shared (tokens,
+   the chapter counter, the seams and seeds) lives in app/living.css, "Calm".
+   ========================================================================================== */
+
+/* ===== About + Now ===== */
+/* #about (components/about-section.tsx) with the Now card #experience (.about__now,
+   components/experience-section.tsx) and the «التالي» line. FINAL-SPEC 6.4. */
+
+/* Both of these chapters open the same way: the numbered eyebrow, the headline at t1, the lead at t4, stacked,
+   then --li-open to the chapter's one object. (globals.css sets #about's bottom padding by id; the chapter
+   rhythm wins back here.) */
+.portfolio-v3 #about.li-chapter { padding-bottom: calc(var(--li-chapter) / 2); }
+.portfolio-v3 :is(#about, #achievements) .section-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: 20px;
+  max-width: none;
+  margin: 0 0 var(--li-open);
+  padding: 0;
+  border: 0;
+}
+.portfolio-v3 :is(#about, #achievements) .section-header__copy { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 16px; }
+.portfolio-v3 :is(#about, #achievements) .section-header h2 {
+  max-width: 18ch;
+  margin: 0;
+  color: var(--li-ink);
+  font-size: var(--li-t1);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+}
+[dir="rtl"] :is(#about, #achievements) .section-header h2 { line-height: 1.2; letter-spacing: 0; }
+.portfolio-v3 :is(#about, #achievements) .section-header__copy > p {
+  max-width: 30em;
+  margin: 0;
+  color: var(--li-ink-2);
+  font-size: var(--li-t4);
+  font-weight: 400;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+/* Text on the start side, the portrait on the end side; the Now card spans the shell under them, and the
+   «التالي» line closes the chapter. Auto-placed, so a visitor's order (below) can move the card first. */
+.about {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--li-gap);
+  align-items: center;
+}
+.about__text { grid-column: 1 / span 7; display: grid; gap: 24px; min-width: 0; }
+.about__text p { margin: 0; text-wrap: pretty; }
+.about__lead { max-width: 36em; color: var(--li-ink); font-size: var(--li-t4); line-height: 1.75; }
+.about__body { max-width: 60ch; color: var(--li-ink-2); font-size: var(--li-t5); line-height: 1.75; }
+/* Each item brings its own dot; the list starts one dot early and clips it, so the first item on every line
+   starts clean and no line ends on a dot. */
+.about__meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  margin-inline-start: -22px;
+  padding: 8px 0 0;
+  list-style: none;
+  clip-path: inset(0 0 0 22px);
+  color: var(--li-ink-3);
+  font-size: var(--li-t6);
+  line-height: 1.7;
+}
+[dir="rtl"] .about__meta { clip-path: inset(0 22px 0 0); }
+.about__meta li { padding-inline-start: 22px; white-space: nowrap; }
+.about__meta li::before { content: "·" / ""; display: inline-block; width: 22px; margin-inline-start: -22px; text-align: center; }
+
+.about__portrait { grid-column: 9 / span 4; width: 100%; max-width: 400px; justify-self: center; }
+.about__portrait-frame {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+/* A soft iris halo behind the portrait: light, not a frame. */
+.about__portrait-frame::before {
+  content: "";
+  position: absolute;
+  inset: -16%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--li-iris-rgb) / 30%), rgb(var(--li-rose-rgb) / 8%) 62%, transparent);
+  pointer-events: none;
+}
+.about__portrait-frame img {
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--li-line-2);
+}
+
+/* The Now card: glass, the copy on the start side and the Salla film as a still poster on the end side. */
+.portfolio-v3 .about__now {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+  margin-top: clamp(40px, 4.4vw, 64px);
+  padding: clamp(24px, 2.8vw, 40px);
+  scroll-margin-top: calc(var(--nav-height, 60px) + 32px);
+}
+.about__now-copy { display: grid; gap: 16px; min-width: 0; }
+.about__now-copy p { margin: 0; }
+.about__now-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.portfolio-v3 .about__now-head h3 { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.about__now-mark { flex: none; width: auto; height: 28px; opacity: 0.85; }
+.about__now-meta { color: var(--li-ink-3); font-size: var(--li-t6); line-height: 1.7; }
+/* A short part of an "a · b · c" line never breaks in the middle (role, dates, place). */
+:is(.about__now-meta, .recognition__quote-role) .meta-part { white-space: nowrap; }
+.about__now-duties { display: grid; gap: 10px; margin: 8px 0 0; padding: 0; list-style: none; }
+.about__now-duties li { position: relative; padding-inline-start: 22px; color: var(--li-ink-2); font-size: var(--li-t5); line-height: 1.75; }
+.about__now-duties li::before { content: ""; position: absolute; inset-inline-start: 2px; top: 0.85em; width: 8px; height: 1px; background: var(--li-ink-3); }
+.about__now-copy .about__now-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--li-line);
+  color: var(--li-tint-apricot);
+  font-size: var(--li-t6);
+  line-height: 1.7;
+}
+
+.about__now-film {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--li-line);
+  border-radius: var(--li-r-s);
+  background: var(--li-bg-1);
+}
+.about__now-video { display: block; width: 100%; height: 100%; object-fit: cover; transition: filter 0.6s var(--li-ease); }
+/* At rest the poster sits a little into the black, with a soft floor for the play button. */
+.about__now-film:not(.is-started) .about__now-video { filter: brightness(0.88) saturate(0.95); }
+.about__now-film:not(.is-started)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgb(var(--li-bg-rgb) / 62%), transparent 48%);
+}
+.about__now-play {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px 0 8px;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: var(--li-r-pill);
+  background: rgb(var(--li-bg-rgb) / 72%);
+  color: var(--li-ink);
+  font: inherit;
+  font-size: var(--li-t6);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease;
+}
+[dir="rtl"] .about__now-play { padding: 0 8px 0 18px; }
+.about__now-play svg {
+  box-sizing: content-box;
+  width: 12px;
+  height: 12px;
+  padding: 8px;
+  border-radius: 50%;
+  background: var(--li-ink);
+  color: var(--li-on-light);
+  fill: currentColor;
+}
+.about__now-play:hover { border-color: rgb(255 255 255 / 40%); background: rgb(var(--li-bg-rgb) / 88%); box-shadow: 0 0 0 6px rgb(255 255 255 / 6%); }
+.about__now-play:focus-visible, .about__now-video:focus-visible { outline: 2px solid var(--li-focus); outline-offset: 3px; }
+.about__now-status { position: absolute; z-index: 2; top: 12px; inset-inline-start: 12px; margin: 0; }
+.about__now-status:not(:empty) {
+  max-width: calc(100% - 24px);
+  padding: 8px 12px;
+  border-radius: var(--li-r-s);
+  background: rgb(var(--li-bg-rgb) / 86%);
+  color: var(--li-ink);
+  font-size: var(--li-t7);
+  line-height: 1.6;
+}
+
+/* «التالي»: what he is working on next, in his own words (the last stop of the journey). */
+.about__next {
+  grid-column: 1 / span 7;
+  display: grid;
+  gap: 6px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--li-line-2);
+}
+.about__next p { margin: 0; }
+.about__next-label { display: inline-flex; align-items: center; gap: 10px; color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.about__next-label::before { content: ""; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
+.about__next-title { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.75; }
+.about__next-detail { max-width: 60ch; text-wrap: pretty; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* Hiring visitors meet the Salla card first inside About (G10): a CSS order swap, no DOM change. The greeting
+   keeps its first sentence right under it, then comes the card, then the rest of the text beside the portrait.
+   The text column opens (display: contents) so its paragraphs can sit on either side of the card. */
+html[data-visitor="hiring"] .about__text { display: contents; }
+html[data-visitor="hiring"] .about__lead { grid-column: 1 / span 7; grid-row: 1; }
+html[data-visitor="hiring"] .about__now { order: -1; grid-row: 2; margin-block: clamp(40px, 4.4vw, 64px); }
+html[data-visitor="hiring"] .about__body { grid-column: 1 / span 7; grid-row: 3; align-self: end; }
+html[data-visitor="hiring"] .about__meta { grid-column: 1 / span 7; grid-row: 4; align-self: start; margin-top: 24px; }
+html[data-visitor="hiring"] .about__portrait { grid-row: 3 / span 2; }
+html[data-visitor="hiring"] .about__next { grid-row: 5; }
+
+@media (max-width: 900px) {
+  .about { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  .about__text, .about__portrait, .portfolio-v3 .about__now, .about__next { grid-column: 1 / -1; }
+  .about__portrait { order: -1; width: 56%; max-width: 260px; margin-bottom: 40px; }
+  .portfolio-v3 .about__now { grid-template-columns: minmax(0, 1fr); row-gap: 24px; margin-top: 40px; }
+  /* One column: the portrait, the first sentence, the card, then the rest. */
+  html[data-visitor="hiring"] :is(.about__lead, .about__now, .about__body, .about__meta, .about__portrait, .about__next) { grid-column: 1 / -1; grid-row: auto; }
+  html[data-visitor="hiring"] .about__portrait { order: -3; }
+  html[data-visitor="hiring"] .about__lead { order: -2; }
+  html[data-visitor="hiring"] .about__now { order: -1; margin-block: 40px; }
+  .about__next { margin-top: 32px; }
+  .about__meta li { white-space: normal; }
+}
+@media (max-width: 560px) {
+  .about__now-play { inset-inline-start: 12px; bottom: 12px; }
+}
+
+/* ===== Recognition ===== */
+/* #achievements (components/achievements-section.tsx) with the quotes #recommendations
+   (.recognition__quotes, components/recommendations-section.tsx). FINAL-SPEC 6.5. */
+
+/* The moment: «أفضل 5%» at t0 in the living light, with a soft glow behind it. The page's one "moment". */
+.recognition__lead { position: relative; isolation: isolate; display: grid; justify-items: start; gap: 16px; max-width: 46rem; }
+.recognition__lead::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-inline-start: -8%;
+  top: -34%;
+  width: 72%;
+  height: 150%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--li-iris-rgb) / 15%), rgb(var(--li-rose-rgb) / 6%) 55%, transparent);
+}
+.recognition__lead p, .recognition__lead h3 { margin: 0; }
+.recognition__lead .recognition__moment { margin-bottom: 8px; font-size: var(--li-t0); font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; }
+[dir="rtl"] .recognition__moment { letter-spacing: 0; line-height: 1.2; }
+.recognition__moment .li-aurora-text { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.portfolio-v3 .recognition__lead-title { color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.recognition__lead-text { max-width: 40em; text-wrap: pretty; color: var(--li-ink-2); font-size: var(--li-t5); line-height: 1.75; }
+.recognition__lead .recognition__by { display: flex; align-items: center; gap: 14px; margin-top: 8px; color: var(--li-ink-3); font-size: var(--li-t6); line-height: 1.7; }
+.recognition__by img { flex: none; width: auto; height: 40px; opacity: 0.85; }
+
+/* The other recognitions: hairline rows, never cards. Signal · title and full description · issuer and date. */
+.recognition__rows { margin: var(--li-group) 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--li-line); }
+.recognition__row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--li-gap);
+  align-items: baseline;
+  padding-block: 32px;
+  border-top: 1px solid var(--li-line);
+}
+.recognition__row p, .recognition__row h3 { margin: 0; }
+.recognition__signal { grid-column: 1 / span 3; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.35; }
+.recognition__text { grid-column: 4 / span 6; display: grid; gap: 6px; min-width: 0; }
+.portfolio-v3 .recognition__text h3 { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.6; letter-spacing: 0; }
+.recognition__text p { max-width: 60ch; text-wrap: pretty; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.75; }
+.recognition__text a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--li-tint-glacier); font-size: var(--li-t6); text-decoration: none; }
+.recognition__issuer { grid-column: 10 / span 3; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; text-align: end; }
+
+/* «قالوا عنّي»: an h3 and two quotes at t2, each under a hairline, with an aurora quote mark. */
+.portfolio-v3 .recognition__quotes { margin-top: var(--li-group); }
+.portfolio-v3 .recognition__quotes-title { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.recognition__quote-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--li-open) clamp(32px, 5vw, 80px); margin-top: 40px; }
+.recognition__quote { min-width: 0; padding-top: 32px; border-top: 1px solid var(--li-line-2); }
+.recognition__quote figure { display: grid; align-content: start; gap: 24px; margin: 0; }
+.recognition__mark { display: block; width: 34px; height: 26px; }
+[dir="rtl"] .recognition__mark { transform: scaleX(-1); }
+.recognition__quote blockquote { margin: 0; }
+.recognition__quote blockquote p { margin: 0; color: var(--li-ink); font-size: var(--li-t2); font-weight: 500; line-height: 1.4; letter-spacing: -0.015em; text-wrap: pretty; }
+[dir="rtl"] .recognition__quote blockquote p { line-height: 1.5; letter-spacing: 0; }
+.recognition__quote figcaption { display: grid; gap: 4px; }
+.recognition__quote-name { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.6; }
+.recognition__quote-role { color: var(--li-ink-3); font-size: var(--li-t6); line-height: 1.7; }
+.recognition__quote-note { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin: 0; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.recognition__quote-note a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--li-tint-glacier);
+  font-size: var(--li-t6);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.recognition__quote-note a:hover { text-decoration: underline; text-underline-offset: 5px; }
+
+@media (max-width: 900px) {
+  .recognition__lead { max-width: none; }
+  .recognition__lead::before { width: 100%; }
+  .recognition__row { grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding-block: 24px; }
+  .recognition__signal, .recognition__text, .recognition__issuer { grid-column: 1 / -1; text-align: start; }
+  .recognition__quote-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ===== Outside the projects ===== */
+/* «خارج المشاريع» (components/deeper-section.tsx: .deeper, .deeper__head, .deeper-row and its
+   summary, .deeper-row__body) and the six row bodies inside it. FINAL-SPEC 6.7. */
+.portfolio-v3 .deeper {
+  --row-num: 3.5rem;                       /* the number column; an open row's body lines up with the titles */
+  --row-gap: 24px;
+  --row-stack: clamp(40px, 4vw, 56px);     /* between the groups inside an open row */
+}
+
+/* The header: the appendix title at t2, with one quiet line under it. */
+.portfolio-v3 .deeper .deeper__head { display: grid; gap: 12px; max-width: 46rem; margin-bottom: var(--li-open); }
+.portfolio-v3 .deeper .deeper__head h2 { color: var(--li-ink); font-size: var(--li-t2); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; }
+.portfolio-v3 .deeper .deeper__head p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* Six sibling rows on hairlines. Closed, each reads as one line: number, title, its one fact, and a «+». */
+.portfolio-v3 .deeper__rows { border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper-row { border-bottom: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper-row__summary {
+  display: grid;
+  grid-template-columns: var(--row-num) minmax(0, 0.92fr) minmax(0, 1.08fr) 44px;
+  grid-template-areas: "num title line plus";
+  align-items: center;
+  column-gap: var(--row-gap);
+  min-height: 84px;
+  padding-block: 16px;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color 0.3s ease;
+}
+.portfolio-v3 .deeper-row__summary::-webkit-details-marker { display: none; }
+.portfolio-v3 .deeper-row__summary::marker { content: ""; }
+.portfolio-v3 .deeper-row__summary:focus-visible { outline: 2px solid var(--li-focus); outline-offset: 2px; border-radius: var(--li-r-s); }
+.portfolio-v3 .deeper .deeper-row__num { grid-area: num; color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .deeper-row__title { grid-area: title; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
+.portfolio-v3 .deeper .deeper-row__line { grid-area: line; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .deeper-row__plus {
+  position: relative;
+  grid-area: plus;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--li-line-2);
+  border-radius: 50%;
+  background: var(--li-glass);
+  transition: transform 0.5s var(--li-ease-spring), border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.4s ease;
+}
+.portfolio-v3 .deeper-row__plus::before,
+.portfolio-v3 .deeper-row__plus::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--li-ink-2);
+  translate: -50% -50%;
+}
+.portfolio-v3 .deeper-row__plus::after { rotate: 90deg; }
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus { border-color: var(--li-line-3); background: var(--li-glass-2); }
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus::before,
+.portfolio-v3 .deeper-row__summary:hover .deeper-row__plus::after { background: var(--li-ink); }
+/* Open: the «+» turns to «×», and its rim catches a little of the living light. */
+.portfolio-v3 .deeper-row[open] .deeper-row__plus {
+  transform: rotate(45deg);
+  border-color: rgb(var(--li-iris-rgb) / 45%);
+  box-shadow: 0 0 18px -4px rgb(var(--li-iris-rgb) / 60%);
+}
+.portfolio-v3 .deeper .deeper-row[open] .deeper-row__num { color: var(--li-ink-2); }
+
+/* An open row: the body lines up with the titles above it. */
+.portfolio-v3 .deeper-row__body { padding: 8px 0 var(--li-open); padding-inline-start: calc(var(--row-num) + var(--row-gap)); }
+@keyframes deeper-open { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .portfolio-v3 .deeper-row[open] .deeper-row__body { animation: deeper-open 0.6s var(--li-ease-spring) both; }
+  /* Where the browser can animate a fold's height, the row eases open instead of jumping. */
+  @supports selector(::details-content) {
+    html:not([data-motion="off"]) .portfolio-v3 .deeper { interpolate-size: allow-keywords; }
+    html:not([data-motion="off"]) .portfolio-v3 .deeper-row::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition: block-size 0.55s var(--li-ease-spring), content-visibility 0.55s allow-discrete;
+    }
+    html:not([data-motion="off"]) .portfolio-v3 .deeper-row[open]::details-content { block-size: auto; }
+  }
+}
+
+/* What every row body shares: a lead in the body size, small labels, links with a hairline underline, a
+   figure that sits with its note, and a two-column split for rows that have facts beside their text. */
+.portfolio-v3 .deeper .deeper-body__lead { max-width: 60ch; color: var(--li-ink-2); font-size: var(--li-t5); line-height: 1.75; }
+.portfolio-v3 .deeper :is(h4, p, li) { margin: 0; }
+.portfolio-v3 .deeper h4 { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.5; letter-spacing: 0; }
+.portfolio-v3 .deeper .row-label { color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--li-ink);
+  font-size: var(--li-t6);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--li-line-3);
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease;
+}
+.portfolio-v3 .deeper .row-link svg { flex: none; color: var(--li-ink-3); }
+.portfolio-v3 .deeper .row-link:hover { text-decoration-color: var(--li-ink); }
+.portfolio-v3 .deeper .row-split { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: calc(var(--li-gap) * 2); row-gap: var(--row-stack); align-items: start; }
+.portfolio-v3 .deeper .row-facts { display: grid; gap: 24px; padding-top: 20px; border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .deeper .row-figure { display: grid; gap: 2px; }
+.portfolio-v3 .deeper .row-figure__value { color: var(--li-ink); font-size: var(--li-t2); font-weight: 600; line-height: 1.2; }
+.portfolio-v3 .deeper .row-figure > span:last-child { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .deeper .row-facts__item { display: grid; gap: 4px; }
+.portfolio-v3 .deeper .row-figure__note { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-facts__text { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 01 · The timeline: one still column. A thin line of the living light runs down through the stops, and each
+   stop's dot is lit in its kind's colour (the same tints as before); "Next" is a lamp. */
+.portfolio-v3 .row-timeline { display: grid; gap: var(--row-stack); max-width: 54rem; }
+.portfolio-v3 .row-timeline__list { --when: 8.5rem; position: relative; display: grid; }
+.portfolio-v3 .row-timeline__list::before {
+  content: "";
+  position: absolute;
+  inset-block: 22px 22px;
+  inset-inline-start: calc(var(--when) + 20px + 3.5px);
+  width: 1px;
+  background: linear-gradient(180deg, rgb(var(--li-apricot-rgb) / 45%), rgb(var(--li-rose-rgb) / 45%) 35%, rgb(var(--li-iris-rgb) / 50%) 70%, rgb(var(--li-glacier-rgb) / 60%));
+}
+.portfolio-v3 .row-timeline__stop {
+  --k: var(--li-ink-3);
+  --k-text: var(--li-ink-3);
+  display: grid;
+  grid-template-columns: var(--when) 8px minmax(0, 1fr);
+  column-gap: 20px;
+  padding-block: 14px;
+}
+.portfolio-v3 .row-timeline__stop--recognition { --k: var(--li-glacier); --k-text: var(--li-tint-glacier); }
+.portfolio-v3 .row-timeline__stop--product { --k: var(--li-apricot); --k-text: var(--li-tint-apricot); }
+.portfolio-v3 .row-timeline__stop--career { --k: var(--li-iris); --k-text: var(--li-tint-iris); }
+.portfolio-v3 .row-timeline__stop--hackathon { --k: var(--li-rose); --k-text: var(--li-tint-rose); }
+.portfolio-v3 .row-timeline__stop--open-source { --k: var(--li-ink); --k-text: var(--li-ink); }
+.portfolio-v3 .row-timeline__stop--learning { --k: var(--li-ink-2); --k-text: var(--li-ink-2); }
+.portfolio-v3 .row-timeline__stop--now { --k: var(--li-glacier); --k-text: var(--li-tint-glacier); }
+.portfolio-v3 .deeper .row-timeline__when { display: grid; align-content: start; gap: 2px; padding-top: 2px; }
+.portfolio-v3 .deeper .row-timeline__date { color: var(--li-ink-2); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-timeline__kind { color: var(--k-text); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .row-timeline__dot {
+  position: relative;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--li-bg);
+  box-shadow: inset 0 0 0 1.5px var(--k);
+}
+.portfolio-v3 .row-timeline__stop--now .row-timeline__dot { background: var(--li-glacier); box-shadow: 0 0 0 3px var(--li-bg), 0 0 12px 2px rgb(var(--li-glacier-rgb) / 70%); }
+.portfolio-v3 .row-timeline__body { display: grid; gap: 4px; min-width: 0; }
+.portfolio-v3 .deeper .row-timeline__body p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 02 · Organizations: a still grid of off-white logos on hairlines, each with what I did there. */
+.portfolio-v3 .row-orgs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--li-gap); row-gap: 8px; }
+.portfolio-v3 .row-orgs__item { display: grid; align-content: start; gap: 4px; padding-block: 24px 28px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .row-orgs__logo {
+  position: relative;
+  display: block;
+  width: 140px;
+  height: 40px;
+  margin-bottom: 14px;
+  opacity: 0.72;
+  transform: scale(var(--visual-scale, 1));
+  transform-origin: left center;
+  transition: opacity 0.3s ease;
+}
+[dir="rtl"] .portfolio-v3 .row-orgs__logo, .portfolio-v3 [dir="rtl"] .row-orgs__logo { transform-origin: right center; }
+.portfolio-v3 .row-orgs__logo img { object-fit: contain; object-position: left center; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+[dir="rtl"] .portfolio-v3 .row-orgs__logo img, .portfolio-v3 [dir="rtl"] .row-orgs__logo img { object-position: right center; }
+.portfolio-v3 .row-orgs__logo--inked img { filter: brightness(0) invert(1); }
+.portfolio-v3 .row-orgs__item:hover .row-orgs__logo { opacity: 1; }
+.portfolio-v3 .deeper .row-orgs__name a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-block: -10px;
+  color: var(--li-ink);
+  text-decoration: none;
+}
+.portfolio-v3 .deeper .row-orgs__name a svg { flex: none; color: var(--li-ink-3); transition: color 0.2s ease, translate 0.3s var(--li-ease-spring); }
+.portfolio-v3 .deeper .row-orgs__name a:hover svg { color: var(--li-tint-glacier); translate: 2px -2px; }
+[dir="rtl"] .portfolio-v3 .deeper .row-orgs__name a:hover svg, .portfolio-v3 [dir="rtl"] .deeper .row-orgs__name a:hover svg { translate: -2px -2px; }
+.portfolio-v3 .deeper .row-orgs__kind { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-orgs__note { margin-top: 6px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+
+/* 03 · Skills: four short lists on hairlines. The strongest tools are in full ink with a lit dot. */
+.portfolio-v3 .row-skills { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--li-gap); }
+.portfolio-v3 .row-skills__group { padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-skills__group h4 { margin-bottom: 10px; font-size: var(--li-t6); }
+.portfolio-v3 .deeper .row-skills__group li { display: flex; align-items: center; gap: 10px; padding-block: 5px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .row-skills__group li > span { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--li-ink-4); }
+.portfolio-v3 .deeper .row-skills__group li.is-strong { color: var(--li-ink); }
+.portfolio-v3 .row-skills__group li.is-strong > span { background: var(--li-glacier); box-shadow: 0 0 8px 1px rgb(var(--li-glacier-rgb) / 60%); }
+
+/* 04 · Courses and programs: three columns of hairline blocks, then the other certificates as quiet rows. */
+.portfolio-v3 .row-programs { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .row-programs__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--li-gap); row-gap: 8px; }
+.portfolio-v3 .row-program { display: flex; flex-direction: column; gap: 6px; padding-block: 24px 28px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .row-program__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 34px; margin-bottom: 10px; }
+.portfolio-v3 .row-program__logo { position: relative; display: block; width: 116px; height: 30px; opacity: 0.72; }
+.portfolio-v3 .row-program__logo img { object-fit: contain; object-position: left center; }
+[dir="rtl"] .portfolio-v3 .row-program__logo img, .portfolio-v3 [dir="rtl"] .row-program__logo img { object-position: right center; }
+.portfolio-v3 .row-program__logo--inked img { filter: brightness(0) invert(1); }
+.portfolio-v3 .deeper .row-program__result { font-size: var(--li-t6); font-weight: 600; line-height: 1.65; white-space: nowrap; }
+.portfolio-v3 .deeper :is(.row-program__issuer, .row-program__focus) { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-program__summary { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .deeper .row-certs h4 { margin-bottom: 12px; font-size: var(--li-t6); }
+.portfolio-v3 .row-certs ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--li-gap); }
+.portfolio-v3 .deeper .row-certs li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name link" "by link";
+  align-items: center;
+  column-gap: 16px;
+  padding-block: 10px;
+  border-top: 1px solid var(--li-line);
+}
+.portfolio-v3 .deeper .row-certs__name { grid-area: name; color: var(--li-ink); font-size: var(--li-t6); line-height: 1.6; }
+.portfolio-v3 .deeper .row-certs__by { grid-area: by; color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-certs li > :last-child { grid-area: link; }
+
+/* 05 · Teaching and volunteering: the trainings on hairlines; beside them, the hours with their source. */
+.portfolio-v3 .row-community { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .row-workshops { margin-top: 12px; }
+.portfolio-v3 .row-workshop { display: grid; gap: 6px; padding-block: 20px 24px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-workshop__meta { color: var(--li-ink-3); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .deeper .row-workshop > p:not(.row-workshop__meta) { max-width: 60ch; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+/* The bootcamp's five steps, joined by short strokes of the living light. */
+.portfolio-v3 .row-workshop__steps { display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; margin-top: 6px; }
+.portfolio-v3 .deeper .row-workshop__steps li { display: inline-flex; align-items: center; color: var(--li-ink-2); font-size: var(--li-t7); line-height: 1.65; }
+.portfolio-v3 .row-workshop__steps li + li::before { content: ""; width: 18px; height: 1px; margin-inline: 10px; background: var(--li-aurora); opacity: 0.8; }
+
+/* 06 · Writing: what and for whom, the followers figure beside it, three kinds of post, the topics. */
+.portfolio-v3 .row-ideas { display: grid; gap: var(--row-stack); }
+.portfolio-v3 .deeper .row-ideas__intro { max-width: 60ch; margin-top: 16px; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.75; }
+.portfolio-v3 .row-ideas__pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--li-gap); }
+.portfolio-v3 .row-ideas__pillars > li { display: grid; align-content: start; gap: 6px; padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-ideas__index { color: var(--li-ink-3); font-size: var(--li-t7); font-weight: 500; line-height: 1.65; }
+.portfolio-v3 .deeper .row-ideas__pillars p { color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .row-ideas__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-top: 20px; border-top: 1px solid var(--li-line); }
+.portfolio-v3 .deeper .row-ideas__topics { display: grid; gap: 4px; max-width: 46rem; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
+.portfolio-v3 .row-ideas__follow { display: flex; flex-wrap: wrap; gap: 10px; }
+.portfolio-v3 .row-ideas__follow .li-btn { font-size: var(--li-t6); }
+
+/* Narrower screens: the line drops under the title, and the bodies fold to fewer columns. */
+@media (max-width: 1100px) {
+  .portfolio-v3 :is(.row-skills, .row-orgs, .row-programs__list) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1023px) {
+  .portfolio-v3 .deeper { --row-num: 2.25rem; --row-gap: 16px; }
+  .portfolio-v3 .deeper-row__summary {
+    grid-template-columns: var(--row-num) minmax(0, 1fr) 44px;
+    grid-template-areas: "num title plus" "num line plus";
+    row-gap: 4px;
+    padding-block: 18px;
+  }
+  .portfolio-v3 .deeper .deeper-row__num { align-self: start; padding-top: 6px; }
+  .portfolio-v3 .deeper .row-split { grid-template-columns: minmax(0, 1fr); }
+  .portfolio-v3 .row-ideas__pillars { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .portfolio-v3 .row-ideas__pillars > li { padding-block: 20px; }
+  .portfolio-v3 .row-certs ul { grid-template-columns: minmax(0, 1fr); }
+}
+/* Phones: the title takes the row's whole width beside the «+», and the number moves down to start the
+   row's line, so a title stays on one line (FINAL-SPEC 6.7, about 95 px a row). */
+@media (max-width: 600px) {
+  .portfolio-v3 .deeper { --row-gap: 12px; }
+  .portfolio-v3 .deeper-row__summary {
+    grid-template-columns: auto minmax(0, 1fr) 44px;
+    grid-template-areas: "title title plus" "num line plus";
+    column-gap: var(--row-gap);
+    row-gap: 2px;
+    padding-block: 16px;
+  }
+  .portfolio-v3 .deeper :is(.deeper-row__num, .deeper-row__line) { align-self: baseline; padding-top: 0; }
+}
+@media (max-width: 700px) {
+  .portfolio-v3 .deeper-row__body { padding-inline-start: 0; padding-bottom: 56px; }
+  .portfolio-v3 :is(.row-skills, .row-orgs, .row-programs__list) { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .portfolio-v3 .row-skills { gap: 8px; }
+  .portfolio-v3 .row-timeline__list { --when: 0px; }
+  .portfolio-v3 .row-timeline__list::before { inset-inline-start: 3.5px; }
+  .portfolio-v3 .row-timeline__stop { grid-template-columns: 8px minmax(0, 1fr); grid-template-areas: "dot when" "dot body"; column-gap: 16px; }
+  .portfolio-v3 .row-timeline__stop .row-timeline__dot { grid-area: dot; }
+  .portfolio-v3 .deeper .row-timeline__when { grid-area: when; display: flex; flex-wrap: wrap; gap: 0 10px; padding-top: 0; }
+  .portfolio-v3 .row-timeline__body { grid-area: body; }
+  .portfolio-v3 .row-ideas__foot { display: grid; justify-content: stretch; }
+}
+
+/* ===== Contact + Help ===== */
+/* #contact (components/contact-section.tsx) with the help paths #help (.contact__help,
+   components/help-section.tsx), the socials and the aurora horizon. FINAL-SPEC 6.8. */
+/* The last chapter ends on its horizon, so it has no space under it: the wordmark rests right below. */
+.portfolio-v3 .li-chapter.finale { padding-bottom: 0; }
+.portfolio-v3 .finale__inner { display: grid; justify-items: center; text-align: center; }
+.portfolio-v3 .finale__head { display: grid; justify-items: center; gap: 20px; max-width: 54rem; }
+.portfolio-v3 .finale .finale__title {
+  margin: 0;
+  color: var(--li-ink);
+  font-size: var(--li-t1);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.portfolio-v3 [dir="rtl"] .finale .finale__title { line-height: 1.2; letter-spacing: 0; }
+/* The question, then the invitation: each on its own line (ClauseLines), so a wrap never splits the question. */
+.portfolio-v3 .finale .finale__title .clause-line { display: block; text-wrap: balance; }
+.portfolio-v3 .finale .finale__lead { max-width: 34em; margin: 0; color: var(--li-ink-2); font-size: var(--li-t4); line-height: 1.75; }
+
+/* One email action, and the address to copy. */
+.portfolio-v3 .finale__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 40px; }
+.portfolio-v3 .finale .finale__btn { min-height: 56px; padding-inline: 28px; font-size: var(--li-t5); }
+.portfolio-v3 .finale .finale__btn svg { width: 18px; height: 18px; }
+.portfolio-v3 .finale .finale__meta { margin: 16px 0 0; color: var(--li-ink-3); font-size: var(--li-t6); line-height: 1.7; }
+
+/* «كيف أقدر أخدمك؟»: three hairline columns, each with who it is for, the offer and one link. */
+.portfolio-v3 .finale .contact__help { width: 100%; margin-top: var(--li-group); }
+/* Its title is a quiet label on the start side, the aurora rule before it, so the three audiences under it
+   carry the hierarchy (the parent never looks like a fourth, dimmer title). */
+.portfolio-v3 .finale .contact__help-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--li-ink-2);
+  font-size: var(--li-t7);
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0;
+  text-align: start;
+}
+.portfolio-v3 .finale .contact__help-title::before { content: ""; flex: none; width: 22px; height: 1px; background: var(--li-aurora); }
+.portfolio-v3 .contact__paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--li-gap); margin-top: 32px; text-align: start; }
+.portfolio-v3 .contact__path { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding-top: 28px; border-top: 1px solid var(--li-line-2); }
+.portfolio-v3 .finale .contact__path h4 { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
+.portfolio-v3 .finale .contact__path p { margin: 0; max-width: 46ch; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.8; }
+.portfolio-v3 .finale .contact__path-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--li-ink);
+  font-size: var(--li-t6);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--li-line-3);
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease;
+}
+.portfolio-v3 .finale .contact__path-cta svg { flex: none; color: var(--li-ink-3); transition: color 0.2s ease, translate 0.3s var(--li-ease-spring); }
+.portfolio-v3 .finale .contact__path-cta:hover { text-decoration-color: var(--li-ink); }
+.portfolio-v3 .finale .contact__path-cta:hover svg { color: var(--li-tint-glacier); translate: 2px -2px; }
+.portfolio-v3 [dir="rtl"] .finale .contact__path-cta:hover svg { translate: -2px -2px; }
+
+/* The profiles: the only row of them below the hero. */
+.portfolio-v3 .finale__socials { margin-top: var(--li-open); }
+.portfolio-v3 .finale__socials .social-links { justify-content: center; gap: 10px; margin: 0; }
+.portfolio-v3 .finale__socials .social-links a {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--li-line-2);
+  border-radius: var(--li-r-pill);
+  background: var(--li-glass);
+  color: var(--li-ink);
+  font-family: inherit;
+  font-size: var(--li-t6);
+  font-weight: 500;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.portfolio-v3 .finale__socials .social-links a:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
+.portfolio-v3 .finale__socials .social-links a span { font: inherit; letter-spacing: 0; text-transform: none; }
+
+/* The horizon: a still, blurred glow of iris and rose, and one line of the living light across it. No orb. */
+.portfolio-v3 .finale__horizon { position: relative; height: clamp(140px, 16vw, 220px); margin-top: var(--li-open); pointer-events: none; }
+.portfolio-v3 .finale__horizon::before {
+  content: "";
+  position: absolute;
+  inset-inline: -10%;
+  bottom: -60%;
+  height: 120%;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--li-iris-rgb) / 30%), rgb(var(--li-rose-rgb) / 12%) 45%, transparent 70%);
+  filter: blur(10px);
+}
+.portfolio-v3 .finale__horizon::after {
+  content: "";
+  position: absolute;
+  inset-inline: 8%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--li-apricot-rgb) / 60%), rgb(var(--li-rose-rgb) / 70%), rgb(var(--li-iris-rgb) / 70%), rgb(var(--li-glacier-rgb) / 60%), transparent);
+}
+
+@media (max-width: 900px) {
+  .portfolio-v3 .contact__paths { grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 20px; }
+  .portfolio-v3 .contact__path { padding-block: 24px 20px; }
+}
+@media (max-width: 560px) {
+  .portfolio-v3 .finale__acts { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .portfolio-v3 .finale .finale__btn { width: 100%; }
+}
+
+/* ===== Closing and footer ===== */
+/* The quiet wordmark under the horizon and the one-row footer (components/footer.tsx). FINAL-SPEC 6.9. */
+.portfolio-v3 .closing { position: relative; }
+/* The name in the page's language, filled with ink that fades from 13% to 2%. Still, and decoration only. */
+.portfolio-v3 .closing .closing__mark {
+  margin: 0;
+  padding-inline: 16px;
+  font-size: clamp(64px, 11vw, 156px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  /* The ink is clipped to the paragraph's box, and the dots under the final «ي» hang below a 1.3 line: the
+     padding gives them room (the negative margin keeps the layout), and the fade ends where the dots are. */
+  padding-bottom: 0.3em;
+  margin-bottom: -0.3em;
+  background: linear-gradient(180deg, rgb(var(--li-ink-rgb) / 13%), rgb(var(--li-ink-rgb) / 5%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+/* Latin is wider than the Arabic name: it scales down a little sooner so it stays on one line on a phone. */
+.portfolio-v3 [dir="ltr"] .closing .closing__mark { font-size: clamp(44px, 10.5vw, 150px); line-height: 1.2; letter-spacing: -0.035em; }
+.portfolio-v3 .closing__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+  padding-block: 12px 28px;
+  color: var(--li-ink-3);
+  font-size: var(--li-t7);
+  line-height: 1.65;
+}
+.portfolio-v3 .closing__row p { margin: 0; }
+.portfolio-v3 .closing__row a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-inline-start: auto;
+  color: var(--li-ink-2);
+  transition: color 0.2s ease;
+}
+.portfolio-v3 .closing__row a:hover { color: var(--li-ink); }
+/* The assistant's launcher is fixed at the bottom inline-end corner (app/agent.css): «للأعلى ↑» stops short of
+   it, so the last link on the page is never under the button. */
+@media (min-width: 701px) {
+  .portfolio-v3 .closing__row { padding-inline-end: max(0px, calc(250px - var(--li-margin))); }
+}
+@media (max-width: 700px) {
+  .portfolio-v3 .closing__row { flex-direction: column; justify-content: center; text-align: center; padding-top: 4px; }
+  .portfolio-v3 .closing__row a { margin-inline-start: 0; }
+}
+

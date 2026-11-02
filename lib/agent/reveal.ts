@@ -1,12 +1,23 @@
 import { motionAllowed } from "@/components/motion-preference";
 
-// Scrolls to a page anchor the agent cited or opened, expanding the "Beyond the projects" panel if the
-// anchor sits inside it, and briefly outlines the target so the visitor sees where they landed.
+// Opens every fold around a target, the target itself included when it is a <details> (the "Beyond the
+// projects" rows carry their section ids). The page keeps folds one level deep; this opens them all anyway,
+// so a nested fold can never hide what the assistant or the palette points at.
+export function openFolds(target: Element) {
+  for (let d = target.closest("details"); d; d = d.parentElement?.closest("details") ?? null) d.open = true;
+}
+
+function inClosedFold(target: Element) {
+  for (let d = target.closest("details"); d; d = d.parentElement?.closest("details") ?? null) if (!d.open) return true;
+  return false;
+}
+
+// Scrolls to a page anchor the agent cited or opened, opening any fold it sits in, and briefly outlines the
+// target so the visitor sees where they landed.
 export function revealAnchor(id: string, highlight = true) {
   const target = document.getElementById(id);
   if (!target) return false;
-  const details = target.closest("details");
-  if (details && !details.open) details.open = true;
+  openFolds(target);
   target.scrollIntoView({ behavior: motionAllowed() ? "smooth" : "auto", block: "start" });
   if (highlight) {
     target.classList.remove("agent-highlight");
@@ -65,9 +76,45 @@ export function showOnPage(id: string, quote?: string | null) {
   clearSpotlight();
   const spot = quote ? findWords(id, quote) : null;
   if (!spot) return revealAnchor(id);
-  const details = spot.closest("details");
-  if (details && !details.open) details.open = true;
+  openFolds(spot);
   spot.classList.add(SPOT);
   scrollToSee(spot);
+  return true;
+}
+
+// A reload, or a step back or forward, puts the visitor back where they were; the page must not pull them
+// to the hash again.
+function restoredVisit() {
+  try {
+    const entry = window.performance?.getEntriesByType?.("navigation")[0] as PerformanceNavigationTiming | undefined;
+    return entry?.type === "reload" || entry?.type === "back_forward";
+  } catch {
+    return false;
+  }
+}
+
+// A shared link to a folded place (/ar/#skills, or #project-danna inside the smaller builds) opens its fold
+// and lands on it. Runs after hydration and on every hash change; any other hash is left to the browser.
+// On a fresh load (`settled`), a place that is not folded is landed on once more: the browser jumped before
+// hydration, and the page may have moved since (a visitor's own order, a card's «كيف بنيته» button). On a
+// reload or a history step the browser has already restored the visitor's own place: a folded target only
+// opens, where it is, and nothing scrolls.
+export function revealFoldedHash(settled = false) {
+  let id = "";
+  try {
+    id = decodeURIComponent(window.location.hash.slice(1));
+  } catch {
+    return false;
+  }
+  const target = id ? document.getElementById(id) : null;
+  if (!target) return false;
+  if (settled && restoredVisit()) {
+    if (!inClosedFold(target)) return false;
+    openFolds(target);
+    return true;
+  }
+  if (inClosedFold(target)) return revealAnchor(id, false);
+  if (!settled) return false;
+  target.scrollIntoView({ behavior: "auto", block: "start" });
   return true;
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { rememberLanguage } from "@/lib/visitor";
 import { PaletteTrigger } from "./command-palette";
 import { MotionToggle } from "./motion-toggle";
+import { BrandOrb } from "./living-orb";
 
 export function Navbar({ locale = "en" }: { locale?: Locale }) {
   const { navigation, ui } = getContent(locale);
@@ -15,16 +15,20 @@ export function Navbar({ locale = "en" }: { locale?: Locale }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const sections = navigation
-      .map((item) => document.querySelector(item.href))
-      .filter((section): section is Element => Boolean(section));
+    // Watch every block on the chapter rhythm, not only the five in the nav: reading Recognition, the band or
+    // the appendix lights nothing, instead of leaving the last chapter you passed lit.
+    const linked = new Set(navigation.map((item) => item.href.slice(1)));
+    const blocks = Array.from(document.querySelectorAll("#main-content .li-chapter, #main-content .li-pause"));
+    const sections = blocks.length
+      ? blocks
+      : navigation.map((item) => document.querySelector(item.href)).filter((section): section is Element => Boolean(section));
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target.id) setActive(visible.target.id);
+        if (visible) setActive(linked.has(visible.target.id) ? visible.target.id : "");
       },
       { rootMargin: "-18% 0px -72% 0px", threshold: 0 }
     );
@@ -92,13 +96,8 @@ export function Navbar({ locale = "en" }: { locale?: Locale }) {
   return (
     <header className={`nav ${active === "home" ? "nav--hero" : ""}`}>
       <a className="nav__brand" href="#home" aria-label={ui.nav.home}>
-        <Image
-          src="/brand/sultan-alfaifi-mark.svg"
-          alt=""
-          width={36}
-          height={36}
-          priority
-        />
+        {/* The living orb is the logo; its poster is the static mark (/brand/sultan-alfaifi-mark.svg). */}
+        <BrandOrb />
         <small>{ui.nav.brandTag}</small>
       </a>
 

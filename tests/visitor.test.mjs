@@ -52,17 +52,29 @@ test("English devices and crawlers stay on /, and crawlers never see the welcome
   assert.equal(boot({ webdriver: true }).welcome, undefined);
 });
 
-test("the welcome screen shows once, on either home page, and replaces the intro curtain", () => {
+test("the welcome screen shows once, on either home page, and the hero's entrance waits behind it", () => {
   const first = boot();
   assert.equal(first.welcome, "show");
-  assert.equal(first.intro, undefined);
+  assert.equal(first.intro, "play", "set before paint, so the hero is ready to arrive as the screen closes");
   const arabic = boot({ path: "/ar/" });
   assert.equal(arabic.welcome, "show");
   assert.deepEqual([arabic.lang, arabic.dir], ["ar", "rtl"]);
   const returning = boot({ stored: { "portfolio-visitor": "hiring" } });
   assert.equal(returning.welcome, undefined);
   assert.equal(returning.visitor, "hiring", "the page is arranged before first paint");
-  assert.equal(returning.intro, "play");
+  assert.equal(returning.intro, "play", "the entrance plays on every visit to the top of a home page");
+  assert.equal(boot({ path: "/ar/", stored: { "portfolio-visitor": "browse" } }).intro, "play");
+});
+
+test("the hero's entrance never hides a page that should be there at once", () => {
+  const visitor = { "portfolio-visitor": "browse" };
+  assert.equal(boot({ stored: visitor, hash: "#work" }).intro, undefined, "a link to a place lands on it, finished");
+  assert.equal(boot({ stored: visitor, search: "?cv=general~x" }).intro, undefined);
+  assert.equal(boot({ stored: visitor, reduced: true }).intro, undefined, "reduced motion gets the finished page");
+  assert.equal(boot({ stored: { ...visitor, "portfolio-motion": "off" } }).intro, undefined, "so does the site's Motion switch");
+  assert.equal(boot({ stored: visitor, userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1)" }).intro, undefined, "crawlers read the finished page");
+  assert.equal(boot({ stored: visitor, path: "/agent-evals/" }).intro, undefined, "only the home pages have the hero");
+  assert.equal(boot({ languages: ["ar-SA"] }).intro, undefined, "a page that is about to redirect plays nothing");
 });
 
 test("links to a specific place skip the welcome screen; ?welcome always shows it", () => {
@@ -78,9 +90,16 @@ test("an unknown stored value is ignored", () => {
 
 test("each visitor's section order covers every section exactly once", () => {
   const all = [...home.matchAll(/id: "([a-z]+)"/g)].map((match) => match[1]).sort();
-  assert.equal(all.length, 13);
-  for (const [visitor, order] of Object.entries(SECTION_ORDERS)) assert.deepEqual([...order].sort(), all, visitor);
-  assert.equal(SECTION_ORDERS.hiring.indexOf("cv") < SECTION_ORDERS.hiring.indexOf("about"), true, "hiring visitors reach the CV early");
+  assert.equal(all.length, 8, "eight blocks after the hero");
+  assert.deepEqual(all, ["about", "achievements", "band", "contact", "cv", "deeper", "runtime", "work"]);
+  assert.deepEqual(Object.keys(SECTION_ORDERS).sort(), ["collaborate", "hiring"]);
+  for (const [visitor, order] of Object.entries(SECTION_ORDERS)) {
+    assert.equal(order.length, 8, `${visitor}: all eight keys`);
+    assert.deepEqual([...order].sort(), all, visitor);
+  }
+  assert.ok(SECTION_ORDERS.hiring.indexOf("cv") < 3, "the CV is within the first 3 blocks for hiring");
+  assert.equal(SECTION_ORDERS.hiring[0], "about", "hiring visitors meet what he does now first (About, with the Salla card)");
+  for (const order of Object.values(SECTION_ORDERS)) assert.equal(order.at(-1), "contact", "contact closes every order");
 });
 
 test("the welcome screen is a real dialog: three choices, a skip, Escape, and a language link that remembers", () => {

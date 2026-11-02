@@ -9,10 +9,9 @@ import { HeroMedia } from "./hero-media";
 const POSTER = "/assets/media/sultan-introduction-poster.webp";
 const MOBILE_FILM = "/assets/media/sultan-introduction-mobile.mp4";
 
-// A real face on the first screen without an autoplaying film. Wide screens show a portrait frame, phones
-// and tablets a small "Meet Sultan" row; both open the same native <dialog>. The film mounts only while
-// the dialog is open, so the MP4 is fetched only when the visitor asks for it, and opening it counts as
-// their request to play.
+// A real face in the hero without an autoplaying film: a round portrait in a glass pill, "Hi, I'm Sultan."
+// It opens a native <dialog>. The film mounts only while the dialog is open, so the MP4 is fetched only
+// when the visitor asks for it, and opening it counts as their request to play.
 export function MeetSultan({ locale = "en" }: { locale?: Locale }) {
   const { identity, ui } = getContent(locale);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -37,14 +36,13 @@ export function MeetSultan({ locale = "en" }: { locale?: Locale }) {
 
   return (
     <div className="meet-sultan">
-      <button type="button" className="maker-frame" onClick={openFilm}>
-        <Image src={POSTER} alt="" fill sizes="300px" fetchPriority="low" className="maker-frame__image" />
-        <span className="maker-frame__caption"><Play size={16} aria-hidden="true" />{ui.hero.filmCaption}{play}</span>
-      </button>
       <button type="button" className="meet-row" onClick={openFilm}>
-        <Image src={POSTER} alt="" width={56} height={56} sizes="56px" fetchPriority="low" className="meet-row__image" />
+        <span className="meet-row__face">
+          <Image src={POSTER} alt="" width={56} height={56} sizes="56px" fetchPriority="low" className="meet-row__image" />
+          <span className="meet-row__play"><Play size={14} aria-hidden="true" /></span>
+        </span>
         <span className="meet-row__text">
-          <span className="meet-row__title"><Play size={15} aria-hidden="true" />{ui.hero.filmCaption}</span>
+          <span className="meet-row__title">{ui.hero.filmCaption}</span>
           <span className="meet-row__place">{identity.location}</span>
         </span>
         {play}

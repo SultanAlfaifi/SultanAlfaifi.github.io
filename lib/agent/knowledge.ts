@@ -1,6 +1,7 @@
 // Turns the site's own data into the agent's knowledge: one block per page anchor, in English and Arabic,
 // plus the evidence index the fit check matches requirements against. Runs at build time only.
 import type { PortfolioContent } from "../../data/i18n";
+import { deeperRowLines } from "../deeper-rows";
 import { buildAnchors, collectUrls } from "./anchors";
 import type { AnchorInfo, EvidenceLevel, EvidenceTerm, KnowledgeBundle, KnowledgeProject } from "./types";
 
@@ -24,15 +25,15 @@ const LABELS = {
     work: "Projects on the page", featured: "Featured (try these first)", smaller: "Smaller builds",
     status: "Status", projectRole: "His role", what: "What it is", problem: "The problem", decision: "The call he made", check: "What you can check yourself", highlights: "Highlights", tech: "Technologies", techNone: "not published on the site", figures: "Figures", asOf: "as of", outcome: "Outcome",
     checkpoint: "Where it stops for a person", step: (step: number, total: number) => `step ${step} of ${total}`, kinds: { asks: "it asks you first", verifies: "it verifies before a result counts", holds: "it holds on its own when a check fails" }, caveat: "Not yet", boundary: "The line it keeps", comma: ", ", repo: "Source code", repoNone: "no public repository", demo: "Live demo", main: "Main link", arabicTitle: "Arabic name",
-    experience: "Work experience", dates: "Dates", place: "Location", does: "What he does", tools: "Technologies in this role", note: "His note",
+    experience: "Work experience", dates: "Dates", place: "Location", does: "What he does", note: "His note",
     skills: "Skills", strongest: "strongest",
-    achievements: "Recognition and numbers", issuer: "Issuer", date: "Date", dateNone: "no documented date", number: "Number", source: "Source",
+    achievements: "Recognition", issuer: "Issuer", date: "Date", dateNone: "no documented date", number: "Number", source: "Source",
     timeline: "Dated timeline",
     programs: "Courses and programs he finished", focus: "Topics", recognition: "Result", verify: "Verify", certificates: "Other certificates",
     community: "Teaching and volunteering", volunteer: "Volunteering",
     ideas: "What he writes about", topics: "Topics", posts: "Posts",
-    recommendations: "Recommendations (in their words)", quote: "Quote", themes: "Themes", publicAt: "Public at",
-    help: "How he can help", who: "For", need: "Need", offer: "Offer", proof: "Proof", cta: "Contact link",
+    recommendations: "Recommendations (in their words)", quote: "Quote", publicAt: "Public at",
+    help: "How he can help", who: "For", offer: "Offer", cta: "Contact link",
     principles: "How he builds agents (principles)",
     organizations: "Organizations he has worked or learned with", relationship: "Relationship",
     contact: "Contact", social: "Social", contactNote: "Send two or three lines: what you need, who it's for, and by when. Arabic or English.",
@@ -46,15 +47,15 @@ const LABELS = {
     work: "المشاريع في الصفحة", featured: "المشاريع البارزة", smaller: "مشاريع أصغر",
     status: "الحالة", projectRole: "دوره", what: "ما هو", problem: "المشكلة", decision: "القرار الذي اتخذه", check: "ما تقدر تتحقق منه", highlights: "أبرز النقاط", tech: "التقنيات", techNone: "غير منشورة في الموقع", figures: "أرقام", asOf: "حتى", outcome: "النتيجة",
     checkpoint: "أين يتوقف لينتظر إنسانًا", step: (step: number, total: number) => `الخطوة ${step} من ${total}`, kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" }, caveat: "ما لم يكتمل بعد", boundary: "الحد الذي يلتزم به", comma: "، ", repo: "الكود", repoNone: "لا يوجد مستودع عام", demo: "عرض حي", main: "الرابط الرئيسي", arabicTitle: "الاسم العربي",
-    experience: "الخبرة العملية", dates: "الفترة", place: "المكان", does: "ماذا يعمل", tools: "التقنيات في هذا الدور", note: "ملاحظته",
+    experience: "الخبرة العملية", dates: "الفترة", place: "المكان", does: "ماذا يعمل", note: "ملاحظته",
     skills: "المهارات", strongest: "الأقوى",
-    achievements: "الإنجازات والأرقام", issuer: "الجهة", date: "التاريخ", dateNone: "بلا تاريخ موثّق", number: "رقم", source: "المصدر",
+    achievements: "الإنجازات", issuer: "الجهة", date: "التاريخ", dateNone: "بلا تاريخ موثّق", number: "رقم", source: "المصدر",
     timeline: "المحطات بتواريخها",
     programs: "الدورات والبرامج التي أكملها", focus: "المواضيع", recognition: "النتيجة", verify: "التحقق", certificates: "شهادات أخرى",
     community: "التدريب والتطوع", volunteer: "التطوع",
     ideas: "ما يكتب عنه", topics: "المواضيع", posts: "المنشورات",
-    recommendations: "التوصيات (بكلماتهم)", quote: "الاقتباس", themes: "المحاور", publicAt: "منشورة في",
-    help: "كيف يقدر يخدمك", who: "لمن", need: "الحاجة", offer: "ما يقدمه", proof: "الدليل", cta: "رابط التواصل",
+    recommendations: "التوصيات (بكلماتهم)", quote: "الاقتباس", publicAt: "منشورة في",
+    help: "كيف يقدر يخدمك", who: "لمن", offer: "ما يقدمه", cta: "رابط التواصل",
     principles: "كيف يبني الوكلاء (مبادئه)",
     organizations: "الجهات التي عمل أو تعلّم معها", relationship: "العلاقة",
     contact: "التواصل", social: "حساباته", contactNote: "اكتب له سطرين أو ثلاثة: ماذا تحتاج، ولمن، ومتى. بالعربي أو بالإنجليزي.",
@@ -78,6 +79,9 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
   const sectionTitle = (id: string) => anchors.find((anchor) => anchor.id === id)?.label[content.locale] ?? id;
   const { identity, about } = content;
   const enabledProjects = content.projects.filter((project) => project.enabled);
+  const shownParagraphs = about.paragraphs.filter((_, index) => index !== 1);
+  const next = content.journey[content.journey.length - 1];
+  const rows = deeperRowLines(content);
 
   const out: Block[] = [];
   out.push({
@@ -96,7 +100,8 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
       field(t.languages, identity.languages),
       !isArabic && field(t.email, identity.email),
       `- ${t.about}:`,
-      ...about.paragraphs.map((paragraph) => `  - ${paragraph}`)
+      ...shownParagraphs.map((paragraph) => `  - ${paragraph}`),
+      field(next.date, `${next.title}. ${next.detail}`)
     ]
   });
 
@@ -144,9 +149,7 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
       `- ${job.role}, ${job.organization}`,
       field(t.dates, job.dates, "  "),
       field(t.place, job.location, "  "),
-      field(t.what, job.description, "  "),
       field(t.does, join(job.responsibilities, " "), "  "),
-      !isArabic && field(t.tools, job.technologies.join(", "), "  "),
       field(t.note, job.note, "  ")
     ])
   });
@@ -154,8 +157,10 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
   out.push({
     anchor: "skills",
     title: `${t.skills} · ${sectionTitle("skills")}`,
+    // The row's own line (the description's first sentence); "the last group is what I'm learning now" is
+    // said by that group's own title, which is listed below.
     lines: [
-      `- ${content.ui.skills.description}`,
+      `- ${rows.skills}`,
       ...content.skillGroups.map((group) => `- ${group.title}: ${group.skills.join(", ")}${group.strongest?.length ? ` (${t.strongest}: ${group.strongest.join(", ")})` : ""}`)
     ]
   });
@@ -163,10 +168,7 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
   out.push({
     anchor: "achievements",
     title: `${t.achievements} · ${sectionTitle("achievements")}`,
-    lines: [
-      ...content.achievements.filter((item) => item.enabled).map((item) => `- ${item.title} (${item.signal}) — ${item.description} ${t.issuer}: ${item.issuer}. ${t.date}: ${item.date ?? t.dateNone}.`),
-      ...content.proofMetrics.map((metric) => `- ${t.number}: ${metric.prefix ?? ""}${metric.value.toLocaleString("en-US")}${metric.suffix ?? ""} ${metric.label} (${t.source}: ${metric.source})`)
-    ]
+    lines: content.achievements.filter((item) => item.enabled).map((item) => `- ${item.title} (${item.signal}) — ${item.description} ${t.issuer}: ${item.issuer}. ${t.date}: ${item.date ?? t.dateNone}.`)
   });
 
   out.push({
@@ -204,7 +206,8 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
       `- ${content.ui.community.description}`,
       ...content.community.workshops.map((workshop) => `- ${workshop.title} (${workshop.meta}): ${workshop.description}`),
       `- ${t.volunteer}: ${content.ui.community.volunteerText}`,
-      field(t.figures, join(content.community.metrics.map((metric) => `${metric.value} ${metric.label}`)))
+      // The figures as the row shows them: "3 trainings I've led · 180+ volunteer hours · Across 11 initiatives".
+      `- ${rows.community}`
     ]
   });
 
@@ -216,20 +219,21 @@ function blocks(content: PortfolioContent, english: PortfolioContent, anchors: A
       `- ${content.ui.ideas.intro}`,
       ...content.content.pillars.map((pillar) => `- ${pillar.title}: ${pillar.description}`),
       field(t.topics, content.content.categories.join(", ")),
-      field(t.figures, join(content.content.metrics.map((metric) => `${metric.value} ${metric.label}`)))
+      field(t.figures, join(content.content.metrics.map((metric) => `${metric.value} ${metric.label}`))),
+      `- ${rows.ideas}`
     ]
   });
 
   out.push({
     anchor: "recommendations",
     title: `${t.recommendations} · ${sectionTitle("recommendations")}`,
-    lines: content.recommendations.map((recommendation) => `- ${recommendation.name} (${recommendation.roles.join(", ")}): “${recommendation.quote}” ${t.themes}: ${recommendation.tags.join(", ")}.${recommendation.note ? ` ${recommendation.note}` : ""}${!isArabic && recommendation.publicUrl ? ` ${t.publicAt}: ${recommendation.publicUrl}` : ""}`)
+    lines: content.recommendations.map((recommendation) => `- ${recommendation.name} (${recommendation.roles.join(", ")}): “${recommendation.quote}”${recommendation.note ? ` ${recommendation.note}` : ""}${!isArabic && recommendation.publicUrl ? ` ${t.publicAt}: ${recommendation.publicUrl}` : ""}`)
   });
 
   out.push({
     anchor: "help",
     title: `${t.help} · ${sectionTitle("help")}`,
-    lines: content.helpPaths.map((path) => `- ${t.who}: ${path.audience}. ${t.need}: ${path.need} ${t.offer}: ${path.offer} ${t.proof}: ${path.proof}.`)
+    lines: content.helpPaths.map((path) => `- ${t.who}: ${path.audience}. ${t.offer}: ${path.offer} ${t.cta}: ${path.cta.label}.`)
   });
 
   out.push({
@@ -306,8 +310,13 @@ function evidenceIndex(content: PortfolioContent): EvidenceTerm[] {
       add(skill, level, "skills", `${group.title}${level === "strong" ? " (one of his strongest)" : ""}`);
     }
   }
+  // The Now card is cited only for a tool its own words name (its duties or its note); the others are in Skills.
   for (const job of content.experience) {
-    for (const tech of job.technologies) add(tech, "working", "experience", `${job.role}, ${job.organization}`);
+    const said = [...job.responsibilities, job.note ?? ""].join(" ").toLowerCase();
+    for (const tech of job.technologies) {
+      const name = tech.toLowerCase();
+      if (said.includes(name) || said.includes(name.split(" ")[0])) add(tech, "working", "experience", `${job.role}, ${job.organization}`);
+    }
   }
   for (const project of content.projects.filter((item) => item.enabled)) {
     for (const tech of project.technologies) add(tech, "working", `project-${project.slug}`, project.title);

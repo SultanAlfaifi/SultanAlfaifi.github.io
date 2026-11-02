@@ -4,35 +4,18 @@
   --font-display: var(--font-arabic), system-ui, sans-serif;
   --font-mono: var(--font-arabic), system-ui, sans-serif;
 }
-:where(time, .live-clock, .work-story__index, .proof-metric strong, .intro-curtain__count, .work-metrics dd) { font-variant-numeric: tabular-nums; }
+:where(time, .live-clock) { font-variant-numeric: tabular-nums; }
 
 /* Arabic is cursive: tracking breaks letter joins, and its marks need taller lines. */
 [dir="rtl"] :is(h1, h2, h3, h4, h5, p, li, a, span, strong, small, em, dt, dd, button, summary, label, blockquote, figcaption, time, kbd, input):not([dir="ltr"], [dir="ltr"] *) {
   letter-spacing: 0 !important;
 }
 [dir="rtl"] :is(h1, h2, h3):not([dir="ltr"] *) { line-height: 1.32; }
-/* The Arabic headline gets weight instead of tracking. Its gate line sits about 0.28em under the baseline:
-   below the descenders of و and ي in يستأذنونك, and above the hamzas of the next line at this line height.
-   It is set as an offset from the box's bottom, never with padding, which would push it into that line. */
-[dir="rtl"] .identity-hero h1 { max-width: 15ch; font-size: clamp(2.75rem, 5vw, 5rem); font-weight: 600; line-height: 1.25; }
-[dir="rtl"] .gate-phrase { background-position: right bottom 0.12em, right bottom 0.12em; }
-[dir="rtl"] .hero-run { --run-from: inset(0 0 0 100%); }
-/* Arabic dots and marks run smaller than Latin at the same size, so the card's smallest text gets bigger. */
-[dir="rtl"] .hero-run__chip { font-size: 0.76rem; }
-[dir="rtl"] .run-step__label { font-size: 0.8rem; }
-[dir="rtl"] .identity-hero::before {
-  -webkit-mask-image: radial-gradient(ellipse 46% 58% at 26% 50%, #000 20%, transparent 78%);
-  mask-image: radial-gradient(ellipse 46% 58% at 26% 50%, #000 20%, transparent 78%);
-}
 [dir="rtl"] .split-word { padding-block: 0.14em 0.34em; margin-block: -0.14em -0.34em; }
-/* The recommendations heading has its own tighter rule; Arabic needs the same room as the rest. */
-[dir="rtl"] #recommendations .section-header h2 { line-height: 1.32; }
+/* The recommendations heading is an h3 inside Recognition now; Arabic gets the same room as the chapter's other titles. */
+[dir="rtl"] #recommendations h3 { line-height: 1.4; }
 /* Parts of a "a · b · c" line read in written order, even when two neighbours are English (components/meta-parts.tsx). */
 .meta-part { unicode-bidi: isolate; }
-[dir="rtl"] .work-story h3,
-[dir="rtl"] .proof-card__signal,
-[dir="rtl"] .proof-card--lead .proof-card__signal { line-height: 1.25; }
-[dir="rtl"] .proof-card--lead .proof-card__signal { font-size: clamp(3rem, 6vw, 5.4rem); }
 
 /* Directional icons mirror; anything explicitly LTR keeps its orientation. */
 [dir="rtl"] :is(.lucide-arrow-up-right, .lucide-arrow-right, .lucide-arrow-left, .lucide-corner-down-left):not([dir="ltr"] *) { scale: -1 1; }
@@ -45,32 +28,17 @@
 [dir="rtl"] .palette__foot svg { margin-left: 0; margin-right: 8px; }
 [dir="rtl"] .palette__foot svg:first-child { margin-right: 0; }
 [dir="rtl"] .secrets { left: auto; right: 18px; align-items: flex-end; }
-[dir="rtl"] .contact-orb { margin: 0 auto 20px 0; }
-[dir="rtl"] .automation-blueprint__review > svg:last-child,
-[dir="rtl"] .resume-blueprint__export svg:last-child { margin-left: 0; margin-right: auto; }
-[dir="rtl"] .agent-blueprint li::before { left: auto; right: 4px; }
-[dir="rtl"] .work-case ul { padding: 0 20px 20px 0; }
-[dir="rtl"] .timeline__dot { left: auto; right: 22px; }
-[dir="rtl"] .timeline__index { right: auto; left: 16px; }
-[dir="rtl"] .timeline__progress span { transform-origin: right; }
-[dir="rtl"] .organization-detail-panel__close { right: auto; left: 18px; }
 
 /* Motion reads right-to-left on Arabic pages. */
 [dir="rtl"] .kinetic-band__row:not(.x) { animation-direction: reverse; }
-@supports (animation-timeline: view()) {
-  @media (min-width: 841px) and (prefers-reduced-motion: no-preference) {
-    html:not([data-motion="off"]) [dir="rtl"] .timeline__track { animation-name: timeline-slide-rtl; }
-  }
-}
-@keyframes timeline-slide-rtl { to { transform: translateX(calc(100% - 100vw + 40px)); } }
 
 /* Language switch in the navigation. */
 .language-switch {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 44px;
+  height: 44px;
   padding: 0 10px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 999px;
@@ -81,13 +49,7 @@
 }
 .language-switch:hover { border-color: var(--mint); background: var(--mint); color: var(--ink); }
 
-.recommendation-card__translated { margin: 10px 0 0; color: var(--muted); font-size: 0.74rem; }
-
 @media (max-width: 840px) {
   [dir="rtl"] .nav__tools { margin-right: auto; margin-left: 8px; }
-  [dir="rtl"] .contact-orb { margin: 0 0 18px; }
   [dir="rtl"] .secrets { right: 12px; }
-}
-@media (max-width: 759px) {
-  [dir="rtl"] .identity-hero h1 { max-width: none; font-size: clamp(2.3rem, 9.4vw, 2.9rem); line-height: 1.3; }
 }

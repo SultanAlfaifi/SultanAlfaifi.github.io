@@ -616,9 +616,9 @@ export const sectionOrder = [
 
 export const navigation = [
   { label: "Work", href: "#work" },
-  { label: "Recognition", href: "#achievements" },
+  { label: "AI assistant", href: "#runtime" },
   { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
+  { label: "CV", href: "#cv" },
   { label: "Contact", href: "#contact" }
 ] satisfies Link[];
 
@@ -629,7 +629,7 @@ export const identity = {
   eyebrow: "Sultan Alfaifi / Full-Stack Software Engineer",
   role: "Full-Stack Software Engineer specializing in AI Agents",
   headline:
-    "I build AI agents that check with you before they act.",
+    "I build AI agents that ask before they act.",
   summary:
     "I study software engineering at Umm Al-Qura in Makkah, graduating in 2027, and I’m a COOP intern at Salla. Masari, my CV builder, has about 1,600 active users. You can try most of what’s below today.",
   currently: "COOP intern at Salla",
@@ -983,12 +983,12 @@ export const projects: Project[] = [
     // The real-bug result comes second, so a view that shows only the first three figures (the agent's
     // project card) still shows it next to the seeded fault. Arabic merges by position: keep both in step.
     metrics: [
-      { value: "7 / 7", label: "Fixes verified on a fault I seeded", kind: "seeded-fault", asOf: "24 Oct 2026" },
+      { value: "7 of 7", label: "Fixes verified on a fault I seeded", kind: "seeded-fault", asOf: "24 Oct 2026" },
       { value: "0 of 7", label: "Runs fixed on a real upstream bug, across 43 attempts", kind: "real-bug", asOf: "24 Oct 2026" },
-      { value: "15 / 15", label: "“Booked” pages with the wrong day saved, rejected by the verifier", kind: "real-bug", asOf: "24 Oct 2026" },
-      { value: "2 / 5", label: "Early trials that passed in full", kind: "trial" }
+      { value: "15 of 15", label: "“Booked” pages with the wrong day saved, rejected by the verifier", kind: "real-bug", asOf: "24 Oct 2026" },
+      { value: "2 of 5", label: "Early trials that passed in full", kind: "trial" }
     ],
-    checkpoint: { step: 4, kind: "verifies", text: "A fix counts only when the saved booking is right." },
+    checkpoint: { step: 4, kind: "verifies", text: "A fix counts only when the saved booking is right" },
     caveat: "0 of 7 on a real upstream bug across 43 attempts",
     showcase: 1,
     outcome: "A repair loop that accepts a fix only once the booking is saved correctly.",
@@ -1015,9 +1015,9 @@ export const projects: Project[] = [
     featured: true,
     status: "Open source · v1.2.0 · Codex & Claude Code",
     challenge:
-      "Coding agents can render video, but left alone they skip the brief, break Arabic letters apart, and add music nobody asked for.",
+      "Coding agents can render video, but left alone they skip the brief and break Arabic letters apart.",
     decision:
-      "I kept it to one portable skill: a focused brief first, one main renderer picked per job, no music unless you ask for it, and a check of the frames and the rendered file before the final render.",
+      "I kept it to one portable skill: a focused brief first, one main renderer picked per job, and a check of the frames and the rendered file before the final render.",
     evidence:
       "Public source and an Arabic demo with sound effects only that you can rebuild from its source. Claude Code support follows the documented Agent Skills format. I haven’t tested it in an interactive Claude Code session yet.",
     highlights: [

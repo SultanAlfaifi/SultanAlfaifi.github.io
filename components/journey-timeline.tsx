@@ -1,34 +1,30 @@
-import type { CSSProperties } from "react";
 import { getContent, type Locale } from "@/data/i18n";
 import { MetaParts } from "./meta-parts";
 
-// On wide screens with scroll-driven animation support, the track is pinned and slides sideways as you scroll.
-// Everywhere else it is a native horizontal scroller with snap points.
+// The dated timeline, inside its "Beyond the projects" row (components/deeper-section.tsx), which carries
+// #timeline and the title. A still, vertical list read top to bottom: no pin, no sideways scroll, nothing that
+// moves on its own. A thin line of the living light runs through the stops, each lit in its kind's colour; the
+// last stop, what I'm working on next, carries a lamp.
 export function JourneyTimeline({ locale = "en" }: { locale?: Locale }) {
   const { journey, ui } = getContent(locale);
   return (
-    <section id="timeline" className="timeline" aria-labelledby="timeline-title" style={{ "--count": journey.length } as CSSProperties}>
-      <div className="timeline__sticky">
-        <div className="page-shell timeline__head">
-          <h2 id="timeline-title">{ui.timeline.title}</h2>
-          <p>{ui.timeline.description}</p>
-        </div>
-        <div className="timeline__viewport" tabIndex={0} aria-label={ui.timeline.aria} data-cursor={ui.timeline.cursor}>
-          <ol className="timeline__track">
-            {journey.map((stop, index) => (
-              <li key={`${stop.date}-${stop.title}`} className={`timeline__stop timeline__stop--${stop.kind.toLowerCase().replace(" ", "-")}`}>
-                <span className="timeline__dot" aria-hidden="true" />
-                <time>{stop.date}</time>
-                <span className="timeline__kind">{ui.timeline.kinds[stop.kind] ?? stop.kind}</span>
-                <h3>{stop.title}</h3>
-                <p><MetaParts text={stop.detail} /></p>
-                <span className="timeline__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div className="page-shell timeline__progress" aria-hidden="true"><span /></div>
-      </div>
-    </section>
+    <div className="row-timeline">
+      <p className="deeper-body__lead">{ui.timeline.description}</p>
+      <ol className="row-timeline__list">
+        {journey.map((stop) => (
+          <li key={`${stop.date}-${stop.title}`} className={`row-timeline__stop row-timeline__stop--${stop.kind.toLowerCase().replace(" ", "-")}`}>
+            <p className="row-timeline__when">
+              <span className="row-timeline__date li-num">{stop.date}</span>{" "}
+              <span className="row-timeline__kind">{ui.timeline.kinds[stop.kind] ?? stop.kind}</span>
+            </p>
+            <span className="row-timeline__dot" aria-hidden="true" />
+            <div className="row-timeline__body">
+              <h4>{stop.title}</h4>
+              <p><MetaParts text={stop.detail} /></p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
