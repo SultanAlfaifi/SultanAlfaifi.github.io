@@ -48,8 +48,8 @@ html[data-motion="off"] .cursor-ring { display: none; }
 .kinetic-band__row .kinetic-band__accent { color: var(--mint); font-weight: 600; }
 .kinetic-band__row [lang="ar"] { letter-spacing: 0; }
 .kinetic-band__row--outline { margin-top: 0.12em; color: transparent; font-size: clamp(2.4rem, 7vw, 6.6rem); -webkit-text-stroke: 1.2px rgb(252 252 251 / 55%); }
-.kinetic-band__row--solid { animation: band-left 56s linear infinite; }
-.kinetic-band__row--outline { animation: band-right 64s linear infinite; }
+.kinetic-band__row--solid { animation: band-left 28s linear infinite; }
+.kinetic-band__row--outline { animation: band-right 32s linear infinite; }
 .kinetic-band.is-away .kinetic-band__row { animation-play-state: paused; }
 @keyframes band-left { to { transform: translateX(-33.333%); } }
 @keyframes band-right { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
@@ -73,27 +73,6 @@ html[data-motion="off"] .kinetic-band__row { animation: none; }
 }
 @keyframes word-rise { from { transform: translateY(108%) rotate(4deg); } to { transform: none; } }
 
-/* ---------- Secrets game + confetti ---------- */
-.secrets { position: fixed; z-index: 130; inset-inline-start: 18px; bottom: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.secrets__pill { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid rgb(71 200 245 / 45%); border-radius: 999px; background: rgb(14 14 19 / 92%); color: var(--paper); font: 600 0.74rem var(--font-mono), monospace; cursor: pointer; animation: toast-in 400ms cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(10px); }
-.secrets__pill svg { color: var(--mint); }
-.secrets.is-complete .secrets__pill { border-color: var(--mint); background: var(--mint); color: var(--ink); }
-.secrets.is-complete .secrets__pill svg { color: var(--ink); }
-.secrets__panel { width: min(320px, calc(100vw - 36px)); padding: 16px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 16px; background: #0e0e13; color: var(--paper); box-shadow: 0 24px 60px rgb(0 0 0 / 40%); animation: toast-in 260ms cubic-bezier(0.16, 1, 0.3, 1); }
-.secrets__title { display: flex; justify-content: space-between; margin: 0 0 12px; font-weight: 600; }
-.secrets__title span { color: var(--mint); font-family: var(--font-mono), monospace; }
-.secrets__panel ul { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
-.secrets__panel li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; color: #b7b4ad; font-size: 0.82rem; }
-.secrets__panel li svg { margin-top: 3px; }
-.secrets__panel li.is-found { color: var(--paper); }
-.secrets__panel li.is-found svg { color: var(--mint); }
-.secrets__panel small { display: block; color: #a29f97; font-size: 0.74rem; line-height: 1.5; }
-.confetti { position: fixed; inset: 0; z-index: 160; overflow: hidden; pointer-events: none; }
-.confetti i { position: absolute; left: 50%; bottom: -12px; width: 9px; height: 14px; border-radius: 2px; animation: confetti-burst var(--d) cubic-bezier(0.1, 0.7, 0.3, 1) forwards; }
-@keyframes confetti-burst { to { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; } }
 
 .portfolio-v3 ::selection { background: var(--mint); color: var(--ink); }
 
-@media (max-width: 840px) {
-  .secrets { inset-inline-start: 12px; bottom: 12px; }
-}

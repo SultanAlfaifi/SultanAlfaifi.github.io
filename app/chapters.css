@@ -699,25 +699,20 @@ html[data-visitor="hiring"] .about__next { grid-row: 5; }
 .portfolio-v3 .finale__socials .social-links a:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
 .portfolio-v3 .finale__socials .social-links a span { font: inherit; letter-spacing: 0; text-transform: none; }
 
-/* The horizon: a still, blurred glow of iris and rose, and one line of the living light across it. No orb. */
+/* The lamp: a still, soft white light that falls from above onto the name below, brightest at its centre
+   and fading to black at every edge. No line and no colour. */
 .portfolio-v3 .finale__horizon { position: relative; height: clamp(140px, 16vw, 220px); margin-top: var(--li-open); pointer-events: none; }
 .portfolio-v3 .finale__horizon::before {
   content: "";
   position: absolute;
-  inset-inline: -10%;
-  bottom: -60%;
-  height: 120%;
+  inset-inline: 4%;
+  top: 10%;
+  bottom: -130%;
   border-radius: 50%;
-  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--li-iris-rgb) / 30%), rgb(var(--li-rose-rgb) / 12%) 45%, transparent 70%);
-  filter: blur(10px);
-}
-.portfolio-v3 .finale__horizon::after {
-  content: "";
-  position: absolute;
-  inset-inline: 8%;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(var(--li-apricot-rgb) / 60%), rgb(var(--li-rose-rgb) / 70%), rgb(var(--li-iris-rgb) / 70%), rgb(var(--li-glacier-rgb) / 60%), transparent);
+  background:
+    radial-gradient(40% 46% at 50% 52%, rgb(255 255 255 / 13%), rgb(255 255 255 / 5%) 55%, transparent 100%),
+    radial-gradient(18% 22% at 50% 50%, rgb(255 255 255 / 9%), transparent 100%);
+  filter: blur(14px);
 }
 
 @media (max-width: 900px) {

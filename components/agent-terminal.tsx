@@ -14,7 +14,6 @@ import { ActivityLine, AgentText, DraftCard, FitCard, ProjectCard, TourCard, typ
 import { Companion, type CompanionView } from "./agent-companion";
 import { pulseVoice, setActivity, setAttention } from "./assistant-presence";
 import { motionAllowed, setMotionEnabled, toast } from "./motion-preference";
-import { foundSecrets, SECRET_IDS, secretCopy, unlockSecret } from "./secrets";
 
 type LineKind = "input" | "out" | "muted" | "ok" | "warn" | "accent" | "answer";
 type Card =
@@ -31,9 +30,9 @@ type Output = Omit<Line, "id">;
 type AgentState = "off" | "checking" | "live" | "offline" | "budget";
 
 // Commands stay in English on both pages; answers follow the page language.
-const COMMANDS = ["help", "whoami", "projects", "open", "achievements", "stack", "socials", "contact", "run", "secrets", "time", "motion", "fit", "clear", "عربي", "sudo hire sultan"];
+const COMMANDS = ["help", "whoami", "projects", "open", "achievements", "stack", "socials", "contact", "run", "time", "motion", "fit", "clear", "عربي", "sudo hire sultan"];
 // Exact-match commands; anything else that isn't a command with arguments goes to the agent.
-const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements", "stack", "socials", "contact", "email", "secrets", "time", "date", "clear", "exit", "عربي", "ar", "motion", "run", "open", "cd"]);
+const BARE_COMMANDS = new Set(["help", "whoami", "projects", "ls", "achievements", "stack", "socials", "contact", "email", "time", "date", "clear", "exit", "عربي", "ar", "motion", "run", "open", "cd"]);
 const BOOT_KINDS: LineKind[] = ["muted", "muted", "muted", "accent", "ok"];
 const TRACE_KINDS: LineKind[] = ["muted", "out", "out", "out", "out", "ok", "warn", "muted"];
 // Trace steps where the agent is working out what to do (planning, preparing or running a tool), not talking.
@@ -83,7 +82,6 @@ function createResponder(content: PortfolioContent) {
     if (!input) return [];
     if (lower === "sudo hire sultan" || lower === "hire sultan" || lower === "hire") {
       toast(copy.hireToast);
-      window.setTimeout(() => unlockSecret("sudo"), 2600);
       return [
         { kind: "muted", text: copy.hire[0] },
         { kind: "ok", text: copy.hire[1] },
@@ -91,7 +89,6 @@ function createResponder(content: PortfolioContent) {
       ];
     }
     if (/^(sudo )?rm\b/.test(lower) || lower.includes("drop table")) {
-      window.setTimeout(() => unlockSecret("policy"), 900);
       return [{ kind: "warn", text: copy.blocked }];
     }
 
@@ -140,19 +137,8 @@ function createResponder(content: PortfolioContent) {
       }
       case "clear":
         return "clear";
-      case "secrets": {
-        const found = foundSecrets();
-        return [
-          { kind: "accent", text: copy.secrets(found.length, SECRET_IDS.length) },
-          ...SECRET_IDS.map((id): Output => {
-            const secret = secretCopy(id, locale);
-            return found.includes(id) ? { kind: "ok", text: `✓ ${secret.title}` } : { kind: "muted", text: `· ${copy.locked} ${secret.hint}` };
-          })
-        ];
-      }
       case "عربي":
       case "ar":
-        window.setTimeout(() => unlockSecret("arabic"), 900);
         return [{ kind: "accent", text: copy.arabic }];
       case "exit":
         return [{ kind: "muted", text: copy.exit }];

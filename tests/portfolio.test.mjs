@@ -394,27 +394,25 @@ test("the hero sheds its loops: no network canvas, scramble, shine, or ticker, a
   assert.doesNotMatch(heroCss.slice(0, motion), /animation:(?! none)|transition:/, "the rest state is the default style");
 });
 
-test("the starfield is gone and the gravity secret lives on the AI section's living orb", async () => {
+test("the starfield is gone, the secrets game with it, and the AI section's orb keeps its press-and-hold", async () => {
   const runtime = readComponent("runtime-section.tsx");
   const stage = readComponent("assistant-stage.tsx");
-  const { SECRET_IDS } = await import("../components/secrets.ts");
   const { getContent } = await import("../data/i18n.ts");
   assert.throws(() => readComponent("agent-field.tsx"), /ENOENT/, "the AgentField starfield was replaced by the living orb");
-  assert.ok(SECRET_IDS.includes("gravity"));
+  assert.throws(() => readComponent("secrets.ts"), /ENOENT/, "the secrets game is removed");
+  assert.throws(() => readComponent("secrets-tracker.tsx"), /ENOENT/, "and its tracker pill");
   assert.ok(runtime.indexOf("<AssistantStage") < runtime.indexOf("<AgentTerminal"), "on a phone the orb comes before the console");
   assert.match(stage, /data-cursor=\{copy\.cursor\}/, "the cursor ring says press and hold over the orb");
-  // Only a press that lasted, then a release, finds it; a scroll that starts on the orb cancels the press.
-  assert.match(stage, /if \(gravityRef\.current !== "held"\) return;[\s\S]*?unlockSecret\("gravity"\)/);
+  // Only a press that lasted, then a release, blooms the light; a scroll that starts on the orb cancels the press.
+  assert.match(stage, /if \(gravityRef\.current !== "held"\) return;[\s\S]*?orbRef\.current\?\.bloom\(\)/);
   assert.match(stage, /window\.addEventListener\("pointercancel", cancel\)/);
-  assert.doesNotMatch(stage.slice(stage.indexOf("const cancel"), stage.indexOf('window.addEventListener("pointerup"')), /unlockSecret/);
   assert.match(readFileSync(new URL("../app/ai.css", import.meta.url), "utf8"), /\.ai-stage\[data-gravity\] \{ cursor: grabbing; \}/);
   for (const locale of ["en", "ar"]) {
     const { ui } = getContent(locale);
     assert.equal("concepts" in ui.runtime, false, `${locale}: no labels left for the removed network`);
     assert.equal("concepts" in ui.hero || "ticker" in ui.hero || "cursor" in ui.hero, false, `${locale}: the hero keeps no copy for the moved parts`);
   }
-  assert.match(getContent("en").ui.secrets.items.gravity.hint, /living light beside the AI assistant/);
-  assert.match(getContent("ar").ui.secrets.items.gravity.hint, /الضوء الحيّ بجانب المساعد الذكي/);
+  for (const locale of ["en", "ar"]) assert.equal("secrets" in getContent(locale).ui, false, `${locale}: no secrets copy left`);
 });
 
 test("profile updates from X, LinkedIn, and GitHub keep their sources", () => {
