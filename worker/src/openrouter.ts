@@ -17,14 +17,29 @@ export class UpstreamError extends Error {
   }
 }
 
+const list = (value: string | undefined) => (value ?? "").split(",").map((item) => item.trim()).filter(Boolean);
+
+function providerPreferences(env: Env) {
+  // Skip providers that keep prompts for training; the vars below can only narrow routing further.
+  const provider: Record<string, unknown> = { data_collection: "deny" };
+  const only = list(env.PROVIDER_ONLY);
+  const quantizations = list(env.PROVIDER_QUANTIZATIONS);
+  if (only.length) {
+    provider.only = only;
+    provider.allow_fallbacks = false;
+  }
+  if (quantizations.length) provider.quantizations = quantizations;
+  if (env.PROVIDER_ZDR === "true") provider.zdr = true;
+  return provider;
+}
+
 function requestBody(env: Env, messages: ChatMessage[], extra: Record<string, unknown>) {
   const body: Record<string, unknown> = {
     model: env.MODEL,
     messages,
     max_tokens: 1800,
     usage: { include: true },
-    // Skip providers that keep prompts for training.
-    provider: { data_collection: "deny" },
+    provider: providerPreferences(env),
     ...extra
   };
   if (env.REASONING_EFFORT) body.reasoning = { effort: env.REASONING_EFFORT };

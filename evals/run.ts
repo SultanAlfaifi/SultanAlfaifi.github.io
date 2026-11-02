@@ -2,7 +2,9 @@
 //   npm run agent:dev            (with your OpenRouter key in worker/.dev.vars)
 //   npm run evals                → evals/results/latest.json (published) + a dated copy
 //   npm run evals -- --mock      → evals/results/mock.json (checks the harness; never published)
-// Spends real OpenRouter credit in live mode: about 44 questions, roughly $0.50–$2 with Claude Sonnet 5.5.
+//   npm run evals -- --out <file> → writes only <file> (model comparisons; never published)
+// Spends real OpenRouter credit in live mode: the 44 questions cost about $0.01–$0.02 with DeepSeek V4.1 Flash
+// (about $0.30 with Claude Sonnet 5.5).
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { grade, type EvalQuestion, type EvalRun } from "./grade";
@@ -16,6 +18,7 @@ const MOCK = args.includes("--mock");
 const WORKER = flag("url", "http://127.0.0.1:8787");
 const ORIGIN = flag("origin", "http://localhost:3000");
 const ONLY = flag("only", "");
+const OUT = flag("out", "");
 // Cloudflare's documented dummy token; it passes only with the Turnstile test secret used in local dev.
 const TEST_TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 
@@ -99,6 +102,8 @@ async function main() {
   await mkdir(dir, { recursive: true });
   if (MOCK) {
     await writeFile(path.join(dir, "mock.json"), JSON.stringify(report, null, 2));
+  } else if (OUT) {
+    await writeFile(path.resolve(OUT), JSON.stringify(report, null, 2));
   } else {
     await writeFile(path.join(dir, "latest.json"), JSON.stringify(report, null, 2));
     await writeFile(path.join(dir, `${report.runAt.slice(0, 19).replace(/:/g, "-")}.json`), JSON.stringify(report, null, 2));

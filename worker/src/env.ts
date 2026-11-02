@@ -8,6 +8,11 @@ export interface Env {
   SITE_URL: string;
   MODEL: string;
   REASONING_EFFORT: string;
+  // Optional OpenRouter provider pinning, comma-separated (e.g. "deepinfra" and "fp8"). Empty = OpenRouter's default routing.
+  PROVIDER_ONLY?: string;
+  PROVIDER_QUANTIZATIONS?: string;
+  // "true" routes only to Zero Data Retention endpoints.
+  PROVIDER_ZDR?: string;
   EMAIL_FROM: string;
   EMAIL_NOTIFY_FROM?: string;
   EMAIL_REPLY_TO?: string;

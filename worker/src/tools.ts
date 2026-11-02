@@ -1,4 +1,5 @@
 import { KNOWLEDGE } from "./generated/knowledge";
+import { pageAnchor } from "../../lib/agent/links";
 import type { EvidenceLevel } from "../../lib/agent/types";
 
 type Locale = "en" | "ar";
@@ -363,7 +364,8 @@ export function checkLinks(answer: string) {
   const sources = new Set<string>();
   const removed: string[] = [];
   const urls = new Set(KNOWLEDGE.urls.map((url) => url.replace(/\/$/, "")));
-  for (const [, , href] of answer.matchAll(LINK)) {
+  for (const [, , rawHref] of answer.matchAll(LINK)) {
+    const href = pageAnchor(rawHref);
     if (href.startsWith("#")) {
       if (ANCHOR_IDS.includes(href.slice(1))) sources.add(href.slice(1));
       else removed.push(href);
