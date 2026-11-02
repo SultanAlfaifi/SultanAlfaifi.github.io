@@ -699,25 +699,31 @@ html[data-visitor="hiring"] .about__next { grid-row: 5; }
 .portfolio-v3 .finale__socials .social-links a:hover { border-color: var(--li-line-3); background: var(--li-glass-2); color: var(--li-ink); }
 .portfolio-v3 .finale__socials .social-links a span { font: inherit; letter-spacing: 0; text-transform: none; }
 
-/* The horizon: a still, blurred glow of iris and rose, and one line of the living light across it. No orb. */
+/* The lamp: a soft white source above the name, and a cone of light that opens downward onto it and fades
+   to black. Still, no line and no colour. */
 .portfolio-v3 .finale__horizon { position: relative; height: clamp(140px, 16vw, 220px); margin-top: var(--li-open); pointer-events: none; }
+/* The cone. */
 .portfolio-v3 .finale__horizon::before {
   content: "";
   position: absolute;
-  inset-inline: -10%;
-  bottom: -60%;
-  height: 120%;
-  border-radius: 50%;
-  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--li-iris-rgb) / 30%), rgb(var(--li-rose-rgb) / 12%) 45%, transparent 70%);
-  filter: blur(10px);
+  inset-inline: 0;
+  top: 46%;
+  height: 190%;
+  background: radial-gradient(ellipse 34% 100% at 50% 0%, rgb(255 255 255 / 15%), rgb(255 255 255 / 6%) 45%, rgb(255 255 255 / 0%) 82%);
+  filter: blur(8px);
 }
+/* The source: a soft white bloom where the light comes from. */
 .portfolio-v3 .finale__horizon::after {
   content: "";
   position: absolute;
-  inset-inline: 8%;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(var(--li-apricot-rgb) / 60%), rgb(var(--li-rose-rgb) / 70%), rgb(var(--li-iris-rgb) / 70%), rgb(var(--li-glacier-rgb) / 60%), transparent);
+  left: 50%;
+  top: 46%;
+  width: min(560px, 52%);
+  height: clamp(40px, 5vw, 70px);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 55%), rgb(255 255 255 / 14%) 55%, rgb(255 255 255 / 0%));
+  filter: blur(14px);
 }
 
 @media (max-width: 900px) {

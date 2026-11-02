@@ -175,7 +175,7 @@ The engine does not read the motion preference itself; pass `still` and call `se
 The stage mirrors the state on the section as `data-presence`, so the console's edge answers it (an aurora
 ring while thinking). It plays the section's entrance (elements first, then the headline word by word) and a
 short hello (listening, speaking, idle) the first time the section is seen, both only with motion on. Press and
-hold the orb, then let go: that is the "gravity" secret.
+hold the orb, then let go, and it pulls in and blooms.
 
 ## One product
 

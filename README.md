@@ -77,8 +77,8 @@ rules are managed from one typed configuration file.
 - Every number sits in its card beside its source and date; the hero's spec strip is the
   page's only number row.
 - Cinematic first-visit intro (the Arabic name written stroke by stroke), aurora, cursor ring,
-  a bilingual type band that drifts on its own and speeds up while you scroll, word-by-word
-  headings, card glare, and a six-secret exploration game with confetti.
+  a bilingual type band that drifts on its own at a steady speed, word-by-word
+  headings, and card glare.
 - **Full Arabic edition** at [`/ar/`](https://sultalfaifi.com/ar/): right-to-left layout, mirrored
   motion and icons, translated content and interface, `hreflang` alternates, and a sitemap entry.
 - System-architecture hero connecting interfaces, backend logic, APIs, data,

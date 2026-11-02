@@ -17,7 +17,6 @@ import { Navbar } from "./navbar";
 import { PersonalOrder } from "./personal-order";
 import { ProjectsSection } from "./projects-section";
 import { RuntimeSection } from "./runtime-section";
-import { SecretsTracker } from "./secrets-tracker";
 import { WelcomeScreen } from "./welcome-screen";
 
 // After the hero, eight blocks: six numbered chapters (.li-chapter, counted by CSS in DOM order), the band
@@ -54,7 +53,6 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
       <AssistantLauncher locale={locale} />
       <InteractionLayer />
       <CursorRing />
-      <SecretsTracker locale={locale} />
       <WelcomeScreen locale={locale} />
     </div>
   );

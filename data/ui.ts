@@ -311,23 +311,7 @@ const en = {
     sendEmail: "Email me",
     open: (label: string) => `Open ${label}`,
     tip: "Tip: press",
-    anywhere: "anywhere.",
-    secret: "Some keys hide a secret."
-  },
-  secrets: {
-    pill: "secrets",
-    title: "Secrets",
-    locked: "Locked",
-    found: (title: string, count: number, total: number) => `Secret found: ${title} · ${count}/${total}`,
-    complete: "All 6 found. You poke at things like an engineer. Email me, I’d like to meet you.",
-    items: {
-      palette: { title: "Command line", hint: "Some people never touch the mouse. Try ⌘K, Ctrl+K, or /." },
-      gravity: { title: "Gravity well", hint: "Press and hold the living light beside the AI assistant, then let go." },
-      sudo: { title: "Root access", hint: "The console takes orders. Try hiring someone." },
-      policy: { title: "Policy enforcer", hint: "Tell the console to rm -rf something." },
-      arabic: { title: "Bilingual", hint: "The console knows one Arabic word. It’s listed in help." },
-      konami: { title: "Old school", hint: "↑ ↑ ↓ ↓ ← → ← → B A" }
-    } as Record<string, { title: string; hint: string }>
+    anywhere: "anywhere."
   },
   toasts: {
     agentOn: "Agent mode on. Every element is now a node you can inspect.",
@@ -373,7 +357,6 @@ const en = {
       "socials — where I post, and how many people follow",
       "contact — my email address",
       "run [task] — a demo agent trace with sample numbers",
-      "secrets — how many hidden things you've found",
       "time · motion on|off · clear · عربي · sudo hire sultan",
       "anything else — ask the AI assistant in plain English or Arabic (when it's live)",
       "fit <role or job description> — how Sultan's work matches it, with evidence and honest gaps"
@@ -386,8 +369,6 @@ const en = {
     arabic: "حيّاك! أنا سلطان، أبني وكلاء ذكاء اصطناعي يستأذنونك قبل أي خطوة لها أثر. وتقدر تقرأ الموقع كله بالعربي من زر «ع» في الأعلى.",
     exit: "there is no exit. only `contact`.",
     notFound: (command: string) => `command not found: ${command}. try \`help\`.`,
-    secrets: (found: number, total: number) => `${found}/${total} secrets found`,
-    locked: "locked:",
     agent: {
       liveLine: "[agent] live. I know everything on this site about Sultan's work, in English or Arabic. Ask about a project, or paste a job description.",
       offlineLine: "[agent] the AI assistant is offline, so you'll get scripted replies. Every command still works.",
@@ -835,23 +816,7 @@ const ar: UiStrings = {
     sendEmail: "راسلني على البريد",
     open: (label: string) => `افتح ${label}`,
     tip: "تلميح: اضغط",
-    anywhere: "من أي مكان.",
-    secret: "بعض المفاتيح تخفي سرًّا."
-  },
-  secrets: {
-    pill: "أسرار",
-    title: "الأسرار",
-    locked: "مقفل",
-    found: (title: string, count: number, total: number) => `لقيت سرًّا: ${title} · ${count}/${total}`,
-    complete: "لقيت الأسرار الستة كلها. فضولك فضول مهندس. راسلني، ودّي أتعرّف عليك.",
-    items: {
-      palette: { title: "قائمة الأوامر", hint: "بعض الناس ما يلمسون الماوس أبدًا. جرّب ⌘K أو Ctrl+K أو /." },
-      gravity: { title: "بئر الجاذبية", hint: "اضغط مطوّلًا على الضوء الحيّ بجانب المساعد الذكي، ثم أفلته." },
-      sudo: { title: "صلاحيات root", hint: "الطرفية تسمع الكلام. جرّب أن توظّف أحدًا." },
-      policy: { title: "حارس السياسات", hint: "جرّب الأمر rm -rf في الطرفية." },
-      arabic: { title: "ثنائي اللغة", hint: "الطرفية تعرف كلمة عربية واحدة. اكتب help وتلقاها." },
-      konami: { title: "زمن الطيبين", hint: "↑ ↑ ↓ ↓ ← → ← → B A" }
-    }
+    anywhere: "من أي مكان."
   },
   toasts: {
     agentOn: "وضع الوكيل شغّال. تقدر الآن تفحص أي عنصر في الصفحة.",
@@ -897,7 +862,6 @@ const ar: UiStrings = {
       "socials — أين أنشر، وكم متابعًا عندي",
       "contact — بريدي",
       "run [task] — تشغيل تجريبي لوكيل بأرقام افتراضية",
-      "secrets — كم سرًّا لقيت",
       "time · motion on|off · clear · عربي · sudo hire sultan",
       "أي سؤال ثاني — اسأل المساعد الذكي بالعربي أو بالإنجليزي (إذا كان شغّال)",
       "fit <الوظيفة أو وصفها> — كيف تطابق أعمال سلطان الوظيفة، بالأدلة والفجوات بصراحة"
@@ -910,8 +874,6 @@ const ar: UiStrings = {
     arabic: "حيّاك! أنت في النسخة العربية أصلًا. أنا سلطان، أبني وكلاء ذكاء اصطناعي يستأذنونك قبل أي خطوة لها أثر.",
     exit: "لا مخرج من هنا إلا contact",
     notFound: (command: string) => `ما عرفت الأمر: ${command}. اكتب help وتلقى الأوامر كلها.`,
-    secrets: (found: number, total: number) => `لقيت ${found} من ${total} أسرار`,
-    locked: "مقفل:",
     agent: {
       liveLine: "[agent] جاهز. أعرف كل ما في هذا الموقع عن شغل سلطان، بالعربي أو بالإنجليزي. اسأل عن أي مشروع، أو الصق وصف وظيفة.",
       offlineLine: "[agent] المساعد الذكي متوقف الآن، فالردود مكتوبة مسبقًا. والأوامر كلها تشتغل.",

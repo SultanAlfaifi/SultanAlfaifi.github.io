@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motionAllowed, subscribeMotion, toast, TOAST_EVENT } from "./motion-preference";
 import { currentLocale, getContent } from "@/data/i18n";
 import { revealFoldedHash } from "@/lib/agent/reveal";
-import { unlockSecret } from "./secrets";
 
 const SCRAMBLE_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/#*+";
 const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
@@ -190,7 +189,6 @@ export function InteractionLayer() {
         else delete root.dataset.agentMode;
         const copy = getContent(currentLocale()).ui.toasts;
         toast(enabled ? copy.agentOn : copy.agentOff);
-        if (enabled) window.setTimeout(() => unlockSecret("konami"), 1800);
       }
     }
 

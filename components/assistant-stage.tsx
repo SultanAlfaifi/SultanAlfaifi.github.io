@@ -6,12 +6,11 @@ import type { LivingOrbState } from "@/lib/living-orb";
 import { approvalCount, presenceState, subscribePresence, voiceLevel, type PresenceState } from "./assistant-presence";
 import { bloomBrandOrb, LivingOrb, type LivingOrbControls } from "./living-orb";
 import { motionAllowed, subscribeMotion } from "./motion-preference";
-import { unlockSecret } from "./secrets";
 
 type Word = PresenceState | "greeting" | "gravity";
 type Gravity = "off" | "held" | "released";
 
-// How long a press must last before the orb starts pulling (the "gravity" secret), and how long the
+// How long a press must last before the orb starts pulling (the "gravity" play), and how long the
 // release bloom shows before the orb goes back to following the console.
 const HOLD_MS = 420;
 const RELEASE_MS = 2000;
@@ -24,7 +23,7 @@ const serverCount = () => 0;
 // The AI section's living orb and the small word under it. It follows the real console (through
 // components/assistant-presence.ts): listening at the input, thinking until the first words, speaking
 // while they stream, a bloom when the visitor approves a draft. It also plays the section's entrance,
-// says hello once, and holds the "gravity" secret: press and hold the light, then let go.
+// says hello once, and has one small play: press and hold the light, then let go.
 export function AssistantStage({ locale = "en" }: { locale?: Locale }) {
   const copy = getContent(locale).ui.runtime;
   const stageRef = useRef<HTMLDivElement>(null);
@@ -117,7 +116,7 @@ export function AssistantStage({ locale = "en" }: { locale?: Locale }) {
     };
   }, []);
 
-  // The gravity secret. A press that lasts pulls the light in; letting go releases it.
+  // Gravity. A press that lasts pulls the light in; letting go releases it.
   useEffect(() => {
     let settle = 0;
     const release = () => {
@@ -128,7 +127,6 @@ export function AssistantStage({ locale = "en" }: { locale?: Locale }) {
       gravityRef.current = "released";
       setGravity("released");
       orbRef.current?.bloom();
-      unlockSecret("gravity");
       window.clearTimeout(settle);
       settle = window.setTimeout(() => {
         gravityRef.current = "off";
