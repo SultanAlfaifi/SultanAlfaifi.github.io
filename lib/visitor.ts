@@ -32,6 +32,21 @@ export function saveVisitor(detail: VisitorDetail) {
   window.dispatchEvent(new CustomEvent<VisitorDetail>(VISITOR_EVENT, { detail }));
 }
 
+// A fuller reading of the card that arrived after the visitor came in (the agent was slow). It replaces the
+// one kept, and the page fills in around them; the sections stay in the order they entered with, since the
+// event carries no company or role and the visitor kind is unchanged.
+export function storeProfile(next: VisitorProfile) {
+  profile = next;
+  try {
+    window.localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
+  } catch {
+    // Without storage the fuller card still applies to this page view.
+  }
+  profileRaw = undefined;
+  const visitor = document.documentElement.dataset.visitor as Visitor | undefined;
+  window.dispatchEvent(new CustomEvent<VisitorDetail>(VISITOR_EVENT, { detail: { visitor: visitor ?? next.intent, profile: next } }));
+}
+
 // The same object for the same stored text, so React's external-store hook doesn't loop.
 let profileRaw: string | null | undefined;
 export function readProfile(): VisitorProfile | null {
@@ -45,7 +60,10 @@ export function readProfile(): VisitorProfile | null {
   profileRaw = raw;
   try {
     const parsed = raw ? (JSON.parse(raw) as VisitorProfile) : null;
-    profile = parsed && typeof parsed === "object" && Array.isArray(parsed.projects) ? parsed : null;
+    // A card kept before reasons and help existed still reads, with both empty.
+    profile = parsed && typeof parsed === "object" && Array.isArray(parsed.projects)
+      ? { ...parsed, reasons: Array.isArray(parsed.reasons) ? parsed.reasons : [], help: Array.isArray(parsed.help) ? parsed.help : [] }
+      : null;
   } catch {
     profile = null;
   }

@@ -44,6 +44,13 @@ export function showcaseOrder(projects: Project[]) {
     .sort((a, b) => (a.showcase ?? Infinity) - (b.showcase ?? Infinity));
 }
 
+// The visitor's own projects first, in the order the agent ranked them; the rest keep the showcase order.
+// The grid's rhythm follows the position, so the closest project becomes the wide feature.
+export function firstFor(list: Project[], slugs: string[]) {
+  const mine = slugs.map((slug) => list.find((project) => project.slug === slug)).filter((project): project is Project => Boolean(project));
+  return [...mine, ...list.filter((project) => !mine.includes(project))];
+}
+
 // The rhythm of the grid: wide, then pairs, and one left over at the end is wide again, so the grid never
 // ends on a gap. Six projects read wide · pair · pair · wide.
 export function isWide(index: number, total: number) {

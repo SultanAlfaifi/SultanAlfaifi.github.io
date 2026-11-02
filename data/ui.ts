@@ -70,7 +70,13 @@ const en = {
       seeAll: (count: number) => `See the ${count} featured projects`,
       strongest: "Open the strongest proof",
       again: "Ask again",
-      own: "Give it your own task"
+      own: "Give it your own task",
+      // The visitor's own run, when their AI introduced them on the welcome screen (components/hero-run.tsx).
+      personal: {
+        plan: (greeting: string, name: string) => (name ? `${greeting}, ${name}. Matching your card to Sultan’s work.` : "Matching your card to Sultan’s work."),
+        card: "your card",
+        replay: "From your card · read by Sultan’s AI assistant"
+      }
     }
   },
   media: {
@@ -212,7 +218,14 @@ const en = {
     arranged: { hiring: "Arranged for hiring", collaborate: "Arranged for working together" } as Record<string, string>,
     arrangedName: (name: string) => `Arranged for ${name}`,
     change: "Change",
-    personalize: "Arrange the site for you"
+    personalize: "Arrange the site for you",
+    // After the welcome: the line on a project the agent tied to the visitor, and the block in Contact.
+    forYou: "For you",
+    helpFor: (name: string) => (name ? `Where Sultan’s work meets yours, ${name}` : "Where Sultan’s work meets yours"),
+    writeTo: "Write to Sultan",
+    mailSubject: (name: string, organization: string) => `Hello from ${name || "a visitor"}${organization ? ` (${organization})` : ""}`,
+    mailBody: (card: { name: string; field: string; organization: string; workingOn: string }) =>
+      `Hi Sultan,\n\n${card.name ? `I’m ${card.name}${card.field ? `, ${card.field}` : ""}${card.organization ? ` at ${card.organization}` : ""}.` : ""}${card.workingOn ? ` I’m working on ${card.workingOn}.` : ""}\n\n`
   },
   assistant: {
     open: "Ask my AI assistant",
@@ -608,7 +621,12 @@ const ar: UiStrings = {
       seeAll: (count: number) => `شوف المشاريع البارزة (${count})`,
       strongest: "افتح أقوى دليل",
       again: "اسألني مرة ثانية",
-      own: "جرّبه بمهمة من عندك"
+      own: "جرّبه بمهمة من عندك",
+      personal: {
+        plan: (greeting: string, name: string) => (name ? `${greeting} يا ${name}. أربط بطاقتك بشغل سلطان.` : "أربط بطاقتك بشغل سلطان."),
+        card: "بطاقتك",
+        replay: "من بطاقتك · قرأها مساعد سلطان الذكي"
+      }
     }
   },
   media: {
@@ -747,7 +765,13 @@ const ar: UiStrings = {
     arranged: { hiring: "مرتّب لك كمسؤول توظيف", collaborate: "مرتّب لك للتعاون" },
     arrangedName: (name: string) => `مرتّب لـ${name}`,
     change: "غيّر",
-    personalize: "رتّب الموقع لك"
+    personalize: "رتّب الموقع لك",
+    forYou: "لك",
+    helpFor: (name: string) => (name ? `وين يلتقي شغل سلطان بشغلك يا ${name}` : "وين يلتقي شغل سلطان بشغلك"),
+    writeTo: "اكتب لسلطان",
+    mailSubject: (name: string, organization: string) => `سلام من ${name || "زائر"}${organization ? ` (${organization})` : ""}`,
+    mailBody: (card: { name: string; field: string; organization: string; workingOn: string }) =>
+      `مرحبا سلطان،\n\n${card.name ? `أنا ${card.name}${card.field ? `، ${card.field}` : ""}${card.organization ? ` في ${card.organization}` : ""}.` : ""}${card.workingOn ? ` أشتغل على ${card.workingOn}.` : ""}\n\n`
   },
   assistant: {
     open: "اسأل مساعدي الذكي",

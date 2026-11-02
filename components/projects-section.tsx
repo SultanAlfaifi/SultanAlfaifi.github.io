@@ -7,6 +7,7 @@ import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
 import { ChapterEyebrow } from "./section-header";
 import { Showcase } from "./showcase";
+import { VisitorReason } from "./visitor-reason";
 
 type Copy = PortfolioContent["ui"]["work"];
 
@@ -64,6 +65,7 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
                   <article key={project.slug} className="sc-lab__card li-glass" id={`project-${project.slug}`}>
                     <p className="sc-lab__status"><MetaParts text={project.status} /></p>
                     <h4>{project.title}</h4>
+                    <VisitorReason slug={project.slug} locale={locale} />
                     <p className="sc-lab__category">{project.category}</p>
                     <p className="sc-lab__description"><LtrNumbers text={project.description} /></p>
                     {project.technologies.length ? (

@@ -6,6 +6,7 @@ import { getContent, type Locale } from "@/data/i18n";
 import { HelpSection } from "./help-section";
 import { ChapterEyebrow, ClauseLines } from "./section-header";
 import { SocialLinks } from "./social-links";
+import { VisitorHelp } from "./visitor-help";
 
 // The closing chapter, last in every visitor's order. One email action and a way to copy the address, the
 // address itself in plain text, the three ways I can help (#help), the three profiles, and then the page
@@ -63,6 +64,9 @@ export function ContactSection({ locale = "en" }: { locale?: Locale }) {
           <span aria-hidden="true"> · </span>
           <span>{ui.contact.based(identity.location)}</span>
         </p>
+
+        {/* For a visitor whose AI introduced them: where Sultan's work meets theirs, and an email already begun. */}
+        <VisitorHelp locale={locale} />
 
         {/* «كيف أقدر أخدمك؟»: the three ways to start, inside Contact (#help), so Contact closes every order. */}
         <HelpSection locale={locale} />

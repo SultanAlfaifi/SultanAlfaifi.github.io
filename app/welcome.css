@@ -227,6 +227,22 @@ html[data-visitor="collaborate"] .identity-hero [data-visitor-hide~="collaborate
   text-decoration: underline; text-underline-offset: 4px; cursor: pointer;
 }
 
+/* On a project the agent tied to the visitor: one quiet line, its label in the living light. */
+.visitor-reason { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 0; color: var(--li-ink-2); font-size: var(--li-t6, 0.95rem); line-height: 1.6; }
+.visitor-reason svg { flex: none; align-self: center; color: var(--li-tint-glacier); }
+.visitor-reason__label { flex: none; color: var(--li-tint-glacier); font-weight: 600; }
+
+/* In Contact, above the three ways to start: where Sultan's work meets the visitor's. */
+.portfolio-v3 .finale .visitor-help {
+  display: grid; justify-items: start; gap: 20px; width: min(760px, 100%); margin-top: var(--li-group, 64px);
+  padding: clamp(24px, 3vw, 40px); border-radius: var(--li-r); text-align: start;
+}
+.portfolio-v3 .finale .visitor-help__title { margin: 0; color: var(--li-ink); font-size: var(--li-t3, 1.4rem); font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.visitor-help__points { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.visitor-help__points li { position: relative; padding-inline-start: 22px; color: var(--li-ink-2); font-size: var(--li-t6, 1rem); line-height: 1.75; }
+.visitor-help__points li::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.72em; width: 8px; height: 8px; border-radius: 50%; background: var(--li-aurora); }
+.visitor-help__write svg { width: 16px; height: 16px; }
+
 @media (max-width: 860px) {
   .welcome__echo--1 { inset-inline-start: -4%; }
   .welcome__echo--2 { inset-inline-end: -6%; }

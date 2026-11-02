@@ -17,12 +17,18 @@ export type VisitorProfile = {
   intent: Intent;
   // The role a hiring visitor hires for, so the CV comes ready for it.
   hiringRole: string;
-  // Sultan's projects closest to the visitor, by slug, closest first.
+  // Sultan's projects closest to the visitor, by slug, closest first, and why each one, in the same order.
   projects: string[];
+  reasons: string[];
   // One or two sentences tying the visitor's work to the first project. Empty without the agent.
   bridge: string;
+  // Two or three points on where Sultan's work meets theirs, for Contact. Empty without the agent.
+  help: string[];
   source: "ai" | "card";
 };
+
+// The reason the agent gave for one of the visitor's projects, if it is one of theirs.
+export const reasonFor = (profile: VisitorProfile | null, slug: string) => (profile ? profile.reasons[profile.projects.indexOf(slug)] ?? "" : "");
 
 // Both prompts ask for the same eight lines, so parseCard can read either one without the agent.
 const PROMPTS: Record<Locale, string> = {
@@ -149,7 +155,9 @@ export function parseCard(text: string): VisitorProfile | null {
     intent: intentFrom(lookingFor),
     hiringRole: "",
     projects: [],
+    reasons: [],
     bridge: "",
+    help: [],
     source: "card"
   };
 }

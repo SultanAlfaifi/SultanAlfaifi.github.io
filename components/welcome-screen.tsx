@@ -7,7 +7,7 @@ import { getContent, type Locale } from "@/data/i18n";
 import { agentConfigured, prepareSession, readIntro, withSession } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
 import { AI_APPS, copyText, introPrompt, parseCard, timeGreeting, type AiAppId, type VisitorProfile } from "@/lib/intro";
-import { markLanding, markWelcome, rememberLanguage, saveVisitor, WELCOME_EVENT, type VisitorDetail } from "@/lib/visitor";
+import { markLanding, markWelcome, rememberLanguage, saveVisitor, storeProfile, WELCOME_EVENT, type VisitorDetail } from "@/lib/visitor";
 import { AiMark } from "./ai-marks";
 import { LivingOrb, type LivingOrbControls, type LivingOrbState } from "./living-orb";
 import { motionAllowed } from "./motion-preference";
@@ -21,7 +21,10 @@ type Shard = { text: string; x: number; y: number; cx: number; cy: number; delay
 const PENDING_KEY = "portfolio-intro-app";
 // Reading never flashes past: the orb thinks for at least this long, even when the card is read locally.
 const MIN_READ_MS = 2200;
-const AGENT_TIMEOUT_MS = 9000;
+// How long the reading waits for the agent before greeting from the card alone, and how long a slower
+// answer may still arrive and fill in the greeting, or the page if the visitor has already come in.
+const AGENT_WAIT_MS = 8000;
+const AGENT_LATE_MS = 30000;
 // The orb's flight into the hero, and the moment it hands over to the hero's own orb.
 const FLIGHT_MS = 1300;
 const LANDING = 0.78;
@@ -82,6 +85,8 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
   const checkRef = useRef<HTMLDivElement>(null);
   const catchRef = useRef<HTMLTextAreaElement>(null);
   const readingRef = useRef<AbortController | null>(null);
+  // The profile the visitor came in with, while the agent may still be writing a fuller one.
+  const enteredRef = useRef<VisitorProfile | null>(null);
   const [step, setStep] = useState<Step>("ask");
   const [app, setApp] = useState<App | null>(null);
   // The opening and the greeting are spoken; once a moment has been said, the orb goes back to listening.
@@ -123,6 +128,10 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     setDevice({ canPaste: typeof navigator.clipboard?.readText === "function", keys: fine ? (mac ? "⌘" : "Ctrl") : null });
     if (document.documentElement.dataset.welcome === "show") open(true);
     const reopen = () => {
+      // Choosing again: a reading still on its way from last time no longer applies.
+      readingRef.current?.abort();
+      readingRef.current = null;
+      enteredRef.current = null;
       setText("");
       setError(null);
       setProfile(null);
@@ -149,7 +158,6 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
   // the visitor never sees a screen close. Without motion the screen just closes.
   function finish(detail: VisitorDetail, then?: () => void) {
     const dialog = dialogRef.current;
-    readingRef.current?.abort();
     rememberApp(null);
     saveVisitor(detail);
     const close = () => {
@@ -191,7 +199,12 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     window.setTimeout(close, FLIGHT_MS + 400);
   }
 
-  const skip = () => finish({ visitor: "skip" });
+  // "No thanks" also drops a reading still on its way: the visitor chose not to be read.
+  function skip() {
+    readingRef.current?.abort();
+    readingRef.current = null;
+    finish({ visitor: "skip" });
+  }
 
   // The tile is a real link, so the app opens in a new tab without a pop-up blocker in the way. The
   // prompt is copied in the same click, for apps that don't read it from the link.
@@ -251,17 +264,21 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     drawIn(value);
     setStep("reading");
     readingRef.current?.abort();
+    enteredRef.current = null;
     const controller = new AbortController();
     readingRef.current = controller;
-    const timer = window.setTimeout(() => controller.abort(), AGENT_TIMEOUT_MS);
+    const timer = window.setTimeout(() => controller.abort(), AGENT_LATE_MS);
     const agent = agentConfigured && checkRef.current
-      ? withSession(checkRef.current, locale, (token) => readIntro(token, value.slice(0, 3000), locale, controller.signal)).then((result) => result.profile, () => null)
+      ? withSession(checkRef.current, locale, (token) => readIntro(token, value.slice(0, 3000), locale, controller.signal)).then((result) => result.profile, () => null).finally(() => window.clearTimeout(timer))
       : Promise.resolve(null);
-    const [fromAgent] = await Promise.all([agent, wait(motionAllowed() ? MIN_READ_MS : 0)]);
-    window.clearTimeout(timer);
+    // undefined: the agent hasn't answered yet; null: it couldn't read the card.
+    const [fromAgent] = await Promise.all([Promise.race([agent, wait(AGENT_WAIT_MS).then(() => undefined)]), wait(motionAllowed() ? MIN_READ_MS : 0)]);
     if (readingRef.current !== controller) return;
-    // Without the agent the card is still read line by line: the name and why they came, no bridge.
-    const result = fromAgent ?? card;
+    // Without the agent the card is still read line by line: the name and why they came, no bridge. Only a
+    // text that isn't the card waits for the agent as long as it takes.
+    let result = fromAgent ?? card;
+    if (fromAgent === undefined && !card) result = await agent;
+    if (readingRef.current !== controller) return;
     if (!result) {
       setStep("listen");
       setError(copy.unreadable);
@@ -269,6 +286,15 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     }
     setProfile(result);
     setStep("ready");
+    if (fromAgent !== undefined || result !== card) return;
+    // The agent is still writing. Its fuller reading replaces the card's when it lands: in the greeting, or
+    // on the page around the visitor if they have already come in (with the order they came in with).
+    void agent.then((late) => {
+      if (!late || readingRef.current !== controller) return;
+      const entered = enteredRef.current;
+      if (!entered) return setProfile(late);
+      storeProfile({ ...late, intent: entered.intent, name: late.name || entered.name, projects: late.projects.length ? late.projects : entered.projects });
+    });
   }
 
   function submit(event: FormEvent) {
@@ -305,6 +331,7 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
     if (!profile) return skip();
     const hiring = profile.intent === "hiring";
     const kept: VisitorProfile = { ...profile, projects: profile.projects.length ? profile.projects : project ? [project.slug] : [] };
+    enteredRef.current = kept;
     finish(
       { visitor: profile.intent, company: hiring ? profile.organization : undefined, role: hiring ? profile.hiringRole : undefined, profile: kept },
       toProject && project ? () => window.setTimeout(() => revealAnchor(`project-${project.slug}`), 80) : undefined
@@ -447,7 +474,8 @@ export function WelcomeScreen({ locale = "en" }: { locale?: Locale }) {
           <div className="welcome__body" key="ready">
             <Voice className="welcome__whisper" text={app && app !== "other" ? copy.introduced(appInfo?.name ?? "") : copy.introducedOther} delay={200} />
             <Voice as="h2" id={title} className="welcome__line welcome__line--greet" text={`${timeGreeting(locale)}${name ? `${comma}${name}` : ""}`} delay={500} />
-            <Voice className="welcome__bridge" text={profile.bridge || copy.fallbackBridge} delay={1300} />
+            {/* Keyed by its words, so a line the agent sends late arrives word by word like the first. */}
+            <Voice key={profile.bridge || "card"} className="welcome__bridge" text={profile.bridge || copy.fallbackBridge} delay={1300} />
             <p className="welcome__arranged">{copy.arrangedTitle} {arranged.join(" · ")}</p>
             <div className="welcome__actions">
               <button type="button" className="li-btn li-btn--primary welcome__enter" onClick={() => enter()} autoFocus>{copy.enter}</button>
