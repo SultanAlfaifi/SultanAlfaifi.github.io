@@ -9,7 +9,7 @@ import { SocialLinks } from "./social-links";
 
 // The closing chapter, last in every visitor's order. One email action and a way to copy the address, the
 // address itself in plain text, the three ways I can help (#help), the three profiles, and then the page
-// comes to rest on a horizon of the living light. The quiet wordmark under it is the footer's
+// comes to rest under a soft white lamp. The quiet wordmark it lights is the footer's
 // (components/footer.tsx).
 export function ContactSection({ locale = "en" }: { locale?: Locale }) {
   const { identity, ui } = getContent(locale);

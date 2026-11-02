@@ -112,8 +112,8 @@ test("the band moves on its own: no scroll-only timeline, and it stops with moti
   const band = experience.slice(experience.indexOf("/* ---------- Kinetic band"), experience.indexOf("/* ---------- Word-by-word headings"));
   assert.ok(band.length > 200, "the band block");
   assert.doesNotMatch(band, /animation-timeline/, "no view() override that ties it to scroll only");
-  assert.match(band, /\.kinetic-band__row--solid \{ animation: band-left 56s linear infinite; \}/);
-  assert.match(band, /\.kinetic-band__row--outline \{ animation: band-right 64s linear infinite; \}/);
+  assert.match(band, /\.kinetic-band__row--solid \{ animation: band-left 28s linear infinite; \}/);
+  assert.match(band, /\.kinetic-band__row--outline \{ animation: band-right 32s linear infinite; \}/);
   assert.match(band, /\.kinetic-band\.is-away \.kinetic-band__row \{ animation-play-state: paused; \}/, "off screen it rests");
   assert.match(band, /@media \(prefers-reduced-motion: reduce\) \{\s*\.kinetic-band__row \{ animation: none; \}/);
   assert.match(band, /html\[data-motion="off"\] \.kinetic-band__row \{ animation: none; \}/);

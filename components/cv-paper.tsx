@@ -157,10 +157,6 @@ export function CvPaper({ cv, footer, label, caption, approved = false }: { cv: 
 
   return (
     <div ref={stageRef} className={stageClass} onPointerMove={tilt} onPointerLeave={rest}>
-      <div className="cv-case" aria-hidden="true">
-        <span className="cv-pool" />
-        <span className="cv-floor" />
-      </div>
       <div ref={pageRef} className="cv-page">
         <span className="cv-ring" aria-hidden="true" />
         <div className="cv-sheet">

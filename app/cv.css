@@ -5,7 +5,6 @@
    components/cv-section.tsx, components/cv-paper.tsx. Calm tokens come from app/living.css ("Calm").
    ========================================================================================== */
 @property --rise { syntax: "<number>"; inherits: true; initial-value: 1; }
-@property --cv-turn { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 
 .portfolio-v3 .cv-section { background: none; color: var(--li-ink); }
 .cv-grid {
@@ -157,9 +156,9 @@
 .cv-section .agent-turnstile:empty { display: none; }
 
 /* ==========================================================================================
-   The stage. A glass case with no top edge (its border and glass fade upward), a pool of the orb's light
-   in it, a floor line, and the page standing on the floor, taller than the case. --rise (0 → 1) lays the
-   page back in its case and stands it up; it is 1 wherever motion is off and without JavaScript.
+   The stage. No case and no coloured light: the page stands on the black with a soft white light behind
+   it. --rise (0 → 1) lays the page back and stands it up; it is 1 wherever motion is off and without
+   JavaScript.
    ========================================================================================== */
 .cv-stagewrap { position: relative; min-width: 0; padding-top: var(--cv-breakout); }
 .cv-stage {
@@ -170,36 +169,6 @@
   perspective: 1700px;
   perspective-origin: 50% 0%;
 }
-/* The case's edge, fading out toward the top. */
-.cv-stage::after {
-  content: ""; position: absolute; inset: 0; z-index: 0; border: 1px solid var(--li-line-2); border-radius: inherit; pointer-events: none;
-  -webkit-mask: linear-gradient(180deg, transparent 0%, transparent 18%, #000 62%);
-  mask: linear-gradient(180deg, transparent 0%, transparent 18%, #000 62%);
-}
-/* The case's glass: deep, lit from above, gone at the top. */
-.cv-case {
-  position: absolute; inset: 0; z-index: -2; overflow: hidden; border-radius: inherit;
-  background:
-    radial-gradient(90% 70% at 50% 0%, rgb(255 255 255 / 3.5%), transparent 60%),
-    linear-gradient(180deg, #0d0d12 0%, #060609 72%, #08080c 100%);
-  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 42%);
-  mask: linear-gradient(180deg, transparent 0%, #000 42%);
-}
-/* The light pool: the orb's colours, CSS only. It brightens and grows as the page rises. */
-.cv-pool {
-  position: absolute; left: 50%; bottom: 4%; width: 84%; height: 34%; border-radius: 50%; translate: -50% 0;
-  background: conic-gradient(from calc(210deg + var(--cv-turn)), var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
-  filter: blur(54px);
-  opacity: calc(0.12 + 0.3 * var(--rise));
-  transform: scale(calc(0.6 + 0.4 * var(--rise)));
-  transition: --cv-turn 1.6s var(--li-ease-spring);
-}
-.cv-pool::after {
-  content: ""; position: absolute; inset: 10%; border-radius: 50%; opacity: 0;
-  background: radial-gradient(closest-side, var(--li-glacier), transparent);
-  transition: opacity 1.6s var(--li-ease-spring);
-}
-.cv-floor { position: absolute; inset-inline: 0; bottom: 0; height: 15%; border-top: 1px solid rgb(255 255 255 / 7%); background: linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 70%); }
 .cv-caption { position: absolute; z-index: 3; inset-inline: 0; bottom: 22px; display: flex; justify-content: center; margin: 0; padding-inline: 12px; pointer-events: none; }
 .cv-caption span {
   display: inline-flex; align-items: center; gap: 10px; min-height: 30px; padding: 3px 14px;
@@ -223,8 +192,15 @@
 }
 [dir="ltr"] .cv-page { --ty: -10deg; }
 .cv-stage:hover .cv-page { transition-duration: 0.16s; }
-/* An aurora glow behind the page, growing as it rises. */
-.cv-page::before { content: ""; position: absolute; inset: 3% -3% -2%; z-index: -1; border-radius: 6px; background: var(--li-aurora); filter: blur(34px); opacity: calc(0.28 * var(--rise)); }
+/* A soft white light behind the page, like a lamp at its back. It grows as the page rises and warms a little
+   brighter on the approval moment. */
+.cv-page::before {
+  content: ""; position: absolute; inset: -16% -24% -10%; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 30%), rgb(255 255 255 / 12%) 45%, rgb(255 255 255 / 0%) 100%);
+  filter: blur(26px);
+  opacity: calc(0.2 + 0.7 * var(--rise));
+  transition: opacity 1.2s var(--li-ease-spring);
+}
 .cv-sheet {
   position: relative; overflow: hidden; border-radius: 3px; background: #fff;
   box-shadow: 0 70px 90px -50px rgb(0 0 0 / 95%), 0 0 0 1px rgb(0 0 0 / 35%);
@@ -314,24 +290,23 @@
       animation-timeline: view();
       animation-range: entry 10% cover 40%;
     }
-    html:not([data-motion="off"]) .cv-section :is(.cv-get, .cv-case) {
+    html:not([data-motion="off"]) .cv-section .cv-get {
       animation: cv-fade-up linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 35%;
     }
   }
   html:not([data-motion="off"]) .cv-stage.is-prepared .cv-ring { animation: cv-ring-turn 2.4s var(--li-ease) 1 both; }
-  /* The approval moment: the pool turns from apricot-led to glacier-led and settles. */
-  html:not([data-motion="off"]) .cv-stage.is-approved .cv-pool { --cv-turn: -90deg; }
-  html:not([data-motion="off"]) .cv-stage.is-approved .cv-pool::after { opacity: 0.55; }
+  /* The approval moment: the light behind the page swells once and settles. */
+  html:not([data-motion="off"]) .cv-stage.is-approved .cv-page::before { opacity: 1; }
   html:not([data-motion="off"]) .cv-more[open] .cv-more__panel { animation: cv-panel-in 0.5s var(--li-ease) both; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cv-stage { --rise: 1 !important; }
-  .cv-page, .cv-pool, .cv-chips, .cv-more__icon { transition: none; }
+  .cv-page, .cv-page::before, .cv-chips, .cv-more__icon { transition: none; }
 }
 html[data-motion="off"] .cv-stage { --rise: 1 !important; }
-html[data-motion="off"] :is(.cv-page, .cv-pool, .cv-chips, .cv-more__icon) { transition: none; }
+html[data-motion="off"] :is(.cv-page, .cv-page::before, .cv-chips, .cv-more__icon) { transition: none; }
 
 /* ---------- Desktop: one screen; the stage stays beside the options when they open ---------- */
 @media (min-width: 901px) {
@@ -383,5 +358,5 @@ html[data-motion="off"] :is(.cv-page, .cv-pool, .cv-chips, .cv-more__icon) { tra
 }
 
 @media print {
-  .cv-stage, .cv-section :is(.cv-get, .cv-case) { animation: none !important; --rise: 1 !important; opacity: 1 !important; }
+  .cv-stage, .cv-section .cv-get { animation: none !important; --rise: 1 !important; opacity: 1 !important; }
 }

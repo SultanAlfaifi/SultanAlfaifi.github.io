@@ -1,6 +1,6 @@
 import { getContent, type Locale } from "@/data/i18n";
 
-// The close of the page: my name in the page's own language, very quiet, resting under the horizon that ends
+// The close of the page: my name in the page's own language, very quiet, lit by the soft white lamp that ends
 // Contact, then one row: how the site was made, the rights, and the way back up. The name is decoration
 // (aria-hidden), and it is still: nothing here follows the pointer. The profiles live in Contact and the hero.
 export function Footer({ locale = "en" }: { locale?: Locale }) {

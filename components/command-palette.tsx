@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { ArrowUpRight, AtSign, Command, CornerDownLeft, FolderGit2, Hash, Sparkles, Terminal, Waves } from "lucide-react";
+import { ArrowUpRight, AtSign, Command, CornerDownLeft, FolderGit2, Hash, Sparkles, Terminal } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { openAssistant } from "@/lib/agent/assistant";
 import { openFolds } from "@/lib/agent/reveal";
 import { rememberLanguage } from "@/lib/visitor";
 import { motionAllowed, openPalette, PALETTE_EVENT, setMotionEnabled, toast } from "./motion-preference";
-import { unlockSecret } from "./secrets";
 
 type PaletteItem = {
   id: string;
@@ -144,7 +143,6 @@ export function CommandPalette({ locale = "en" }: { locale?: Locale }) {
       setIsOpen(true);
       dialog.showModal();
       inputRef.current?.focus();
-      unlockSecret("palette");
     }
     function handleKey(event: KeyboardEvent) {
       const typing = (event.target as Element | null)?.closest("input, textarea, [contenteditable='true']");
@@ -238,7 +236,7 @@ export function CommandPalette({ locale = "en" }: { locale?: Locale }) {
             );
           })}
         </ul>
-        <p className="palette__foot"><Terminal size={13} aria-hidden="true" /> {copy.tip} <kbd>/</kbd> {copy.anywhere} <Waves size={13} aria-hidden="true" /> {copy.secret} <AtSign size={13} aria-hidden="true" /><span dir="ltr">{identity.email}</span></p>
+        <p className="palette__foot"><Terminal size={13} aria-hidden="true" /> {copy.tip} <kbd>/</kbd> {copy.anywhere} <AtSign size={13} aria-hidden="true" /><span dir="ltr">{identity.email}</span></p>
       </div>
     </dialog>
   );
