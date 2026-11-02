@@ -14,7 +14,7 @@
 }
 .terminal__action:hover { background: var(--mint); color: var(--ink); }
 .terminal__chips--agent { padding-top: 0; font-family: var(--font-arabic), sans-serif; }
-.terminal__chips--agent button { border-color: rgb(71 200 245 / 40%); }
+.terminal__chips--agent button { border-color: rgb(157 245 228 / 40%); }
 .terminal__chips button:disabled { opacity: 0.55; cursor: progress; }
 .terminal__privacy { margin: 0; color: #cfcdc8; font-family: var(--font-arabic), sans-serif; font-size: 0.84rem; line-height: 1.6; }
 .agent-turnstile:empty { display: none; }
@@ -38,16 +38,16 @@
 [dir="rtl"] .agent-activity[open] summary::before { transform: rotate(-90deg); }
 .agent-activity summary:hover { color: var(--paper); }
 .agent-activity summary:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 6px; }
-.agent-activity ol { display: grid; gap: 4px; margin: 6px 0 0; padding: 6px 12px; list-style: none; border-inline-start: 1px solid rgb(71 200 245 / 25%); }
-.agent-activity__warn { color: #ffb46a; }
+.agent-activity ol { display: grid; gap: 4px; margin: 6px 0 0; padding: 6px 12px; list-style: none; border-inline-start: 1px solid rgb(157 245 228 / 25%); }
+.agent-activity__warn { color: #b6f23c; }
 
 /* The places on the page an answer drew on. Each one scrolls there. */
 .agent-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; color: #a29f97; font-family: var(--font-arabic), sans-serif; font-size: 0.76rem; }
 .agent-sources button {
-  min-height: 28px; padding: 0 10px; border: 1px solid rgb(71 200 245 / 35%); border-radius: 999px;
+  min-height: 28px; padding: 0 10px; border: 1px solid rgb(157 245 228 / 35%); border-radius: 999px;
   background: transparent; color: var(--mint); font: inherit; cursor: pointer;
 }
-.agent-sources button:hover { background: rgb(71 200 245 / 12%); }
+.agent-sources button:hover { background: rgb(157 245 228 / 12%); }
 .agent-sources button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 
 .agent-card {
@@ -78,7 +78,7 @@
 .agent-draft__to span { color: var(--paper); font-weight: 600; }
 .agent-card__status { margin: 0; color: var(--mint); }
 .agent-card__status a, .agent-card a { color: var(--mint); text-underline-offset: 3px; }
-.agent-card__error { margin: 0; color: #ffb46a; }
+.agent-card__error { margin: 0; color: #b6f23c; }
 .agent-fit h4 { margin: 4px 0 0; color: var(--paper); font-size: 0.82rem; }
 .agent-fit ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; }
 .agent-fit__summary { margin: 0; color: #ebe8e1; }
@@ -86,14 +86,14 @@
 .agent-fit__plan { display: block; color: #b7b4ad; font-size: 0.78rem; }
 
 /* Where the agent took the visitor. A steady outline; the pulse only plays when motion is allowed. */
-.agent-highlight { outline: 3px solid var(--mint, #9fe3ff); outline-offset: 8px; border-radius: 12px; transition: outline-color 600ms ease; }
+.agent-highlight { outline: 3px solid var(--mint, #cffbf2); outline-offset: 8px; border-radius: 12px; transition: outline-color 600ms ease; }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="off"]) .agent-highlight { animation: agent-highlight 1.4s ease-out 2; }
 }
 @keyframes agent-highlight {
-  0% { outline-color: rgb(71 200 245 / 100%); }
-  60% { outline-color: rgb(71 200 245 / 35%); }
-  100% { outline-color: rgb(71 200 245 / 100%); }
+  0% { outline-color: rgb(157 245 228 / 100%); }
+  60% { outline-color: rgb(157 245 228 / 35%); }
+  100% { outline-color: rgb(157 245 228 / 100%); }
 }
 
 /* ---------- /agent-evals ---------- */
@@ -114,12 +114,12 @@
 .evals-questions { display: grid; gap: 10px; padding-inline-start: 22px; }
 .evals-tag { display: inline-block; padding: 1px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.75rem; font-weight: 400; }
 .evals-result { margin-top: 12px; padding: 16px 18px; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--white); }
-.evals-result--failed { border-color: #ffb46a; }
+.evals-result--failed { border-color: #b6f23c; }
 .evals-result h3 { margin: 0 0 6px; font-size: 1rem; }
 .evals-badge { font-weight: 700; }
-.evals-result--failed .evals-badge { color: #ffb46a; }
+.evals-result--failed .evals-badge { color: #b6f23c; }
 .evals-result__question { margin: 0 0 8px; }
-.evals-result__failures { margin: 0 0 8px; color: #ffb46a; }
+.evals-result__failures { margin: 0 0 8px; color: #b6f23c; }
 .evals-result__answer { white-space: pre-wrap; line-height: 1.7; }
 .evals-result__trace { color: var(--muted); font-size: 0.85rem; }
 .evals-result__meta { color: var(--muted); font-size: 0.8rem; }
@@ -146,7 +146,7 @@
 
 .terminal-placeholder {
   display: grid; place-content: center; justify-items: center; gap: 14px; padding: 32px;
-  border: 1px dashed rgb(71 200 245 / 40%); border-radius: 18px; color: #cfcdc8; text-align: center;
+  border: 1px dashed rgb(157 245 228 / 40%); border-radius: 18px; color: #cfcdc8; text-align: center;
 }
 .terminal-placeholder p { margin: 0; }
 .terminal-placeholder button {
@@ -176,8 +176,8 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 
 .assistant-cta {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px;
-  border: 1px solid rgb(71 200 245 / 60%); border-radius: 999px;
-  background: rgb(71 200 245 / 10%); color: var(--paper);
+  border: 1px solid rgb(157 245 228 / 60%); border-radius: 999px;
+  background: rgb(157 245 228 / 10%); color: var(--paper);
   font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
@@ -188,10 +188,10 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
 .assistant-launcher {
   position: fixed; z-index: 125; inset-block-end: 20px; inset-inline-end: 20px;
   display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding-inline: 16px 20px;
-  border: 1px solid rgb(71 200 245 / 55%); border-radius: 999px;
+  border: 1px solid rgb(157 245 228 / 55%); border-radius: 999px;
   background: var(--ink); color: var(--paper);
   font: inherit; font-family: var(--font-arabic), sans-serif; font-size: 0.95rem; font-weight: 600;
-  box-shadow: 0 18px 50px rgb(0 0 0 / 30%), 0 0 0 6px rgb(71 200 245 / 10%);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 30%), 0 0 0 6px rgb(157 245 228 / 10%);
   cursor: pointer;
   transition: opacity 220ms ease, transform 260ms var(--ease-arrive), visibility 220ms, background-color 200ms ease, color 200ms ease;
 }
@@ -222,7 +222,7 @@ html[data-assistant="open"] .runtime-section > .page-shell { position: relative;
   display: grid; gap: 12px;
   width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 120px));
   padding: 14px 16px 10px;
-  border: 1px solid rgb(71 200 245 / 28%); border-radius: 20px;
+  border: 1px solid rgb(157 245 228 / 28%); border-radius: 20px;
   background: rgb(9 9 13 / 94%); color: #e5e1d8;
   box-shadow: 0 24px 60px rgb(0 0 0 / 45%), inset 0 0 0 1px rgb(255 255 255 / 4%);
   backdrop-filter: blur(14px);
@@ -291,13 +291,13 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
 /* The exact words an answer rests on, lit until the agent points somewhere else. */
 .agent-spot {
   border-radius: 6px;
-  background: rgb(71 200 245 / 22%);
-  box-shadow: 0 0 0 4px rgb(71 200 245 / 22%), 0 0 0 5px rgb(71 200 245 / 70%);
+  background: rgb(157 245 228 / 22%);
+  box-shadow: 0 0 0 4px rgb(157 245 228 / 22%), 0 0 0 5px rgb(157 245 228 / 70%);
 }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="off"]) .agent-spot { animation: agent-spot 1.2s ease-out; }
 }
-@keyframes agent-spot { from { background: rgb(71 200 245 / 0%); box-shadow: 0 0 0 16px rgb(71 200 245 / 0%), 0 0 0 5px rgb(71 200 245 / 0%); } }
+@keyframes agent-spot { from { background: rgb(157 245 228 / 0%); box-shadow: 0 0 0 16px rgb(157 245 228 / 0%), 0 0 0 5px rgb(157 245 228 / 0%); } }
 
 /* A project the agent is talking about, as the page shows it. */
 .agent-project { gap: 0; padding: 0; overflow: hidden; }
@@ -329,9 +329,9 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
 }
 .agent-tour button::before {
   content: counter(stop); flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px;
-  border: 1px solid rgb(71 200 245 / 45%); border-radius: 50%; color: var(--mint); font-size: 0.72rem;
+  border: 1px solid rgb(157 245 228 / 45%); border-radius: 50%; color: var(--mint); font-size: 0.72rem;
 }
-.agent-tour button:hover { background: rgb(71 200 245 / 10%); }
+.agent-tour button:hover { background: rgb(157 245 228 / 10%); }
 .agent-tour button:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }
 
 /* ---------- The assistant's face: the living orb, in the panel, its welcome, and the companion ---------- */
@@ -372,7 +372,7 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
   border: 1px solid rgb(255 255 255 / 12%); border-radius: 18px; background: rgb(255 255 255 / 3%);
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
-.terminal-shell--docked .terminal__input:focus-within { border-color: rgb(71 200 245 / 60%); box-shadow: 0 0 0 3px rgb(71 200 245 / 14%); }
+.terminal-shell--docked .terminal__input:focus-within { border-color: rgb(157 245 228 / 60%); box-shadow: 0 0 0 3px rgb(157 245 228 / 14%); }
 .terminal-shell--docked .terminal__input .terminal__prompt { display: none; }
 
 /* Centred in the empty panel, so the first screen reads as a greeting, not as an empty log. */
@@ -387,7 +387,7 @@ html[data-companion="on"] .assistant-launcher { visibility: hidden; opacity: 0; 
   color: var(--paper); font: inherit; text-align: start; cursor: pointer;
   transition: border-color 200ms ease, background-color 200ms ease, transform 220ms var(--ease-arrive);
 }
-.agent-starters button:hover:not(:disabled) { border-color: rgb(71 200 245 / 55%); background-color: rgb(71 200 245 / 7%); transform: translateY(-2px); }
+.agent-starters button:hover:not(:disabled) { border-color: rgb(157 245 228 / 55%); background-color: rgb(157 245 228 / 7%); transform: translateY(-2px); }
 .agent-starters button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 .agent-starters button:disabled { opacity: 0.55; cursor: progress; }
 .agent-starters svg { margin-bottom: 6px; color: var(--mint); }

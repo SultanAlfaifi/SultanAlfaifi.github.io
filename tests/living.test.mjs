@@ -65,7 +65,7 @@ function setup({ reduce = false, motionOff = false } = {}) {
 
 test("the engine exposes the living states, the aurora palette, and a cap on live WebGL orbs", () => {
   assert.deepEqual(LIVING_ORB_STATES, ["idle", "listening", "thinking", "speaking", "approved", "paused"]);
-  assert.deepEqual([...LIVING_PALETTES.aurora], ["#FFB46A", "#FF5C8D", "#8F6BFF", "#47C8F5"]);
+  assert.deepEqual([...LIVING_PALETTES.aurora], ["#B6F23C", "#4A7DFF", "#00D1B2", "#9DF5E4"]);
   assert.equal(MAX_LIVE_WEBGL, 3);
 });
 

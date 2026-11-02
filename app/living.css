@@ -14,10 +14,10 @@
   /* channels, for alpha: rgb(var(--li-ink-rgb) / 40%) */
   --li-bg-rgb: 3 3 4;
   --li-ink-rgb: 244 242 238;
-  --li-apricot-rgb: 255 180 106;
-  --li-rose-rgb: 255 92 141;
-  --li-iris-rgb: 143 107 255;
-  --li-glacier-rgb: 71 200 245;
+  --li-apricot-rgb: 182 242 60;
+  --li-rose-rgb: 74 125 255;
+  --li-iris-rgb: 0 209 178;
+  --li-glacier-rgb: 157 245 228;
 
   /* ground */
   --li-bg: #030304;
@@ -37,21 +37,22 @@
   --li-line-2: rgb(var(--li-ink-rgb) / 15%);
   --li-line-3: rgb(var(--li-ink-rgb) / 26%);
 
-  /* the living light: the orb's aurora palette */
-  --li-apricot: #ffb46a;
-  --li-rose: #ff5c8d;
-  --li-iris: #8f6bff;
-  --li-glacier: #47c8f5;
+  /* the living light: the "Abyss" palette (Sultan's pick, 2026-11-02). The names keep their roles:
+     apricot = chartreuse (asks), rose = cobalt (holds), iris = turquoise glow, glacier = foam (verifies). */
+  --li-apricot: #b6f23c;
+  --li-rose: #4a7dff;
+  --li-iris: #00d1b2;
+  --li-glacier: #9df5e4;
   --li-violet: #a684ff;
   --li-frost: #e8f6ff;
   /* tints: the same hues, light enough for small text on the ground */
-  --li-tint-apricot: #ffd3a8;
-  --li-tint-rose: #ffb3c8;
-  --li-tint-iris: #c9beff;
-  --li-tint-glacier: #9fe3ff;
-  --li-aurora: linear-gradient(90deg, var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier));
-  --li-aurora-ring: conic-gradient(from var(--li-angle), var(--li-apricot), var(--li-rose), var(--li-iris), var(--li-glacier), var(--li-apricot));
-  --li-focus: #9cc9ff;
+  --li-tint-apricot: #ddf9a6;
+  --li-tint-rose: #b4c9ff;
+  --li-tint-iris: #8eebdd;
+  --li-tint-glacier: #cffbf2;
+  --li-aurora: linear-gradient(90deg, var(--li-rose), var(--li-iris), var(--li-apricot), var(--li-glacier));
+  --li-aurora-ring: conic-gradient(from var(--li-angle), var(--li-rose), var(--li-iris), var(--li-apricot), var(--li-glacier), var(--li-rose));
+  --li-focus: #7fe9d8;
 
   /* where an agent stops for a person (data/portfolio.ts CheckpointKind) */
   --li-k-asks: var(--li-apricot);      /* waits for your yes */
