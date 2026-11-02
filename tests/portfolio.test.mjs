@@ -311,11 +311,11 @@ test("the living palette meets its intended contrast roles on the black ground",
   assert.ok(contrastRatio("#b1afab", ground) >= 4.5, "secondary ink");
   assert.ok(contrastRatio("#8c8a87", "#131318") >= 4.5, "quiet captions, even on raised glass");
   assert.ok(contrastRatio("#050507", "#f4f2ee") >= 4.5, "dark text on the off-white primary button");
-  assert.ok(contrastRatio("#9fe3ff", ground) >= 4.5, "glacier tint labels");
-  assert.ok(contrastRatio("#050507", "#ffd3a8") >= 4.5, "dark text on the apricot Approve");
-  assert.ok(contrastRatio("#9cc9ff", ground) >= 3, "focus ring");
-  for (const lamp of ["#ffb46a", "#47c8f5", "#ff5c8d"]) assert.ok(contrastRatio(lamp, ground) >= 3, `checkpoint lamp ${lamp}`);
-  assert.ok(contrastRatio("#f4f2ee", "#47c8f5") < 3, "off-white never sits on a glacier fill");
+  assert.ok(contrastRatio("#cffbf2", ground) >= 4.5, "glacier tint labels");
+  assert.ok(contrastRatio("#050507", "#ddf9a6") >= 4.5, "dark text on the apricot Approve");
+  assert.ok(contrastRatio("#7fe9d8", ground) >= 3, "focus ring");
+  for (const lamp of ["#b6f23c", "#9df5e4", "#4a7dff"]) assert.ok(contrastRatio(lamp, ground) >= 3, `checkpoint lamp ${lamp}`);
+  assert.ok(contrastRatio("#f4f2ee", "#9df5e4") < 3, "off-white never sits on a glacier fill");
 });
 
 test("responsive and reduced-motion safeguards are present", () => {

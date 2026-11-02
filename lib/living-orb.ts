@@ -50,7 +50,7 @@ export type LivingOrbHandle = {
 
 // Four stops on a cyclic gradient. Colour only ever lives in the light.
 export const LIVING_PALETTES: Record<LivingOrbPaletteName, readonly [string, string, string, string]> = {
-  aurora: ["#FFB46A", "#FF5C8D", "#8F6BFF", "#47C8F5"], // apricot, rose, iris, glacier
+  aurora: ["#B6F23C", "#4A7DFF", "#00D1B2", "#9DF5E4"], // apricot, rose, iris, glacier
   ember: ["#FFD9A0", "#FF8A4C", "#F0436A", "#9B4DFF"],
   glacier: ["#E8F6FF", "#72D6FF", "#4F7DFF", "#A684FF"],
   pearl: ["#F4F1EA", "#C4D6FF", "#EBCBFF", "#FFE2C4"]
