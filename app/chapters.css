@@ -790,3 +790,30 @@ html[data-visitor="hiring"] .about__next { grid-row: 5; }
   .portfolio-v3 .closing__row a { margin-inline-start: 0; }
 }
 
+
+/* ===== Living colour in the words ===== */
+/* Words filled with the living light hold a small mesh of the palette: three soft spots over a cobalt to
+   turquoise base, drifting slowly inside the letters. Still with reduced motion or the Motion switch. */
+@property --li-w1 { syntax: "<percentage>"; inherits: false; initial-value: 18%; }
+@property --li-w2 { syntax: "<percentage>"; inherits: false; initial-value: 78%; }
+@property --li-w3 { syntax: "<percentage>"; inherits: false; initial-value: 46%; }
+.portfolio-v3 :is(.li-aurora-text, .kinetic-band__row .kinetic-band__accent, .ai-principles__number) {
+  background:
+    radial-gradient(40% 95% at var(--li-w1) 30%, var(--li-apricot), rgb(var(--li-apricot-rgb) / 0%) 72%),
+    radial-gradient(44% 100% at var(--li-w2) 72%, var(--li-glacier), rgb(var(--li-glacier-rgb) / 0%) 72%),
+    radial-gradient(48% 110% at var(--li-w3) 40%, var(--li-iris), rgb(var(--li-iris-rgb) / 0%) 75%),
+    linear-gradient(90deg, var(--li-rose), var(--li-iris));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes li-word-wave {
+  0% { --li-w1: 12%; --li-w2: 82%; --li-w3: 44%; }
+  50% { --li-w1: 68%; --li-w2: 22%; --li-w3: 92%; }
+  100% { --li-w1: 34%; --li-w2: 58%; --li-w3: 6%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .portfolio-v3 :is(.li-aurora-text, .kinetic-band__row .kinetic-band__accent, .ai-principles__number) {
+    animation: li-word-wave 12s ease-in-out infinite alternate;
+  }
+}

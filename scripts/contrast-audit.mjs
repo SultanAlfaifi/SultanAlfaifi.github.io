@@ -75,14 +75,14 @@ const pairs = [
   },
   {
     usage: "Glacier tint labels and links on the ground",
-    foreground: "#9FE3FF",
+    foreground: "#CFFBF2",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Glacier tint labels on raised glass",
-    foreground: "#9FE3FF",
+    foreground: "#CFFBF2",
     background: "#131318",
     minimum: 4.5,
     category: "Normal text"
@@ -90,13 +90,13 @@ const pairs = [
   {
     usage: "Dark text on glacier tint controls",
     foreground: "#050507",
-    background: "#9FE3FF",
+    background: "#CFFBF2",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Apricot tint gate phrase and asks text on the ground",
-    foreground: "#FFD3A8",
+    foreground: "#DDF9A6",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
@@ -104,34 +104,34 @@ const pairs = [
   {
     usage: "Dark text on the apricot tint Approve button",
     foreground: "#050507",
-    background: "#FFD3A8",
+    background: "#DDF9A6",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Iris tint data labels on the ground",
-    foreground: "#C9BEFF",
+    foreground: "#8EEBDD",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Iris tint data labels on raised glass",
-    foreground: "#C9BEFF",
+    foreground: "#8EEBDD",
     background: "#131318",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Rose tint labels on the ground",
-    foreground: "#FFB3C8",
+    foreground: "#B4C9FF",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Apricot warnings on the ground",
-    foreground: "#FFB46A",
+    foreground: "#B6F23C",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
@@ -145,63 +145,63 @@ const pairs = [
   },
   {
     usage: "AI section: console warnings (apricot tint) on the raised console glass",
-    foreground: "#FFD3A8",
+    foreground: "#DDF9A6",
     background: "#0A0A0D",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "AI section: aurora principle numerals at their darkest stop (iris) on the ground",
-    foreground: "#8F6BFF",
+    foreground: "#00D1B2",
     background: "#030304",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Aurora display text (the lead achievement, the band's accent words) at its darkest stop (iris) on the ground",
-    foreground: "#8F6BFF",
+    foreground: "#00D1B2",
     background: "#030304",
     minimum: 3,
     category: "Large text"
   },
   {
     usage: "Aurora display text at its darkest stop (iris) on the lead achievement's raised glass (--li-bg-3)",
-    foreground: "#8F6BFF",
+    foreground: "#00D1B2",
     background: "#131318",
     minimum: 3,
     category: "Large text"
   },
   {
     usage: "Focus ring (--li-focus) on the ground",
-    foreground: "#9CC9FF",
+    foreground: "#7FE9D8",
     background: "#030304",
     minimum: 3,
     category: "Focus indicator"
   },
   {
     usage: "Focus ring (--li-focus) on raised glass",
-    foreground: "#9CC9FF",
+    foreground: "#7FE9D8",
     background: "#131318",
     minimum: 3,
     category: "Focus indicator"
   },
   {
     usage: "Checkpoint lamp: asks (apricot) on the ground",
-    foreground: "#FFB46A",
+    foreground: "#B6F23C",
     background: "#030304",
     minimum: 3,
     category: "Borders and controls"
   },
   {
     usage: "Checkpoint lamp: verifies (glacier) on the ground",
-    foreground: "#47C8F5",
+    foreground: "#9DF5E4",
     background: "#030304",
     minimum: 3,
     category: "Borders and controls"
   },
   {
     usage: "Checkpoint lamp: holds (rose) on the ground",
-    foreground: "#FF5C8D",
+    foreground: "#4A7DFF",
     background: "#030304",
     minimum: 3,
     category: "Borders and controls"
@@ -215,7 +215,7 @@ const pairs = [
   },
   {
     usage: "Iris accents on the ground",
-    foreground: "#8F6BFF",
+    foreground: "#00D1B2",
     background: "#030304",
     minimum: 3,
     category: "Borders and controls"
@@ -229,7 +229,7 @@ const pairs = [
   },
   {
     usage: "Showcase: rose tint (rejected stamp, wrong day) on a rejected page (rose 10% over a raised card)",
-    foreground: "#FFB3C8",
+    foreground: "#B4C9FF",
     background: "#241419",
     minimum: 4.5,
     category: "Normal text"
@@ -243,7 +243,7 @@ const pairs = [
   },
   {
     usage: "Showcase: apricot tint on the seeded-fault tag (apricot 7% over a raised card)",
-    foreground: "#FFD3A8",
+    foreground: "#DDF9A6",
     background: "#1D1814",
     minimum: 4.5,
     category: "Normal text"
@@ -257,21 +257,21 @@ const pairs = [
   },
   {
     usage: "Showcase: glacier label for a verifying stop on the case sheet",
-    foreground: "#47C8F5",
+    foreground: "#9DF5E4",
     background: "#121217",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Showcase: rose label for a holding stop on the case sheet",
-    foreground: "#FF5C8D",
+    foreground: "#4A7DFF",
     background: "#121217",
     minimum: 4.5,
     category: "Normal text"
   },
   {
     usage: "Showcase: apricot label for an asking stop on the case sheet",
-    foreground: "#FFB46A",
+    foreground: "#B6F23C",
     background: "#121217",
     minimum: 4.5,
     category: "Normal text"
@@ -309,13 +309,13 @@ const excludedPairs = [
   {
     usage: "Off-white text on a glacier fill",
     foreground: "#F4F2EE",
-    background: "#47C8F5",
+    background: "#9DF5E4",
     reason: "Insufficient contrast. Fills in the living light carry dark text (--li-on-light), never off-white."
   },
   {
     usage: "Off-white text on an apricot fill",
     foreground: "#F4F2EE",
-    background: "#FFB46A",
+    background: "#B6F23C",
     reason: "Insufficient contrast. The asks colour is a lamp or a fill behind dark text."
   },
   {

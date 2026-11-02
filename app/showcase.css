@@ -10,8 +10,8 @@
    and the motion switch (html[data-motion="off"]) and reduced motion turn all of it off.
    ========================================================================================== */
 
-@property --sc-a { syntax: "<color>"; inherits: true; initial-value: #ff5c8d; }
-@property --sc-b { syntax: "<color>"; inherits: true; initial-value: #ffb46a; }
+@property --sc-a { syntax: "<color>"; inherits: true; initial-value: #4a7dff; }
+@property --sc-b { syntax: "<color>"; inherits: true; initial-value: #b6f23c; }
 
 /* ---------- The section on the black ---------- */
 .portfolio-v3 #work.sc-section {
