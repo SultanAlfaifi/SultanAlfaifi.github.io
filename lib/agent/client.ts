@@ -1,6 +1,9 @@
 // Browser side of the agent: Turnstile, the console session, the streamed answer, and the email and CV
 // endpoints. Every call fails soft: the caller gets an AgentError code and falls back to scripted behavior.
 
+import type { VisitorProfile } from "../intro";
+import { readProfile } from "../visitor";
+
 export const AGENT_URL = (process.env.NEXT_PUBLIC_AGENT_URL ?? "").replace(/\/$/, "");
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 export const agentConfigured = Boolean(AGENT_URL && SITE_KEY);
@@ -192,7 +195,7 @@ export async function streamChat(token: string, turns: ChatTurn[], locale: "en" 
       method: "POST",
       signal,
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ messages: turns, locale })
+      body: JSON.stringify({ messages: turns, locale, visitor: readProfile() })
     });
   } catch (error) {
     if ((error as Error).name === "AbortError") throw error;
@@ -231,6 +234,13 @@ export function sendEmailToSultan(turnstile: string, message: { name: string; em
 }
 
 export type TailorResult = { encoded: string; coverMessage: string; target: string; signature: string; source: "ai" };
+
+export type IntroResult = { profile: VisitorProfile };
+
+// The card the visitor pasted on the welcome screen, read by the agent. The Worker keeps none of it.
+export function readIntro(token: string, text: string, locale: "en" | "ar", signal?: AbortSignal) {
+  return request<IntroResult>("/intro", { text, locale }, { token, signal });
+}
 
 export function tailorCv(token: string, description: string, company: string, locale: "en" | "ar") {
   return request<TailorResult>("/cv/tailor", { description, company, locale }, { token });

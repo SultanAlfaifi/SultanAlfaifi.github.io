@@ -102,15 +102,35 @@ test("each visitor's section order covers every section exactly once", () => {
   for (const order of Object.values(SECTION_ORDERS)) assert.equal(order.at(-1), "contact", "contact closes every order");
 });
 
-test("the welcome screen is a real dialog: three choices, a skip, Escape, and a language link that remembers", () => {
+test("the welcome screen is a real dialog with one question: let your AI introduce you, or don't", () => {
   assert.match(welcome, /<dialog/);
   assert.match(welcome, /dialog\.showModal\(\)/);
-  assert.match(welcome, /onCancel=\{\(event\) => \{\s*event\.preventDefault\(\);\s*finish\(/);
-  assert.match(welcome, /\{ visitor: "hiring", Icon: BriefcaseBusiness \},\s*\{ visitor: "collaborate", Icon: Handshake \},\s*\{ visitor: "browse", Icon: Compass \}/);
-  assert.match(welcome, /className="welcome__skip" onClick=/);
+  assert.match(welcome, /onCancel=\{\(event\) => \{\s*event\.preventDefault\(\);/);
+  // The three apps are real links to a new tab, so no pop-up blocker stands in the way, and each copies the prompt.
+  assert.match(welcome, /AI_APPS\.map/);
+  assert.match(welcome, /target="_blank" rel="noopener noreferrer" onClick=\{\(\) => pick\(item\.id\)\}/);
+  assert.match(welcome, /function pick\(next: App\) \{\s*void copyText\(prompt\);/);
+  // One clear way out, next to the choice, and the old three options are gone.
+  assert.match(welcome, /className="welcome__no" onClick=\{skip\}/);
+  assert.doesNotMatch(welcome, /BriefcaseBusiness|Handshake/);
   assert.match(welcome, /onClick=\{\(\) => rememberLanguage\(ui\.nav\.language\.hrefLang\)\}/);
   assert.match(welcome, /aria-labelledby=/);
   assert.match(styles, /html\[data-welcome="show"\] \{ overflow: hidden; \}/);
+});
+
+test("the card is pasted anywhere, and the orb leaves by flying into the hero's orb", () => {
+  // While the orb listens, a paste anywhere on the screen is read; the visible box keeps its own text.
+  assert.match(welcome, /if \(step !== "listen"\) return;/);
+  assert.match(welcome, /document\.addEventListener\("paste", onPaste\)/);
+  // Every exit, "No thanks" included, flies to the hero's orb, and the hero's own orb stays hidden until it lands.
+  assert.match(welcome, /document\.querySelector<HTMLElement>\("\.hero-stage \.hero-orb"\)/);
+  assert.match(welcome, /markLanding\(true\);\s*markWelcome\(false\);/);
+  assert.match(styles, /html\[data-landing\] \.hero-stage \{ opacity: 0 !important; transition: none !important; \}/);
+  // Without motion, or once the page has scrolled, the screen simply closes.
+  assert.match(welcome, /!motionAllowed\(\)/);
+  assert.match(welcome, /window\.scrollY > 40/);
+  // A tab in the background still closes the screen, even if the flight never runs.
+  assert.match(welcome, /window\.setTimeout\(close, FLIGHT_MS \+ 400\)/);
 });
 
 test("every language link remembers the choice", () => {

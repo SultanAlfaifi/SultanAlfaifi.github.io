@@ -18,6 +18,9 @@ export interface Env {
   DAILY_CODE_CAP: string;
   DAILY_TAILOR_CAP: string;
   DAILY_TAILOR_PER_VISITOR: string;
+  // The welcome card. Optional: 300 a day in all, 6 per visitor.
+  DAILY_INTRO_CAP?: string;
+  DAILY_INTRO_PER_VISITOR?: string;
 
   // Secrets: set by Sultan with `wrangler secret put` (production) or worker/.dev.vars (local).
   OPENROUTER_API_KEY?: string;

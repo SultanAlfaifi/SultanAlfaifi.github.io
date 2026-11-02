@@ -10,6 +10,8 @@ import { GitHubIcon } from "./brand-icons";
 import { MetaParts } from "./meta-parts";
 import { motionAllowed, subscribeMotion } from "./motion-preference";
 import { playsOnce, ShowcaseDemo, type DemoPhase } from "./showcase-demos";
+import { useProfile } from "./use-visitor";
+import { VisitorReason } from "./visitor-reason";
 import {
   accentPair,
   accentStyle,
@@ -22,6 +24,7 @@ import {
   leadFigures,
   primaryLink,
   showcaseOrder,
+  firstFor,
   StopLine,
   type WorkCopy
 } from "./showcase-parts";
@@ -137,6 +140,7 @@ function Links({ project, copy }: { project: Project; copy: WorkCopy }) {
 type TileProps = {
   project: Project;
   index: number;
+  locale: Locale;
   copy: WorkCopy;
   feature: boolean;
   wide: boolean;
@@ -145,7 +149,7 @@ type TileProps = {
   register: (index: number, element: HTMLElement | null) => void;
 };
 
-function Tile({ project, index, copy, feature, wide, hydrated, onOpen, register }: TileProps) {
+function Tile({ project, index, locale, copy, feature, wide, hydrated, onOpen, register }: TileProps) {
   const s = copy.showcase;
   const ref = useRef<HTMLElement>(null);
   const demoRef = useRef<HTMLDivElement>(null);
@@ -238,6 +242,8 @@ function Tile({ project, index, copy, feature, wide, hydrated, onOpen, register 
           ) : null}
           <span dir="auto">{project.title}</span>
         </h3>
+        {/* In the head, so a wide card's grid areas stay as they are. */}
+        <VisitorReason slug={project.slug} locale={locale} />
       </header>
       {wide ? <p className="sc-tile__desc">{project.description}</p> : null}
       <div className="sc-demo" ref={demoRef}>
@@ -339,7 +345,8 @@ function CaseView({ project, index, total, copy, run, phase, onDone, onStep, onC
 export function Showcase({ locale = "en" }: { locale?: Locale }) {
   const { projects, ui } = getContent(locale);
   const copy = ui.work;
-  const list = showcaseOrder(projects);
+  // A visitor introduced by their AI sees their closest projects first (an empty list for everyone else).
+  const list = firstFor(showcaseOrder(projects), useProfile()?.projects ?? []);
   const hydrated = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const tiles = useRef<(HTMLElement | null)[]>([]);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -474,7 +481,7 @@ export function Showcase({ locale = "en" }: { locale?: Locale }) {
     <>
       <div className="sc-grid">
         {list.map((project, index) => (
-          <Tile key={project.slug} project={project} index={index} copy={copy} feature={index === 0} wide={isWide(index, list.length)} hydrated={hydrated} onOpen={openCase} register={register} />
+          <Tile key={project.slug} project={project} index={index} locale={locale} copy={copy} feature={index === 0} wide={isWide(index, list.length)} hydrated={hydrated} onOpen={openCase} register={register} />
         ))}
       </div>
       <dialog

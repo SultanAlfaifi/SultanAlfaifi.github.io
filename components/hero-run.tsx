@@ -6,17 +6,20 @@ import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
 import { openAssistant } from "@/lib/agent/assistant";
 import { agentConfigured } from "@/lib/agent/client";
 import { revealAnchor } from "@/lib/agent/reveal";
+import { timeGreeting, type VisitorProfile } from "@/lib/intro";
 import { bloomBrandOrb } from "./living-orb";
 import { heroOrb } from "./hero-orb";
 import { MetaParts } from "./meta-parts";
 import { motionAllowed, subscribeMotion } from "./motion-preference";
+import { useProfile } from "./use-visitor";
 
 type Gate = "waiting" | "approved" | "held";
 
 export type RunVariant = {
-  key: "project" | "hiring" | "collaborate";
-  // Which visitor sees it, read by the same html[data-visitor] rules as the hero's calls to action.
-  visitor: { "data-visitor-only": string } | { "data-visitor-hide": string };
+  key: "project" | "hiring" | "collaborate" | "personal";
+  // Which visitor sees it, read by the same html[data-visitor] rules as the hero's calls to action. The
+  // personal run is the only one rendered when it exists, so it needs no rule.
+  visitor: { "data-visitor-only": string } | { "data-visitor-hide": string } | Record<string, never>;
   plan: string;
   tool: string;
   read: string;
@@ -88,6 +91,27 @@ export function runScript(content: PortfolioContent) {
   return { variants, featured: featured.length, checks, flagship };
 }
 
+// The visitor's own run, when their AI introduced them: it greets them, reads their card, says what ties
+// them to Sultan's closest project (the agent's line, or that project's last highlight), and offers to open
+// it. Null when the agent named no project that is on the page.
+export function personalRun(content: PortfolioContent, profile: VisitorProfile, greeting: string): RunVariant | null {
+  const copy = content.ui.hero.run;
+  const project = content.projects.find((item) => item.enabled && item.slug === profile.projects[0]);
+  if (!project) return null;
+  return {
+    key: "personal",
+    visitor: {},
+    plan: copy.personal.plan(greeting, profile.name),
+    tool: "visitor.card()",
+    read: [profile.field, profile.organization].filter(Boolean).join(" · ") || profile.workingOn || copy.personal.card,
+    result: profile.bridge || lastSentence(project.highlights[project.highlights.length - 1]),
+    ask: { before: copy.ask.project[0], name: project.title, after: copy.ask.project[1] },
+    target: `project-${project.slug}`,
+    approveLabel: copy.approveLabel.project(project.title),
+    done: copy.done.project(project.title)
+  };
+}
+
 // The run's clock, in ms from the start of the hero's entrance. hero.css plays the same schedule: the
 // steps scan from RUN.scan, one every RUN.step, and the question lights and is asked at RUN.ask, once the
 // last step is done (until then its words wait dimmed, like a step not yet reached). The entrance is
@@ -130,6 +154,10 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
   const copy = content.ui.hero.run;
   const script = runScript(content);
   const hydrated = useSyncExternalStore(subscribeNothing, () => true, () => false);
+  // The card lives in this browser only, so the personal run replaces the three after hydration.
+  const profile = useProfile();
+  const personal = profile ? personalRun(content, profile, timeGreeting(locale)) : null;
+  const variants = personal ? [personal] : script.variants;
   const rootRef = useRef<HTMLElement>(null);
   const choicesRef = useRef<HTMLDivElement>(null);
   const focusNext = useRef<"choices" | "approve" | null>(null);
@@ -309,7 +337,8 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
       <div className="hero-run__head">
         <div className="hero-run__who">
           <h2 id="hero-run-title" className="hero-run__title">{copy.title}</h2>
-          <p className="hero-run__chip"><MetaParts text={copy.replay} /></p>
+          {/* The personal run's result line was written by the agent, so it doesn't claim "no AI call". */}
+          <p className="hero-run__chip"><MetaParts text={personal ? copy.personal.replay : copy.replay} /></p>
         </div>
         <p className="hero-run__state"><span className="hero-run__dot" aria-hidden="true" />{copy.state[gate]}</p>
       </div>
@@ -319,13 +348,13 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
         <li className="run-step run-step--plan">
           <span className="run-step__label">{copy.labels.plan}</span>
           <span className="run-step__text">
-            {script.variants.map((variant) => <span key={variant.key} {...variant.visitor}>{variant.plan}</span>)}
+            {variants.map((variant) => <span key={variant.key} {...variant.visitor}>{variant.plan}</span>)}
           </span>
         </li>
         <li id="hero-run-read" className="run-step run-step--read">
           <span className="run-step__label">{copy.labels.read}</span>
           <span className="run-step__text">
-            {script.variants.map((variant) => (
+            {variants.map((variant) => (
               <span key={variant.key} {...variant.visitor}>
                 <bdi dir="ltr" className="run-step__tool">{variant.tool}</bdi> <MetaParts text={variant.read} />
               </span>
@@ -335,7 +364,7 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
         <li className="run-step run-step--result">
           <span className="run-step__label">{copy.labels.result}</span>
           <span className="run-step__text">
-            {script.variants.map((variant) => <span key={variant.key} {...variant.visitor}>{variant.result}</span>)}
+            {variants.map((variant) => <span key={variant.key} {...variant.visitor}>{variant.result}</span>)}
           </span>
         </li>
       </ol>
@@ -345,7 +374,7 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
       <div className="hero-run__gate">
         <div className="hero-run__question">
           <p className="hero-run__ask">
-            {script.variants.map((variant) => (
+            {variants.map((variant) => (
               <span key={variant.key} {...variant.visitor}>
                 {variant.ask.before}{variant.ask.name ? <bdi dir="ltr">{variant.ask.name}</bdi> : null}{variant.ask.after}
               </span>
@@ -363,7 +392,7 @@ export function HeroRun({ locale = "en" }: { locale?: Locale }) {
           </div>
         ) : (
           <div className="hero-run__actions">
-            {script.variants.map((variant) => (
+            {variants.map((variant) => (
               <a
                 key={variant.key}
                 className="hero-run__approve"

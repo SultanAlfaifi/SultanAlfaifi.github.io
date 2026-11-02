@@ -97,8 +97,11 @@ export async function* streamTurn(env: Env, messages: ChatMessage[], tools: unkn
 }
 
 // One non-streaming turn, for the CV tailor.
-export async function completeTurn(env: Env, messages: ChatMessage[], tools: unknown[]) {
-  const response = await post(env, requestBody(env, messages, { tools, tool_choice: "auto" }));
+export async function completeTurn(env: Env, messages: ChatMessage[], tools: unknown[], options: { reasoning?: Record<string, unknown> } = {}) {
+  const body = requestBody(env, messages, { tools, tool_choice: "auto" });
+  // A turn that only fills in a form can switch the model's thinking off (the welcome card, worker/src/intro.ts).
+  if (options.reasoning) body.reasoning = options.reasoning;
+  const response = await post(env, body);
   const result = (await response.json()) as {
     choices?: { message?: { content?: string | null; tool_calls?: ToolCall[] } }[];
     usage?: Usage;

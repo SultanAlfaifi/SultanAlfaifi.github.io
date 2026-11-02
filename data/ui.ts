@@ -70,7 +70,13 @@ const en = {
       seeAll: (count: number) => `See the ${count} featured projects`,
       strongest: "Open the strongest proof",
       again: "Ask again",
-      own: "Give it your own task"
+      own: "Give it your own task",
+      // The visitor's own run, when their AI introduced them on the welcome screen (components/hero-run.tsx).
+      personal: {
+        plan: (greeting: string, name: string) => (name ? `${greeting}, ${name}. Matching your card to Sultan’s work.` : "Matching your card to Sultan’s work."),
+        card: "your card",
+        replay: "From your card · read by Sultan’s AI assistant"
+      }
     }
   },
   media: {
@@ -172,22 +178,54 @@ const en = {
   },
   welcome: {
     brand: "Sultan Alfaifi",
-    hello: "Welcome",
-    title: "What brings you here?",
-    lead: "Pick one and the site arranges itself around what matters to you. You can change it anytime.",
-    options: {
-      hiring: { title: "I'm hiring", detail: "Looking for an engineer for my team. Show me the experience and the CV first." },
-      collaborate: { title: "I want to work together", detail: "I have a product, an idea, or a program, and want to see what Sultan can build." },
-      browse: { title: "Just browsing", detail: "Here to look around the projects, no particular goal." }
+    whisper: "Before you come in… I’d like to know you.",
+    title: "Let your AI introduce you",
+    apps: "Open the question in",
+    other: "Another AI? Copy the question",
+    copied: "Copied",
+    seePrompt: "See the question",
+    privacy: "Your AI writes, you decide. The site keeps nothing you paste.",
+    skip: "No thanks",
+    skipShort: "No thanks",
+    listenAside: {
+      prefill: (app: string) => `${app} is open with the question ready. Send it.`,
+      paste: (app: string) => `The question is copied. Paste it in ${app} and send it.`,
+      other: "The question is copied. Send it to your AI."
     },
-    skip: "Skip",
-    companyTitle: "Want the CV ready with your company's name?",
-    companyLead: "Optional. Add the company or the role, and the CV further down comes ready for it.",
-    enter: "Enter the site",
+    listenTitle: "Copy the card it writes, then paste it here",
+    anywhere: "anywhere",
+    paste: "Paste",
+    manual: "Type it instead",
+    pasteLabel: "The card your AI wrote",
+    pastePlaceholder: "Name: …\nField: …\nLooking for: …",
+    read: "Arrange the site for me",
+    reopen: (app: string) => `Open ${app} again`,
+    copyAgain: "Copy the question again",
     back: "Back",
+    reading: "Reading your card…",
+    readingName: (name: string) => `Nice to meet you, ${name}. One moment…`,
+    tooShort: "That looks too short. Copy the whole card your AI wrote.",
+    unreadable: "I couldn’t read that as the card. Copy the whole card, or come in without it.",
+    introduced: (app: string) => `${app} introduced you`,
+    introducedOther: "Your AI introduced you",
+    arrangedTitle: "Arranged for you:",
+    arrangedFor: { hiring: "experience and the CV first", collaborate: "the projects and the assistant first", browse: "the projects as they are" } as Record<string, string>,
+    cvFor: (organization: string) => `the CV ready for ${organization}`,
+    agentKnows: "the assistant knows your card",
+    startWith: (project: string) => `Start with ${project}`,
+    fallbackBridge: "The site is arranged around what you’re looking for.",
+    enter: "Come in",
     arranged: { hiring: "Arranged for hiring", collaborate: "Arranged for working together" } as Record<string, string>,
+    arrangedName: (name: string) => `Arranged for ${name}`,
     change: "Change",
-    personalize: "Arrange the site for you"
+    personalize: "Arrange the site for you",
+    // After the welcome: the line on a project the agent tied to the visitor, and the block in Contact.
+    forYou: "For you",
+    helpFor: (name: string) => (name ? `Where Sultan’s work meets yours, ${name}` : "Where Sultan’s work meets yours"),
+    writeTo: "Write to Sultan",
+    mailSubject: (name: string, organization: string) => `Hello from ${name || "a visitor"}${organization ? ` (${organization})` : ""}`,
+    mailBody: (card: { name: string; field: string; organization: string; workingOn: string }) =>
+      `Hi Sultan,\n\n${card.name ? `I’m ${card.name}${card.field ? `, ${card.field}` : ""}${card.organization ? ` at ${card.organization}` : ""}.` : ""}${card.workingOn ? ` I’m working on ${card.workingOn}.` : ""}\n\n`
   },
   assistant: {
     open: "Ask my AI assistant",
@@ -583,7 +621,12 @@ const ar: UiStrings = {
       seeAll: (count: number) => `شوف المشاريع البارزة (${count})`,
       strongest: "افتح أقوى دليل",
       again: "اسألني مرة ثانية",
-      own: "جرّبه بمهمة من عندك"
+      own: "جرّبه بمهمة من عندك",
+      personal: {
+        plan: (greeting: string, name: string) => (name ? `${greeting} يا ${name}. أربط بطاقتك بشغل سلطان.` : "أربط بطاقتك بشغل سلطان."),
+        card: "بطاقتك",
+        replay: "من بطاقتك · قرأها مساعد سلطان الذكي"
+      }
     }
   },
   media: {
@@ -682,22 +725,53 @@ const ar: UiStrings = {
   },
   welcome: {
     brand: "سلطان الفيفي",
-    hello: "حيّاك الله",
-    title: "وش يجيبك هنا؟",
-    lead: "اختر وحدة، ويترتّب لك الموقع على اللي يهمك. وتقدر تغيّرها متى ما بغيت.",
-    options: {
-      hiring: { title: "أوظّف", detail: "أدوّر مهندس لفريقي. أبي الخبرة والسيرة أول شي." },
-      collaborate: { title: "أبي أتعاون", detail: "عندي منتج أو فكرة أو برنامج، وأبي أشوف وش يقدر سلطان يبني." },
-      browse: { title: "أتصفح", detail: "جيت أتفرّج على المشاريع، بدون هدف معيّن." }
+    whisper: "قبل ما تدخل… أبي أعرفك.",
+    title: "خلّ ذكاءك الاصطناعي يعرّفني عليك",
+    apps: "افتح السؤال في",
+    other: "برنامج ثاني؟ انسخ السؤال",
+    copied: "تم النسخ",
+    seePrompt: "شوف السؤال",
+    privacy: "ذكاءك يكتب وأنت تقرر. الموقع ما يحفظ اللي تلصقه.",
+    skip: "ما أبغى",
+    skipShort: "ما أبغى",
+    listenAside: {
+      prefill: (app: string) => `فتحنا ${app} والسؤال جاهز. أرسله.`,
+      paste: (app: string) => `نسخنا السؤال. الصقه في ${app} وأرسله.`,
+      other: "نسخنا السؤال. أرسله لذكاءك."
     },
-    skip: "تخطي",
-    companyTitle: "تبغى السيرة جاهزة باسم شركتك؟",
-    companyLead: "اختياري. اكتب الشركة أو الوظيفة، وتلقى السيرة تحت جاهزة لها.",
-    enter: "ادخل الموقع",
+    listenTitle: "انسخ البطاقة اللي يكتبها، وارجع الصقها هنا",
+    anywhere: "في أي مكان",
+    paste: "الصق",
+    manual: "أكتبها بنفسي",
+    pasteLabel: "البطاقة اللي كتبها ذكاءك",
+    pastePlaceholder: "الاسم: …\nالمجال: …\nأدور على: …",
+    read: "رتّب الموقع لي",
+    reopen: (app: string) => `افتح ${app} مرة ثانية`,
+    copyAgain: "انسخ السؤال مرة ثانية",
     back: "رجوع",
+    reading: "أقرأ بطاقتك…",
+    readingName: (name: string) => `تشرّفنا يا ${name}… لحظة`,
+    tooShort: "النص قصير. انسخ البطاقة كاملة من ذكاءك.",
+    unreadable: "ما قدرت أقرأها كبطاقة. انسخها كاملة، أو ادخل بدونها.",
+    introduced: (app: string) => `${app} عرّفني عليك`,
+    introducedOther: "ذكاءك عرّفني عليك",
+    arrangedTitle: "رتّبت لك:",
+    arrangedFor: { hiring: "الخبرة والسيرة أول شي", collaborate: "المشاريع والمساعد أول شي", browse: "المشاريع بترتيبها" },
+    cvFor: (organization: string) => `السيرة جاهزة باسم ${organization}`,
+    agentKnows: "المساعد يعرف بطاقتك",
+    startWith: (project: string) => `ابدأ بـ${project}`,
+    fallbackBridge: "رتّبت لك الموقع على اللي تدوّر عليه.",
+    enter: "ادخل",
     arranged: { hiring: "مرتّب لك كمسؤول توظيف", collaborate: "مرتّب لك للتعاون" },
+    arrangedName: (name: string) => `مرتّب لـ${name}`,
     change: "غيّر",
-    personalize: "رتّب الموقع لك"
+    personalize: "رتّب الموقع لك",
+    forYou: "لك",
+    helpFor: (name: string) => (name ? `وين يلتقي شغل سلطان بشغلك يا ${name}` : "وين يلتقي شغل سلطان بشغلك"),
+    writeTo: "اكتب لسلطان",
+    mailSubject: (name: string, organization: string) => `سلام من ${name || "زائر"}${organization ? ` (${organization})` : ""}`,
+    mailBody: (card: { name: string; field: string; organization: string; workingOn: string }) =>
+      `مرحبا سلطان،\n\n${card.name ? `أنا ${card.name}${card.field ? `، ${card.field}` : ""}${card.organization ? ` في ${card.organization}` : ""}.` : ""}${card.workingOn ? ` أشتغل على ${card.workingOn}.` : ""}\n\n`
   },
   assistant: {
     open: "اسأل مساعدي الذكي",
