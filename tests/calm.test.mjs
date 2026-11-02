@@ -130,6 +130,35 @@ test("the CV page rises out of light and is complete at every point: standing wi
   // The approval moment and the prepared ring are decoration: gated on motion, the status line says it.
   assert.match(read("../components/cv-section.tsx"), /if \(download === "done" && motionAllowed\(\)\) bloomBrandOrb\(\);/);
   assert.match(motion, /html:not\(\[data-motion="off"\]\) \.cv-stage\.is-prepared \.cv-ring \{ animation: cv-ring-turn 2\.4s [^}]*1 both; \}/, "the ring turns once");
+  // The paper in the server HTML is the fitted one (lib/cv/fitted-file.ts), so it fits one page without
+  // JavaScript: it shows exactly the lines scripts/build-cv.ts kept for the general CV.
+  const fitted = (() => { try { return JSON.parse(read("../public/cv/fitted.json")); } catch { return null; } })();
+  if (fitted?.general) {
+    const kept = new Set(fitted.general.split("~").slice(1).flatMap((part) => part.split(/[._]/)).filter(Boolean));
+    for (const [locale, document] of Object.entries(pages)) {
+      const lines = [...document.querySelectorAll("#cv .cv-paper [data-line]")].map((line) => line.getAttribute("data-line")).filter((id) => /^(sum|skl|exp|prj|rec|trn|tch)-/.test(id));
+      assert.ok(lines.length > 10, `${locale}: the paper has its lines`);
+      for (const id of lines) assert.ok(kept.has(id), `${locale}: ${id} is on the paper only if the fitted CV keeps it`);
+      for (const id of kept) assert.ok(lines.includes(id), `${locale}: ${id} from the fitted CV is on the paper`);
+    }
+  }
+});
+
+test("the last headline breaks after its question, never inside it, and the hiring order keeps the greeting with its sentence", () => {
+  for (const [locale, document] of Object.entries(pages)) {
+    const title = getContent(locale).ui.contact.title;
+    const lines = [...document.querySelectorAll("#contact-title .clause-line")].map((line) => line.textContent.trim());
+    if (/[?؟]\s/.test(title)) assert.deepEqual(lines, title.replace(/([?؟])\s+/g, "$1\n").split("\n"), `${locale}: one line per clause`);
+    else assert.equal(lines.length, 0, `${locale}: a headline without a question stays one block`);
+    // The voices in Mashhad and AutoFlow are one line each, not rows of bars.
+    for (const wave of document.querySelectorAll(".mh-wave, .au-wave")) {
+      assert.equal(wave.querySelectorAll("i").length, 0, `${locale}: no bars`);
+      assert.equal(wave.querySelectorAll("svg.sc-wave > path").length, 1, `${locale}: one stroke`);
+    }
+  }
+  const chapters = read("../app/chapters.css");
+  assert.match(chapters, /html\[data-visitor="hiring"\] \.about__now \{ order: -1;/, "G10: the Salla card comes first inside About");
+  assert.match(chapters, /html\[data-visitor="hiring"\] \.about__lead \{ grid-column: 1 \/ span 7; grid-row: 1; \}/, "the greeting keeps its first sentence above the card");
 });
 
 test("(h) the navigation is the five chapters a visitor looks for, in both languages", () => {
@@ -172,11 +201,11 @@ test("the rhythm steps clearly: chapter > group > opener > card, and eight type 
   }
   for (const size of ["--li-t0", "--li-t1", "--li-t2", "--li-t3", "--li-t4", "--li-t5", "--li-t6", "--li-t7"]) assert.match(living, new RegExp(`${size}: `), size);
   assert.match(living, /--li-space-feature: calc\(var\(--li-chapter\) \/ 2\);/, "the work and AI sections share the chapter rhythm");
-  // The blocks for each builder exist, in order, and the file loads right after the design system.
+  // The chapter blocks exist, in page order, and the file loads right after the design system.
   const chapters = read("../app/chapters.css");
-  const owners = ["About + Now (owner: recog)", "Recognition (owner: recog)", "Outside the projects (owner: rest)", "Contact + Help (owner: rest)", "Closing and footer (owner: rest)"].map((name) => chapters.indexOf(`/* ===== ${name} ===== */`));
-  assert.ok(owners.every((at) => at > 0));
-  assert.deepEqual([...owners].sort((a, b) => a - b), owners);
+  const blocks = ["About + Now", "Recognition", "Outside the projects", "Contact + Help", "Closing and footer"].map((name) => chapters.indexOf(`/* ===== ${name} ===== */`));
+  assert.ok(blocks.every((at) => at > 0));
+  assert.deepEqual([...blocks].sort((a, b) => a - b), blocks);
   assert.match(read("../app/layout.tsx"), /import "\.\/living\.css";\r?\nimport "\.\/chapters\.css";/);
 });
 
@@ -244,6 +273,20 @@ test("the assistant, the palette and a shared link open every fold around what t
     assert.equal(revealFoldedHash(), false, "any other hash is left to the browser");
     assert.equal(revealFoldedHash(true), true, "on load, after hydration, a place that is not folded is landed on again");
     assert.equal(scrolled.at(-1), "cv");
+    // A reload or a history step keeps the place the browser restored: nothing scrolls, a fold only opens.
+    const navigation = window.performance.getEntriesByType;
+    window.performance.getEntriesByType = (type) => (type === "navigation" ? [{ type: "reload" }] : []);
+    const before = scrolled.length;
+    assert.equal(revealFoldedHash(true), false, "a reload is not pulled back to the hash");
+    outer.open = row.open = false;
+    window.location.hash = "#skills";
+    assert.equal(revealFoldedHash(true), true, "a reload of a folded link opens the row");
+    assert.ok(row.open && outer.open);
+    window.performance.getEntriesByType = () => [{ type: "back_forward" }];
+    window.location.hash = "#cv";
+    assert.equal(revealFoldedHash(true), false, "neither is a step back");
+    assert.equal(scrolled.length, before, "no scroll on a restored visit");
+    window.performance.getEntriesByType = navigation;
     window.location.hash = "#%E0%A4%A";
     assert.equal(revealFoldedHash(), false, "a broken hash is ignored");
   } finally {

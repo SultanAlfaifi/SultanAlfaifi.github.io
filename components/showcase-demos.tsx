@@ -171,11 +171,23 @@ function MasariDemo({ project, copy, phase, onDone }: DemoProps) {
   );
 }
 
+/* ---------- A voice, drawn as one quiet line ---------- */
+// The sound in Mashhad and the voice in AutoFlow were rows of 26 and 22 bars: dozens of small marks inside a
+// card that should read as one object. Each is now one stroke through the same heights, worked out once
+// (bar i at 0.25 + |0.6 sin 1.7i + 0.3 sin 0.6i| for Mashhad, 0.3 + |0.7 sin 1.3i| for AutoFlow) and written
+// out, so the server and every browser draw the same path.
+const SOUND_LINE = "M0 12 Q3.7 9.5 5.6 15.8 Q7.4 22.0 9.3 15.1 Q11.1 8.2 13.0 12.7 Q14.8 17.1 16.7 10.8 Q18.5 4.5 20.4 12.1 Q22.2 19.7 24.1 11.8 Q25.9 4.0 27.8 12.4 Q29.6 20.8 31.5 14.1 Q33.3 7.3 35.2 10.9 Q37.0 14.6 38.9 8.7 Q40.7 2.9 42.6 8.7 Q44.4 14.5 46.3 8.3 Q48.1 2.0 50.0 9.4 Q51.9 16.8 53.7 11.5 Q55.6 6.2 57.4 12.1 Q59.3 17.9 61.1 11.3 Q63.0 4.7 64.8 12.4 Q66.7 20.1 68.5 11.2 Q70.4 2.2 72.2 9.3 Q74.1 16.4 75.9 12.2 Q77.8 7.9 79.6 13.9 Q81.5 19.9 83.3 14.7 Q85.2 9.5 87.0 15.7 Q88.9 22.0 90.7 14.2 Q92.6 6.4 94.4 12.4 Q96.3 18.5 98.1 15.3 L100 12";
+const VOICE_LINE = "M0 12 Q4.3 9.0 6.5 15.4 Q8.7 21.7 10.9 13.6 Q13.0 5.4 15.2 12.6 Q17.4 19.8 19.6 11.3 Q21.7 2.8 23.9 9.7 Q26.1 16.5 28.3 9.3 Q30.4 2.0 32.6 9.6 Q34.8 17.2 37.0 10.2 Q39.1 3.2 41.3 11.8 Q43.5 20.3 45.7 13.2 Q47.8 6.1 50.0 14.0 Q52.2 21.9 54.3 15.1 Q56.5 8.2 58.7 14.9 Q60.9 21.5 63.0 13.1 Q65.2 4.8 67.4 12.0 Q69.6 19.2 71.7 10.9 Q73.9 2.5 76.1 9.1 Q78.3 15.8 80.4 8.9 Q82.6 2.1 84.8 10.0 Q87.0 17.9 89.1 10.8 Q91.3 3.7 93.5 12.2 Q95.7 20.8 97.8 16.4 L100 12";
+
+function WaveLine({ path }: { path: string }) {
+  return (
+    <svg className="sc-wave" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path d={path} />
+    </svg>
+  );
+}
+
 /* ---------- Mashhad: brief, scenes, sound, render, then the review before the final cut ---------- */
-const BARS = Array.from({ length: 26 }, (_, index) => ({
-  "--h": (0.25 + Math.abs(Math.sin(index * 1.7) * 0.6 + Math.sin(index * 0.6) * 0.3)).toFixed(2),
-  "--d": (index * 0.07).toFixed(2)
-}));
 
 function MashhadDemo({ project, copy, phase, onDone }: DemoProps) {
   const frame = useFrames(phase, MASHHAD, onDone);
@@ -186,7 +198,7 @@ function MashhadDemo({ project, copy, phase, onDone }: DemoProps) {
       <div className="mh-screen">
         <p className="mh-brief">{copy.visuals.motionNote}</p>
         <p className="mh-word" lang="ar" dir="rtl">مَشهد</p>
-        <div className="mh-wave">{BARS.map((bar, index) => <i key={index} style={bar as CSSProperties} />)}</div>
+        <div className="mh-wave"><WaveLine path={SOUND_LINE} /></div>
         <div className="mh-render"><i /></div>
         <div className="mh-check" />
       </div>
@@ -200,10 +212,6 @@ function MashhadDemo({ project, copy, phase, onDone }: DemoProps) {
 }
 
 /* ---------- AutoFlow: text or voice, one draft, and nothing turns on until you approve ---------- */
-const VOICE = Array.from({ length: 22 }, (_, index) => ({
-  "--h": (0.3 + Math.abs(Math.sin(index * 1.3) * 0.7)).toFixed(2),
-  "--d": (index * 0.06).toFixed(2)
-}));
 
 function AutoFlowDemo({ project, copy, phase, onDone }: DemoProps) {
   const visuals = copy.visuals;
@@ -211,7 +219,7 @@ function AutoFlowDemo({ project, copy, phase, onDone }: DemoProps) {
   return (
     <div className="sc-dm sc-dm--au" role="img" aria-label={`${visuals.autoIntent} ${visuals.autoReview.join(" ")}`} data-frame={frame} data-phase={phase}>
       <div className="au-in au-in--text"><span className="au-tag">{visuals.autoText}</span><span className="au-type">{project.flow?.[0]}…</span></div>
-      <div className="au-in au-in--voice"><span className="au-tag">{visuals.autoVoice}</span><span className="au-wave">{VOICE.map((bar, index) => <i key={index} style={bar as CSSProperties} />)}</span></div>
+      <div className="au-in au-in--voice"><span className="au-tag">{visuals.autoVoice}</span><span className="au-wave"><WaveLine path={VOICE_LINE} /></span></div>
       <p className="au-same">{visuals.autoShared}</p>
       <div className="au-draft">
         <div className="au-draft__head"><span>{visuals.autoDraft}</span><span className="au-switch" /></div>

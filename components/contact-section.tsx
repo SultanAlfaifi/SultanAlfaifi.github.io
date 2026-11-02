@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, Clipboard, Mail } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { HelpSection } from "./help-section";
-import { ChapterEyebrow, SplitWords } from "./section-header";
+import { ChapterEyebrow, ClauseLines } from "./section-header";
 import { SocialLinks } from "./social-links";
 
 // The closing chapter, last in every visitor's order. One email action and a way to copy the address, the
@@ -42,7 +42,7 @@ export function ContactSection({ locale = "en" }: { locale?: Locale }) {
       <div className="page-shell finale__inner">
         <header className="finale__head">
           <ChapterEyebrow className="finale__eyebrow" />
-          <h2 id="contact-title" className="split-heading finale__title"><SplitWords text={ui.contact.title} /></h2>
+          <h2 id="contact-title" className="split-heading finale__title"><ClauseLines text={ui.contact.title} /></h2>
           <p className="finale__lead">{ui.contact.body}</p>
         </header>
 

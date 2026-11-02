@@ -2,19 +2,33 @@ import type { CSSProperties } from "react";
 import { Reveal } from "./reveal";
 
 type SectionHeaderProps = {
-  eyebrow?: string;
-  /** A numbered chapter (.li-chapter): the eyebrow shows the chapter's number before any eyebrow words. */
-  numbered?: boolean;
   title: string;
   description?: string;
 };
 
-// Words sit in clipping wrappers so CSS can raise them one by one as the heading scrolls in.
-export function SplitWords({ text }: { text: string }) {
+// Words sit in clipping wrappers so CSS can raise them one by one as the heading scrolls in. `start` carries
+// the count on when one heading is split into lines.
+export function SplitWords({ text, start = 0 }: { text: string; start?: number }) {
   return text.split(" ").map((word, index) => (
     <span key={`${word}-${index}`}>
       {index > 0 ? " " : null}
-      <span className="split-word"><span style={{ "--i": index } as CSSProperties}>{word}</span></span>
+      <span className="split-word"><span style={{ "--i": start + index } as CSSProperties}>{word}</span></span>
+    </span>
+  ));
+}
+
+// A headline that asks and then invites («عندك فكرة أو فرصة؟ حدّثني عنها») breaks after its question, never
+// inside it: each clause is its own line, balanced on its own. A headline with no question stays one block.
+export function ClauseLines({ text }: { text: string }) {
+  // Split after each question mark (no lookbehind, which older Safari cannot parse).
+  const clauses = text.replace(/([?؟])\s+/g, "$1\n").split("\n");
+  if (clauses.length < 2) return <SplitWords text={text} />;
+  // Each clause's words count on from the words before it, so the rise stays one sequence.
+  const starts = clauses.map((_, index) => clauses.slice(0, index).reduce((sum, clause) => sum + clause.split(" ").length, 0));
+  return clauses.map((clause, index) => (
+    <span key={clause} className="clause-line">
+      {index > 0 ? " " : null}
+      <SplitWords text={clause} start={starts[index]} />
     </span>
   ));
 }
@@ -32,16 +46,12 @@ export function ChapterEyebrow({ text, className = "" }: { text?: string; classN
   );
 }
 
-export function SectionHeader({
-  eyebrow,
-  numbered = false,
-  title,
-  description
-}: SectionHeaderProps) {
+// A numbered chapter's opener (.li-chapter): the eyebrow with the chapter's number, the headline, the lead.
+export function SectionHeader({ title, description }: SectionHeaderProps) {
   return (
     <Reveal variant="title">
       <header className="section-header">
-        {numbered ? <ChapterEyebrow text={eyebrow} /> : null}
+        <ChapterEyebrow />
         <div className="section-header__copy">
           <h2 className="split-heading"><SplitWords text={title} /></h2>
           {description ? <p>{description}</p> : null}

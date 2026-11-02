@@ -39,6 +39,16 @@ function readDraft(): Draft | null {
   }
 }
 
+// public/cv/fitted.json: each field's encoded lines, kept only when they decode back to that field.
+function decodeFitted(data: Record<string, unknown>) {
+  const next: Partial<Record<CvTarget, CvSelection>> = {};
+  for (const [name, encoded] of Object.entries(data)) {
+    const decoded = typeof encoded === "string" ? decodeSelection(encoded) : null;
+    if (decoded && decoded.target === name) next[decoded.target] = decoded;
+  }
+  return next;
+}
+
 function writeDraft(draft: Omit<Draft, "savedAt">) {
   try {
     if (!draft.company && !draft.role && !draft.posting) window.localStorage.removeItem(DRAFT_KEY);
@@ -48,7 +58,9 @@ function writeDraft(draft: Omit<Draft, "savedAt">) {
   }
 }
 
-export function CvSection({ locale = "en" }: { locale?: Locale }) {
+// `fitted` comes from the build (lib/cv/fitted-file.ts), so the first paper, the one in the server HTML and
+// the one without JavaScript, already fits one page.
+export function CvSection({ locale = "en", fitted: fittedAtBuild = {} }: { locale?: Locale; fitted?: Record<string, string> }) {
   const { ui } = getContent(locale);
   const copy = ui.cv;
   const id = useId();
@@ -65,7 +77,7 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
   // choosing a role (component state, not :focus-within, which Safari never sets for a clicked button).
   const [moreOpen, setMoreOpen] = useState(false);
   const [chipsOpen, setChipsOpen] = useState(false);
-  const [fitted, setFitted] = useState<Partial<Record<CvTarget, CvSelection>>>({});
+  const [fitted, setFitted] = useState(() => decodeFitted(fittedAtBuild));
   const [pick, setPick] = useState<Pick | null>(null);
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [aiLive, setAiLive] = useState(false);
@@ -128,12 +140,8 @@ export function CvSection({ locale = "en" }: { locale?: Locale }) {
       .then((response) => (response.ok ? (response.json() as Promise<Record<string, unknown>>) : {}))
       .then((data) => {
         if (cancelled) return;
-        const next: Partial<Record<CvTarget, CvSelection>> = {};
-        for (const [name, encoded] of Object.entries(data)) {
-          const decoded = typeof encoded === "string" ? decodeSelection(encoded) : null;
-          if (decoded && decoded.target === name) next[decoded.target] = decoded;
-        }
-        setFitted(next);
+        const next = decodeFitted(data);
+        if (Object.keys(next).length) setFitted(next);
       })
       .catch(() => undefined);
     return () => {

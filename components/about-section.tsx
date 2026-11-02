@@ -20,7 +20,7 @@ export function AboutSection({ locale = "en" }: { locale?: Locale }) {
   return (
     <section id="about" className="section li-chapter about-chapter">
       <div className="page-shell">
-        <SectionHeader numbered title={ui.about.title} />
+        <SectionHeader title={ui.about.title} />
 
         <div className="about">
           <Reveal className="about__text" variant="right">
@@ -42,6 +42,7 @@ export function AboutSection({ locale = "en" }: { locale?: Locale }) {
                 <Image
                   src={portrait.derived.color}
                   alt={portrait.alt}
+                  lang={locale === "en" ? undefined : "en"}
                   fill
                   sizes="(max-width: 900px) 56vw, 400px"
                   loading="eager"

@@ -1,11 +1,11 @@
 /* ==========================================================================================
    The lower chapters (FINAL-SPEC 6.4 to 6.9). Imported right after app/living.css, so it builds on the
    Calm tokens there: --li-chapter, --li-group, --li-open, --li-gap and --li-t0 to --li-t7.
-   Each block below has one owner. Write only inside your own block; anything shared (tokens, the
-   chapter counter, the seams and seeds) lives in app/living.css, "Calm".
+   One block per chapter, in page order (tests slice the file on these headings). Anything shared (tokens,
+   the chapter counter, the seams and seeds) lives in app/living.css, "Calm".
    ========================================================================================== */
 
-/* ===== About + Now (owner: recog) ===== */
+/* ===== About + Now ===== */
 /* #about (components/about-section.tsx) with the Now card #experience (.about__now,
    components/experience-section.tsx) and the «التالي» line. FINAL-SPEC 6.4. */
 
@@ -208,15 +208,27 @@
 .about__next-title { color: var(--li-ink); font-size: var(--li-t5); font-weight: 600; line-height: 1.75; }
 .about__next-detail { max-width: 60ch; text-wrap: pretty; color: var(--li-ink-2); font-size: var(--li-t6); line-height: 1.7; }
 
-/* Hiring visitors meet the Salla card first inside About (G10): a CSS order swap, no DOM change. */
-html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-bottom: clamp(40px, 4.4vw, 64px); }
+/* Hiring visitors meet the Salla card first inside About (G10): a CSS order swap, no DOM change. The greeting
+   keeps its first sentence right under it, then comes the card, then the rest of the text beside the portrait.
+   The text column opens (display: contents) so its paragraphs can sit on either side of the card. */
+html[data-visitor="hiring"] .about__text { display: contents; }
+html[data-visitor="hiring"] .about__lead { grid-column: 1 / span 7; grid-row: 1; }
+html[data-visitor="hiring"] .about__now { order: -1; grid-row: 2; margin-block: clamp(40px, 4.4vw, 64px); }
+html[data-visitor="hiring"] .about__body { grid-column: 1 / span 7; grid-row: 3; align-self: end; }
+html[data-visitor="hiring"] .about__meta { grid-column: 1 / span 7; grid-row: 4; align-self: start; margin-top: 24px; }
+html[data-visitor="hiring"] .about__portrait { grid-row: 3 / span 2; }
+html[data-visitor="hiring"] .about__next { grid-row: 5; }
 
 @media (max-width: 900px) {
   .about { grid-template-columns: minmax(0, 1fr); align-items: start; }
   .about__text, .about__portrait, .portfolio-v3 .about__now, .about__next { grid-column: 1 / -1; }
   .about__portrait { order: -1; width: 56%; max-width: 260px; margin-bottom: 40px; }
   .portfolio-v3 .about__now { grid-template-columns: minmax(0, 1fr); row-gap: 24px; margin-top: 40px; }
-  html[data-visitor="hiring"] .about__now { order: -2; margin-top: 0; margin-bottom: 40px; }
+  /* One column: the portrait, the first sentence, the card, then the rest. */
+  html[data-visitor="hiring"] :is(.about__lead, .about__now, .about__body, .about__meta, .about__portrait, .about__next) { grid-column: 1 / -1; grid-row: auto; }
+  html[data-visitor="hiring"] .about__portrait { order: -3; }
+  html[data-visitor="hiring"] .about__lead { order: -2; }
+  html[data-visitor="hiring"] .about__now { order: -1; margin-block: 40px; }
   .about__next { margin-top: 32px; }
   .about__meta li { white-space: normal; }
 }
@@ -224,7 +236,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .about__now-play { inset-inline-start: 12px; bottom: 12px; }
 }
 
-/* ===== Recognition (owner: recog) ===== */
+/* ===== Recognition ===== */
 /* #achievements (components/achievements-section.tsx) with the quotes #recommendations
    (.recognition__quotes, components/recommendations-section.tsx). FINAL-SPEC 6.5. */
 
@@ -304,7 +316,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .recognition__quote-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* ===== Outside the projects (owner: rest) ===== */
+/* ===== Outside the projects ===== */
 /* «خارج المشاريع» (components/deeper-section.tsx: .deeper, .deeper__head, .deeper-row and its
    summary, .deeper-row__body) and the six row bodies inside it. FINAL-SPEC 6.7. */
 .portfolio-v3 .deeper {
@@ -576,6 +588,19 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .portfolio-v3 .row-ideas__pillars > li { padding-block: 20px; }
   .portfolio-v3 .row-certs ul { grid-template-columns: minmax(0, 1fr); }
 }
+/* Phones: the title takes the row's whole width beside the «+», and the number moves down to start the
+   row's line, so a title stays on one line (FINAL-SPEC 6.7, about 95 px a row). */
+@media (max-width: 600px) {
+  .portfolio-v3 .deeper { --row-gap: 12px; }
+  .portfolio-v3 .deeper-row__summary {
+    grid-template-columns: auto minmax(0, 1fr) 44px;
+    grid-template-areas: "title title plus" "num line plus";
+    column-gap: var(--row-gap);
+    row-gap: 2px;
+    padding-block: 16px;
+  }
+  .portfolio-v3 .deeper :is(.deeper-row__num, .deeper-row__line) { align-self: baseline; padding-top: 0; }
+}
 @media (max-width: 700px) {
   .portfolio-v3 .deeper-row__body { padding-inline-start: 0; padding-bottom: 56px; }
   .portfolio-v3 :is(.row-skills, .row-orgs, .row-programs__list) { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
@@ -589,7 +614,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .portfolio-v3 .row-ideas__foot { display: grid; justify-content: stretch; }
 }
 
-/* ===== Contact + Help (owner: rest) ===== */
+/* ===== Contact + Help ===== */
 /* #contact (components/contact-section.tsx) with the help paths #help (.contact__help,
    components/help-section.tsx), the socials and the aurora horizon. FINAL-SPEC 6.8. */
 /* The last chapter ends on its horizon, so it has no space under it: the wordmark rests right below. */
@@ -606,6 +631,8 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   text-wrap: balance;
 }
 .portfolio-v3 [dir="rtl"] .finale .finale__title { line-height: 1.2; letter-spacing: 0; }
+/* The question, then the invitation: each on its own line (ClauseLines), so a wrap never splits the question. */
+.portfolio-v3 .finale .finale__title .clause-line { display: block; text-wrap: balance; }
 .portfolio-v3 .finale .finale__lead { max-width: 34em; margin: 0; color: var(--li-ink-2); font-size: var(--li-t4); line-height: 1.75; }
 
 /* One email action, and the address to copy. */
@@ -616,7 +643,21 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
 
 /* «كيف أقدر أخدمك؟»: three hairline columns, each with who it is for, the offer and one link. */
 .portfolio-v3 .finale .contact__help { width: 100%; margin-top: var(--li-group); }
-.portfolio-v3 .finale .contact__help-title { margin: 0; color: var(--li-ink-2); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+/* Its title is a quiet label on the start side, the aurora rule before it, so the three audiences under it
+   carry the hierarchy (the parent never looks like a fourth, dimmer title). */
+.portfolio-v3 .finale .contact__help-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--li-ink-2);
+  font-size: var(--li-t7);
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0;
+  text-align: start;
+}
+.portfolio-v3 .finale .contact__help-title::before { content: ""; flex: none; width: 22px; height: 1px; background: var(--li-aurora); }
 .portfolio-v3 .contact__paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--li-gap); margin-top: 32px; text-align: start; }
 .portfolio-v3 .contact__path { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding-top: 28px; border-top: 1px solid var(--li-line-2); }
 .portfolio-v3 .finale .contact__path h4 { margin: 0; color: var(--li-ink); font-size: var(--li-t3); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
@@ -688,7 +729,7 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   .portfolio-v3 .finale .finale__btn { width: 100%; }
 }
 
-/* ===== Closing and footer (owner: rest) ===== */
+/* ===== Closing and footer ===== */
 /* The quiet wordmark under the horizon and the one-row footer (components/footer.tsx). FINAL-SPEC 6.9. */
 .portfolio-v3 .closing { position: relative; }
 /* The name in the page's language, filled with ink that fades from 13% to 2%. Still, and decoration only. */
@@ -701,7 +742,11 @@ html[data-visitor="hiring"] .about__now { order: -1; margin-top: 0; margin-botto
   letter-spacing: 0;
   text-align: center;
   white-space: nowrap;
-  background: linear-gradient(180deg, rgb(var(--li-ink-rgb) / 13%), rgb(var(--li-ink-rgb) / 2%) 92%);
+  /* The ink is clipped to the paragraph's box, and the dots under the final «ي» hang below a 1.3 line: the
+     padding gives them room (the negative margin keeps the layout), and the fade ends where the dots are. */
+  padding-bottom: 0.3em;
+  margin-bottom: -0.3em;
+  background: linear-gradient(180deg, rgb(var(--li-ink-rgb) / 13%), rgb(var(--li-ink-rgb) / 5%) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

@@ -82,10 +82,23 @@ export function showOnPage(id: string, quote?: string | null) {
   return true;
 }
 
+// A reload, or a step back or forward, puts the visitor back where they were; the page must not pull them
+// to the hash again.
+function restoredVisit() {
+  try {
+    const entry = window.performance?.getEntriesByType?.("navigation")[0] as PerformanceNavigationTiming | undefined;
+    return entry?.type === "reload" || entry?.type === "back_forward";
+  } catch {
+    return false;
+  }
+}
+
 // A shared link to a folded place (/ar/#skills, or #project-danna inside the smaller builds) opens its fold
 // and lands on it. Runs after hydration and on every hash change; any other hash is left to the browser.
-// On load (`settled`), a place that is not folded is landed on once more: the browser jumped before
-// hydration, and the page may have moved since (a visitor's own order, a card's «كيف بنيته» button).
+// On a fresh load (`settled`), a place that is not folded is landed on once more: the browser jumped before
+// hydration, and the page may have moved since (a visitor's own order, a card's «كيف بنيته» button). On a
+// reload or a history step the browser has already restored the visitor's own place: a folded target only
+// opens, where it is, and nothing scrolls.
 export function revealFoldedHash(settled = false) {
   let id = "";
   try {
@@ -95,6 +108,11 @@ export function revealFoldedHash(settled = false) {
   }
   const target = id ? document.getElementById(id) : null;
   if (!target) return false;
+  if (settled && restoredVisit()) {
+    if (!inClosedFold(target)) return false;
+    openFolds(target);
+    return true;
+  }
   if (inClosedFold(target)) return revealAnchor(id, false);
   if (!settled) return false;
   target.scrollIntoView({ behavior: "auto", block: "start" });

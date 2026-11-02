@@ -32,7 +32,7 @@ export function AchievementsSection({ locale = "en" }: { locale?: Locale }) {
   return (
     <section id="achievements" className="section li-chapter recognition">
       <div className="page-shell">
-        <SectionHeader numbered title={ui.proof.title} description={ui.proof.description} />
+        <SectionHeader title={ui.proof.title} description={ui.proof.description} />
 
         {lead ? (
           <Reveal className="recognition__lead">

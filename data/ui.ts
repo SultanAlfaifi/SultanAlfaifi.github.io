@@ -83,7 +83,7 @@ const en = {
     loading: "Loading video…",
     failedStart: "Video couldn’t start. Press play to try again.",
     failedLoad: "Video couldn’t load. Press play to retry.",
-    salla: { film: "Salla brand film", play: "Play Salla video", pause: "Pause Salla video" }
+    salla: { film: "Salla brand film", play: "Play Salla video" }
   },
   work: {
     title: "Try these first",
@@ -127,11 +127,9 @@ const en = {
     },
     // The showcase (components/showcase-*.tsx). Kinds and tags say what a stop or a number is, never more.
     showcase: {
-      count: (count: number) => `Featured projects · ${String(count).padStart(2, "0")}`,
       legend: "Where it stops to wait for a human",
       kinds: { asks: "Asks you first", verifies: "Verifies before a result counts", holds: "Holds on its own when a check fails" },
       boundary: "The line it keeps",
-      projects: (count: number) => (count === 1 ? "1 project" : `${count} projects`),
       step: (step: number, total: number) => `Step ${step} of ${total}`,
       tags: { "seeded-fault": "Seeded on purpose", "real-bug": "Real bug", trial: "Early trial", "public-count": "Public count", "own-count": "My own count", team: "Team", design: "Design target" },
       asOf: (date: string) => `As of ${date}`,
@@ -226,7 +224,7 @@ const en = {
     // from the data (lib/deeper-rows.ts), so a changed number flows through.
     rows: { timeline: (count: number) => `${count} stops, from starting my degree to what I'm working on now` }
   },
-  skills: { title: "What I work with", description: "Laravel, PHP, and MySQL are what I use in my Salla COOP. My public repos are mostly Python and JavaScript. The last group is what I’m learning now." },
+  skills: { title: "What I work with", description: "Laravel, PHP, and MySQL are what I use in my Salla COOP, and my public repos are mostly Python and JavaScript. The last group is what I’m learning now." },
   programs: {
     title: "Courses I’ve finished",
     description: "KAUST Academy, NVIDIA, IBM, McKinsey.org, DeepLearning.AI, and the University of Michigan.",
@@ -274,7 +272,7 @@ const en = {
     designed: "I designed and built this site with Next.js and TypeScript.",
     rights: "© 2026 Sultan Alfaifi. All rights reserved.",
     top: "Back to top ↑",
-    topAria: "Back to the top of the page"
+    topAria: "Back to top of the page"
   },
   social: { visit: (platform: string) => `${platform}: Sultan Alfaifi` },
   palette: {
@@ -398,7 +396,7 @@ const en = {
       errorLine: "[agent] couldn't reach the assistant, so here's the scripted reply.",
       verifying: "[agent] checking you're human…",
       thinking: "thinking…",
-      privacy: "Questions you type here go to an AI assistant (Claude via OpenRouter). They're kept for 30 days without your IP to improve answers, so don't share private details.",
+      privacy: "Questions you type here go to an AI assistant through OpenRouter. They're kept for 30 days without your IP to improve answers, so don't share private details.",
       evalsLink: "See how it's tested, failures included",
       steps: { plan: "planner", tool: "tool", result: "result", policy: "policy", sources: "sources", guard: "guard" } as Record<string, string>,
       // The one line that stands for everything the agent did on a turn; it opens to show the steps.
@@ -617,7 +615,7 @@ const ar: UiStrings = {
     loading: "جارٍ تحميل الفيديو…",
     failedStart: "تعذّر تشغيل الفيديو. اضغط زر التشغيل وجرّب مرة ثانية.",
     failedLoad: "تعذّر تحميل الفيديو. اضغط زر التشغيل لإعادة المحاولة.",
-    salla: { film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة", pause: "أوقف فيديو سلة" }
+    salla: { film: "فيلم سلة التعريفي", play: "شغّل فيديو سلة" }
   },
   work: {
     title: "جرّبها بنفسك",
@@ -658,11 +656,9 @@ const ar: UiStrings = {
       waterNote: "كل قرار يُسجَّل مع سببه."
     },
     showcase: {
-      count: (count: number) => `أبرز المشاريع · ${String(count).padStart(2, "0")}`,
       legend: "أين يتوقف لينتظر إنسانًا",
       kinds: { asks: "يستأذنك أولًا", verifies: "يتحقق قبل أن تُحسب النتيجة", holds: "يتوقف من نفسه إذا فشل أي فحص" },
       boundary: "الحد الذي يلتزم به",
-      projects: (count: number) => (count === 1 ? "مشروع واحد" : count === 2 ? "مشروعان" : count <= 10 ? `${count} مشاريع` : `${count} مشروعًا`),
       step: (step: number, total: number) => `الخطوة ${step} من ${total}`,
       tags: { "seeded-fault": "خلل زرعته عمدًا", "real-bug": "خلل حقيقي", trial: "تجربة أولى", "public-count": "عدّاد عام", "own-count": "من إحصاءاتي", team: "الفريق", design: "هدف تصميمي" },
       asOf: (date: string) => `حتى ${date}`,
@@ -801,7 +797,7 @@ const ar: UiStrings = {
     designed: "بنيت هذا الموقع بـ Next.js وTypeScript، وصمّمته بنفسي.",
     rights: "© 2026 سلطان الفيفي. جميع الحقوق محفوظة.",
     top: "للأعلى ↑",
-    topAria: "العودة إلى أعلى الصفحة"
+    topAria: "للأعلى: العودة إلى أعلى الصفحة"
   },
   social: { visit: (platform: string) => `${platform}: سلطان الفيفي` },
   palette: {
@@ -924,7 +920,7 @@ const ar: UiStrings = {
       errorLine: "[agent] ما قدرت أوصل للمساعد، فهذا الرد المكتوب مسبقًا.",
       verifying: "[agent] أتأكد أنك إنسان…",
       thinking: "أفكّر…",
-      privacy: "ما تكتبه هنا يُرسَل إلى مساعد ذكاء اصطناعي يعمل بـ Claude عبر OpenRouter. ونحتفظ بالأسئلة 30 يومًا دون عنوان IP لتحسين الإجابات، فلا تكتب بيانات خاصة.",
+      privacy: "ما تكتبه هنا يُرسَل إلى مساعد ذكاء اصطناعي عبر OpenRouter. ونحتفظ بالأسئلة 30 يومًا دون عنوان IP لتحسين الإجابات، فلا تكتب بيانات خاصة.",
       evalsLink: "شوف كيف نختبره، مع إخفاقاته",
       steps: { plan: "المخطِّط", tool: "أداة", result: "النتيجة", policy: "السياسة", sources: "المصادر", guard: "حماية" },
       activity: (count: number) => (count === 1 ? "نفّذ خطوة وحدة" : count === 2 ? "نفّذ خطوتين" : `نفّذ ${count} خطوات`),

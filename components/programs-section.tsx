@@ -2,14 +2,8 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale } from "@/data/i18n";
 import { getPortfolioAsset } from "@/data/portfolio";
+import { LtrNumbers } from "./ltr-numbers";
 import { MetaParts } from "./meta-parts";
-
-// A number with its sign ("5%") keeps its written order inside Arabic, so «أفضل 5%» never reads «%5».
-function LtrNumbers({ text }: { text: string }) {
-  return text.split(/([+]?\d[\d.,]*[%+]?)/).map((part, index) =>
-    index % 2 ? <bdi key={index} dir="ltr">{part}</bdi> : part
-  );
-}
 
 // Inside its "Beyond the projects" row (components/deeper-section.tsx), which carries #journey and the title;
 // the row's line already names the issuers, and its title already says they are finished. Each program is a
@@ -35,7 +29,7 @@ export function ProgramsSection({ locale = "en" }: { locale?: Locale }) {
               <div className="row-program__top">
                 {asset && logoSource ? (
                   <span className={`row-program__logo${logoSource === asset.derived.monochrome ? "" : " row-program__logo--inked"}`}>
-                    <Image src={logoSource} alt={asset.alt} fill sizes="160px" />
+                    <Image src={logoSource} alt={asset.alt} lang={locale === "en" ? undefined : "en"} fill sizes="160px" />
                   </span>
                 ) : <span />}
                 {program.recognition ? <span className="row-program__result li-aurora-text"><LtrNumbers text={program.recognition} /></span> : null}

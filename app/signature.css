@@ -90,7 +90,7 @@ html[data-motion="off"] .glow-card::after { display: none; }
   justify-content: center;
   gap: 3px;
   min-width: 44px;
-  height: 40px;
+  height: 44px;
   padding: 0 12px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 999px;
@@ -100,12 +100,15 @@ html[data-motion="off"] .glow-card::after { display: none; }
   cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
-.motion-toggle { padding: 0; width: 40px; min-width: 40px; }
+.motion-toggle { padding: 0; width: 44px; min-width: 44px; }
 .palette-trigger:hover,
 .motion-toggle:hover { background: var(--mint); border-color: var(--mint); color: var(--ink); }
 .motion-toggle[aria-pressed="true"] { border-color: var(--mint); color: var(--mint); }
 @media (prefers-reduced-motion: reduce) { .motion-toggle { display: none; } }
 .portfolio-v3 .nav__desktop a > span { display: inline-block; }
+/* The links' pills are 38 px inside the bar's 3 px ring; the hit area reaches into the ring, so each is a
+   44 px target on a touch screen wide enough for the desktop bar. */
+.portfolio-v3 .nav__desktop a::before { content: ""; position: absolute; inset: -3px 0; }
 
 /* ---------- Hero and AI section: their rules live in hero.css and ai.css, on the deep black without grain ---------- */
 
@@ -225,7 +228,8 @@ html[data-agent-mode="on"] body { cursor: crosshair; }
 /* ---------- Responsive ---------- */
 @media (max-width: 840px) {
   .nav__tools { margin-left: auto; margin-right: 8px; }
-  .nav__tools .motion-toggle { display: none; }
+  /* The motion switch stays on phones, so a visitor can stop the band (the one thing that keeps moving) with
+     one tap. */
   .terminal__log { height: 340px; padding-inline: 16px; }
   .terminal__line { font-size: 0.9rem; }
   .terminal__input, .terminal__chips { padding-inline: 16px; }

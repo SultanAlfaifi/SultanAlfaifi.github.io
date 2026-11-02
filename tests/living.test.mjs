@@ -260,10 +260,10 @@ test("the lower chapters are hairline rows in the eight type sizes, and small la
   assert.doesNotMatch(living, /font-size: 0\.78125rem/, "nothing at 12.5 px");
   // Recognition is hairline rows, never cards, so no grid of them can end on a hole.
   assert.match(read("../app/chapters.css"), /\.recognition__row \{[^}]*border-top: 1px solid var\(--li-line\);/, "the recognitions are hairline rows");
-  // The appendix, Contact and the footer (app/chapters.css, owner rest) speak only in the eight type sizes, and
+  // The appendix, Contact and the footer (app/chapters.css) speak only in the eight type sizes, and
   // their logos are off-white: no brand colour fills a tile any more.
   const chapters = read("../app/chapters.css");
-  const rest = chapters.slice(chapters.indexOf("/* ===== Outside the projects (owner: rest) ===== */"));
+  const rest = chapters.slice(chapters.indexOf("/* ===== Outside the projects ===== */"));
   const sizes = [...rest.matchAll(/font-size: ([^;]+);/g)].map((match) => match[1]);
   assert.ok(sizes.length > 20);
   for (const size of sizes) assert.match(size, /^(var\(--li-t[0-7]\)|clamp\(\d+px, [\d.]+vw, \d+px\))$/, `${size}: a type token (or the decorative wordmark)`);

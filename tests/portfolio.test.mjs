@@ -114,7 +114,7 @@ test("organizations keep their brand palettes, and the grid shows each one still
   assert.match(organizationRailSource, /href=\{organization\.url\} target="_blank" rel="noreferrer noopener"/);
   assert.match(organizationRailSource, /draggable=\{false\}/);
   const chapters = readFileSync(new URL("../app/chapters.css", import.meta.url), "utf8");
-  const grid = chapters.slice(chapters.indexOf("/* ===== Outside the projects (owner: rest) ===== */"), chapters.indexOf("/* ===== Contact + Help (owner: rest) ===== */"));
+  const grid = chapters.slice(chapters.indexOf("/* ===== Outside the projects ===== */"), chapters.indexOf("/* ===== Contact + Help ===== */"));
   assert.match(grid, /\.row-orgs \{ display: grid; grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
   assert.match(grid, /\.row-orgs__logo--inked img \{ filter: brightness\(0\) invert\(1\); \}/, "a colour-only logo is inked off-white too");
   assert.match(grid, /-webkit-user-drag: none/);

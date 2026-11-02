@@ -1,5 +1,6 @@
 import type { Locale } from "@/data/i18n";
 import { getContent } from "@/data/i18n";
+import { readFittedCv } from "@/lib/cv/fitted-file";
 import { AboutSection } from "./about-section";
 import { AchievementsSection } from "./achievements-section";
 import { AssistantLauncher } from "./assistant-launcher";
@@ -42,7 +43,7 @@ export function HomePage({ locale = "en" }: { locale?: Locale }) {
             { id: "runtime", node: <RuntimeSection locale={locale} /> },
             { id: "about", node: <AboutSection locale={locale} /> },
             { id: "achievements", node: <AchievementsSection locale={locale} /> },
-            { id: "cv", node: <CvSection locale={locale} /> },
+            { id: "cv", node: <CvSection locale={locale} fitted={readFittedCv()} /> },
             { id: "deeper", node: <DeeperSection locale={locale} /> },
             { id: "contact", node: <ContactSection locale={locale} /> }
           ]}

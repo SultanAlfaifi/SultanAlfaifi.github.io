@@ -166,7 +166,8 @@ export function InteractionLayer() {
     }
 
     // A shared link to a folded row (/ar/#skills) opens it, and any other shared place is landed on again.
-    // After hydration, once the visitor's own order has settled, and on every later hash change.
+    // After hydration, once the visitor's own order has settled, and on every later hash change. A reload or a
+    // step back keeps the place the browser restored (lib/agent/reveal.ts).
     const hashTimer = window.setTimeout(() => revealFoldedHash(true), 120);
     const handleHash = () => revealFoldedHash();
 

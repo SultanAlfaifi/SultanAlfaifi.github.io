@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { getContent, type Locale, type PortfolioContent } from "@/data/i18n";
 import type { Project } from "@/data/portfolio";
 import { GitHubIcon } from "./brand-icons";
+import { LtrNumbers } from "./ltr-numbers";
 import { MetaParts } from "./meta-parts";
 import { Reveal } from "./reveal";
 import { ChapterEyebrow } from "./section-header";
@@ -64,7 +65,7 @@ export function ProjectsSection({ locale = "en" }: { locale?: Locale }) {
                     <p className="sc-lab__status"><MetaParts text={project.status} /></p>
                     <h4>{project.title}</h4>
                     <p className="sc-lab__category">{project.category}</p>
-                    <p className="sc-lab__description">{project.description}</p>
+                    <p className="sc-lab__description"><LtrNumbers text={project.description} /></p>
                     {project.technologies.length ? (
                       <ul className="sc-chips" aria-label={copy.techAria(project.title)}>
                         {project.technologies.slice(0, 4).map((tech) => <li key={tech}>{tech}</li>)}
