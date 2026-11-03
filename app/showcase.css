@@ -686,6 +686,9 @@ html.sc-locked { overflow: hidden; }
 }
 @media (max-width: 720px) {
   .sc-tile { padding: 20px; }
+  /* Every card reads the same on a phone: its line, its demo, its numbers, its ways in. A wide card's long
+     description waits in the case it opens, as the other cards' do. */
+  .sc-tile > .sc-tile__desc { display: none; }
   .sc-labrow__summary { align-items: flex-start; gap: 16px; }
   .sc-flow { grid-template-columns: minmax(0, 1fr); }
   .sc-figs--two,

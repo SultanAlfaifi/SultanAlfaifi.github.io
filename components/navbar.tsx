@@ -148,6 +148,10 @@ export function Navbar({ locale = "en" }: { locale?: Locale }) {
             </a>
           ))}
         </nav>
+        {/* On a phone the bar keeps only the mark, the language and the menu; the motion switch moves here. */}
+        <div className="nav__drawer-tools">
+          <MotionToggle locale={locale} labelled />
+        </div>
       </div>
     </header>
   );

@@ -637,10 +637,11 @@
 }
 
 /* ---------- Phones ---------- */
-/* Approve and the first call to action stay on the first screen of a 390 × 844 phone: the clock steps
-   aside, the headline sets in two lines in Arabic, and the card folds its middle step. */
+/* One thing at a time on a phone. The first screen is who, the headline and the whole sphere; the card
+   begins under it, out of the sphere's way, and the ways in follow the card. The clock steps aside, the
+   headline sets in two lines in Arabic, and the card folds its middle step and its caption. */
 @media (max-width: 759px) {
-  .identity-hero { --hero-orb: clamp(208px, min(60vw, 28svh), 280px); padding-top: clamp(84px, 10.5svh, 96px); }
+  .identity-hero { --hero-orb: clamp(220px, min(68vw, 34svh), 300px); padding-top: clamp(84px, 10.5svh, 96px); }
   .hero-status { padding: 4px 14px; font-size: 0.8125rem; }
   .hero-status__sep,
   .portfolio-v3 .hero-status .live-clock { display: none; }
@@ -649,9 +650,12 @@
      headline keeps its two lines on every phone instead of leaving a word alone on a third. */
   .portfolio-v3 .identity-hero .hero-title { margin-top: 10px; font-size: min(calc((100vw - 40px) / 10.9), 2.75rem); line-height: 1.14; letter-spacing: -0.035em; }
   [dir="rtl"] .identity-hero .hero-title { line-height: 1.36; }
-  /* The headline's second line passes over the sphere's top, and the card covers only its bottom edge. */
-  .identity-hero { --hero-stage: calc(var(--hero-orb) * 0.6); }
-  .hero-run { padding: 12px 14px 12px; }
+  /* The headline's second line passes over the sphere's top, and the card starts just under its bottom
+     edge, so nothing covers the sphere. */
+  .identity-hero { --hero-stage: var(--hero-orb); }
+  .hero-stage .hero-orb { top: calc(100% - var(--hero-orb) * 0.56); }
+  .hero-run { padding: 14px 16px 14px; }
+  .hero-run__caption { display: none; }
   /* The title and the state share the first row; the replay note gets the second to itself. */
   .hero-run__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px; padding-bottom: 9px; }
   .hero-run__who { display: contents; }
@@ -680,12 +684,12 @@
   .hero-run__choices { gap: 6px; }
   .hero-run__choices .li-btn { flex: 1 1 auto; justify-content: center; }
   /* Two columns: the two buttons, then the plain link and the visitor note. */
-  .identity-hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; width: 100%; margin-top: 14px; }
+  .identity-hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; width: 100%; margin-top: 28px; }
   .identity-hero__actions > .hero-primary,
   .identity-hero__actions > .assistant-cta { justify-content: center; min-width: 0; padding: 0 14px; white-space: nowrap; }
   .identity-hero__actions > .identity-hero__contact { justify-content: center; }
   .identity-hero .visitor-note { justify-content: center; }
-  .identity-hero__more { gap: 22px; margin-top: 48px; }
+  .identity-hero__more { gap: 28px; margin-top: 88px; }
   .identity-hero__summary { font-size: 1rem; line-height: 1.8; text-align: start; }
   .spec-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spec-strip > li:nth-child(odd) { border-inline-start: 0; }
@@ -694,23 +698,18 @@
   .spec-cell__value { font-size: 1.5rem; }
   .identity-hero__foot { flex-direction: column; align-items: stretch; }
   .meet-row { width: 100%; }
-  .identity-hero__foot .social-links { justify-content: center; }
+  /* The film stays; the three links wait for the closing, where they are the last thing on the page. */
+  .identity-hero__foot .social-links { display: none; }
   .film-dialog { width: 100vw; height: 100dvh; max-height: none; margin: 0; }
   .film-dialog__panel { height: 100%; max-height: none; border: 0; border-radius: 0; }
   .film-dialog__stage { flex: 1; aspect-ratio: auto; }
 }
 /* A phone with its browser's bars showing (a 390 × 844 iPhone leaves about 390 × 664 to the page): the
-   gaps close, the sphere shows a thinner band and the card drops its one-line caption, so Approve and
-   "Not now" are still on the first screen. */
+   top gap closes a little so the whole sphere still fits under the headline. */
 @media (max-width: 759px) and (max-height: 740px) {
-  .identity-hero { --hero-stage: calc(var(--hero-orb) * 0.4); padding-top: 76px; }
+  .identity-hero { padding-top: 76px; }
   .hero-who { margin-top: 8px; }
   .portfolio-v3 .identity-hero .hero-title { margin-top: 6px; }
-  .hero-run { padding-block: 10px; }
-  .hero-run__head { padding-bottom: 7px; }
-  .hero-run__caption { display: none; }
-  .hero-run__gate { margin-top: 4px; padding-block: 8px 10px; }
-  .identity-hero__actions { margin-top: 10px; }
 }
 
 /* ==========================================================================================
