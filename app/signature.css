@@ -228,8 +228,11 @@ html[data-agent-mode="on"] body { cursor: crosshair; }
 /* ---------- Responsive ---------- */
 @media (max-width: 840px) {
   .nav__tools { margin-left: auto; margin-right: 8px; }
-  /* The motion switch stays on phones, so a visitor can stop the band (the one thing that keeps moving) with
-     one tap. */
+  /* The bar keeps the mark, the language and the menu. ⌘K needs a keyboard, and the motion switch (which
+     stops the band, the one thing that keeps moving) waits in the menu with its words beside it. */
+  .nav__tools > :is(.motion-toggle, .palette-trigger) { display: none; }
+  .nav__drawer-tools { display: flex; margin-top: 28px; }
+  .motion-toggle.motion-toggle--labelled { width: auto; gap: 10px; padding-inline: 16px 18px; font-family: inherit; font-size: 0.9375rem; font-weight: 500; }
   .terminal__log { height: 340px; padding-inline: 16px; }
   .terminal__line { font-size: 0.9rem; }
   .terminal__input, .terminal__chips { padding-inline: 16px; }

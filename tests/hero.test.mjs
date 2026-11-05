@@ -432,7 +432,20 @@ test("the orb stays the centrepiece: the card covers only its lower edge, and th
   assert.match(css, /\.hero-stage \.hero-orb \{[^}]*top: calc\(100% - var\(--hero-orb\) \* 0\.32\);/, "the sphere hangs from the stage's lower edge, so the card covers its bottom 18%");
   assert.match(css, /--hero-stage: clamp\(calc\(var\(--hero-orb\) \* 0\.3\), calc\(60svh - 300px\), calc\(var\(--hero-orb\) \* 0\.74\)\);/);
   assert.match(css, /@media \(min-width: 960px\) \{\s*\.hero-run \{[^}]*grid-template-columns: minmax\(0, 1\.55fr\) minmax\(0, 1fr\);/, "wide screens set the steps and the question side by side");
-  assert.match(css, /@media \(max-width: 759px\) and \(max-height: 740px\)/, "a phone with its browser bars showing keeps Approve on the first screen");
+  assert.match(css, /@media \(max-width: 759px\) and \(max-height: 740px\)/, "a phone with its browser bars showing closes the top gap so the whole sphere still fits");
   assert.match(css, /\.hero-run__gate \{ --i: 3; \}/, "the question is the run's fourth beat");
   assert.match(css, /:is\(\.hero-run__question, \.hero-run__actions\) \{ animation: run-text 0\.5s ease var\(--at\) both; \}/, "its words wait, dimmed, until the agent has read");
+});
+
+test("a phone shows one thing at a time: the whole sphere first, then the card, with a quiet bar", () => {
+  const hero = read("../app/hero.css");
+  const phone = hero.match(/@media \(max-width: 759px\) \{([\s\S]*?)\n\}/)[1];
+  assert.match(phone, /--hero-stage: var\(--hero-orb\);/, "the stage holds the whole sphere");
+  assert.match(phone, /\.hero-stage \.hero-orb \{ top: calc\(100% - var\(--hero-orb\) \* 0\.56\); \}/, "so the card starts under it");
+  assert.match(phone, /\.hero-run__caption \{ display: none; \}/);
+  assert.match(phone, /\.identity-hero__foot \.social-links \{ display: none; \}/, "the links wait for the closing");
+  const nav = read("../app/signature.css");
+  assert.match(nav, /@media \(max-width: 840px\) \{[\s\S]*?\.nav__tools > :is\(\.motion-toggle, \.palette-trigger\) \{ display: none; \}/, "the bar keeps the mark, the language and the menu");
+  assert.match(read("../components/navbar.tsx"), /<div className="nav__drawer-tools">\s*<MotionToggle locale=\{locale\} labelled \/>/, "the motion switch waits in the menu");
+  assert.match(read("../app/showcase.css"), /@media \(max-width: 720px\) \{[\s\S]*?\.sc-tile > \.sc-tile__desc \{ display: none; \}/, "a wide card's long description waits in its case");
 });
